@@ -1,0 +1,18 @@
+data
+sell-arts-backend/src/main/resources/application.properties
+.idea
+.vscode
+*.venv
+logs
+*.log
+*.lock
+*__pycache__
+*.vscode
+0*
+.idea
+*.md5
+/api/db.py
+
+# Secrets
+*secret.py
+
