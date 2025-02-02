@@ -35,8 +35,6 @@ public class ArtWork {
 
     private double width;
     private double height;
-    // Ajout du champ size
-    private String size; // Ajoutez le champ 'size'
 
     private double price;
 

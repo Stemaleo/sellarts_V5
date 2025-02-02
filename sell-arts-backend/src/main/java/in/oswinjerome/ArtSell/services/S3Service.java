@@ -114,6 +114,24 @@ public class S3Service {
         return cdnEndPoint+"/"+objectKey;
     }
 
+
+     /**
+     * 🔥 **Ajout de la méthode pour supprimer un fichier S3**
+     */
+    public void deleteFile(String fileKey) {
+        try {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileKey)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+            System.out.println("Fichier supprimé avec succès : " + fileKey);
+        } catch (S3Exception e) {
+            throw new RuntimeException("Erreur lors de la suppression du fichier S3 : " + fileKey, e);
+        }
+    }
+
     public String getFileExtension(String fileName){
         String ext = "";
 
