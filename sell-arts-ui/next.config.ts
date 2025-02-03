@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   experimental: {
     turbo: {},
     serverActions: {
+			allowedOrigins: ['http://localhost', 'http://dev.stellarts.net', 'dev.sellarts.front', 'dev.sellarts.net'],
       bodySizeLimit: "10mb",
     },
   },
