@@ -31,7 +31,7 @@ services:
       - "9022:3000"
     environment:
       API_URL: http://backend:8080
-      PUBLIC_APP_DOMAIN: https://dev.]sellarts.net
+      PUBLIC_APP_DOMAIN: https://dev.sellarts.seter
     depends_on:
       - backend
     restart: always
