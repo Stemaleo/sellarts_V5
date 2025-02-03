@@ -1,11 +1,15 @@
 import type { NextConfig } from "next";
 import { hostname } from "os";
 import createNextIntlPlugin from "next-intl/plugin";
+import { NEXTAUTH_URL } from "./secret";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-
+  basePath: '',
+  env: {
+    NEXTAUTH_URL: NEXTAUTH_URL,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
