@@ -44,8 +44,8 @@ const nextConfig: NextConfig = {
         hostname: "art.s3.oswinjerome.in",
       },
       {
-        hostname: "127.0.0.1",
-      },
+       hostname: "127.0.0.1",
+     },
     ],
   },
 };
