@@ -62,7 +62,11 @@ export const updateArtWork = async (artworkId: string, artWork: ArtWork, images:
 export const getMyArtWorks = async (page: number, title: string, paintingType: string) => {
   const res = await fetchHelper(process.env.API_URL + `/artists/artworks?page=${page}&size=8&title=${title}&paintingType=${paintingType}`, {
     method: "GET",
-  });
+  }
+);
+
+
+  
 
   const data: ApiResponse<PageableResponse<ArtWorkDTO>> = await res.json();
 
@@ -73,6 +77,9 @@ export const getAllArtWorks = async (page: number, paintingType: string, materia
   const res = await fetchHelper(process.env.API_URL + `/public/artworks?page=${page}&size=8&paintingType=${paintingType}&materialType=${materialType}&price=${price}&title=${title}`, {
     method: "GET",
   });
+  console.log('####################getAllArtWorks##########################');
+  
+console.log(getAllArtWorks);
 
   const data: ApiResponse<PageableResponse<ArtWorkDTO>> = await res.json();
 
