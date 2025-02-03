@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import { hostname } from "os";
 import createNextIntlPlugin from "next-intl/plugin";
-import { NEXTAUTH_URL, NEXT_PUBLIC_SITE_URL} from "./secret";
+import { NEXTAUTH_URL, NEXTAUTH_URL_INTERNAL, NEXT_PUBLIC_SITE_URL} from "./secret";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
   basePath: '',
   env: {
     NEXTAUTH_URL: NEXTAUTH_URL,
-    NEXT_PUBLIC_SITE_URL: NEXT_PUBLIC_SITE_URL,
+    NEXTAUTH_URL_INTERNAL: NEXTAUTH_URL_INTERNAL,
+    API_URL: NEXTAUTH_URL_INTERNAL
   },
   eslint: {
     ignoreDuringBuilds: true,
