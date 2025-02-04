@@ -20,7 +20,8 @@ public class Media {
     @UUID
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     String id;
-
+    
+    @Column(name = "`key`") 
     private String key;
     private String contentSize;
     private String contentType;

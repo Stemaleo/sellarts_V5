@@ -2,6 +2,7 @@ package in.oswinjerome.ArtSell.accounts;
 
 import in.oswinjerome.ArtSell.dtos.ResponseDTO;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -16,6 +17,8 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
+
+    @Autowired
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
