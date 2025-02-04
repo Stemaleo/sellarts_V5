@@ -1,11 +1,11 @@
-from django.test import TestCase
 from faker import Faker
 from graphene_django.utils.testing import GraphQLTestCase
 from . import models as models
+from django.core.management import call_command
 
 class SetupTests(GraphQLTestCase):
     GRAPHQL_URL = "/sellarts/"
-
+ 
     def test_query_setup(self):
         response = self.query(
             """
@@ -40,11 +40,10 @@ mutation{
 
 
 class MutationTests(GraphQLTestCase):
-    GRAPHQL_URL = "/sellarts/"
-
-
+    GRAPHQL_URL = "/sellarts/" 
 
     def test_feature_initiate_payment(self):
+      # models.Orders.objects.create(address="adads")
       # models.Orders.objects.get(id=1)
       fake = Faker()
       variables = {
