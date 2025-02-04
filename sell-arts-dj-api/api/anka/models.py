@@ -5,15 +5,15 @@ class ArtWorks(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
     created_at = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    height = models.FloatField()
-    is_featured = models.BooleanField()
-    price = models.FloatField()
+    height = models.FloatField(null=True)
+    is_featured = models.BooleanField(null=True)
+    price = models.FloatField(null=True)
     stock = models.IntegerField(blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    width = models.FloatField()
+    width = models.FloatField(null=True)
     artist = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-    material_type = models.ForeignKey('MaterialType', models.DO_NOTHING)
+    material_type = models.ForeignKey('MaterialType', models.DO_NOTHING, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, related_name='artworks_owner_set', blank=True, null=True)
     painting_type = models.ForeignKey('PaintingType', models.DO_NOTHING)
 
@@ -56,8 +56,8 @@ class Blogs(models.Model):
     author = models.CharField(max_length=255, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
-    duration = models.IntegerField()
-    is_publish = models.BooleanField()
+    duration = models.IntegerField(null=True)
+    is_publish = models.BooleanField(null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
@@ -69,7 +69,7 @@ class Blogs(models.Model):
 class CartItem(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
     price = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(null=True)
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
@@ -91,8 +91,8 @@ class Catalog(models.Model):
 
 
 class CatalogArtworks(models.Model):
-    catalog = models.ForeignKey(Catalog, models.DO_NOTHING)
-    artwork = models.ForeignKey(ArtWorks, models.DO_NOTHING)
+    catalog = models.ForeignKey(Catalog, models.DO_NOTHING, default=None)
+    artwork = models.ForeignKey(ArtWorks, models.DO_NOTHING, default=None)
 
     class Meta:
         managed = True
@@ -140,7 +140,7 @@ class Events(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
-    max_registration = models.IntegerField()
+    max_registration = models.IntegerField(null=True)
     owner_type = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
@@ -216,7 +216,7 @@ class Notification(models.Model):
     id = models.BigAutoField(primary_key=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     message = models.CharField(max_length=255)
-    read_status = models.BooleanField()
+    read_status = models.BooleanField(null=True)
     timestamp = models.DateTimeField()
     user = models.ForeignKey('Users', models.DO_NOTHING)
 
@@ -231,7 +231,7 @@ class OrderItem(models.Model):
     artist_share = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     price = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(null=True)
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
     order = models.ForeignKey('Orders', models.DO_NOTHING, blank=True, null=True)
 
@@ -297,12 +297,12 @@ class Post(models.Model):
 
 class Promo(models.Model):
     id = models.BigAutoField(primary_key=True)
-    amount = models.FloatField()
+    amount = models.FloatField(null=True)
     code = models.CharField(unique=True, max_length=255, blank=True, null=True)
-    count = models.IntegerField()
+    count = models.IntegerField(null=True)
     created_at = models.DateTimeField(blank=True, null=True)
-    is_active = models.BooleanField()
-    is_percentage = models.BooleanField()
+    is_active = models.BooleanField(null=True)
+    is_percentage = models.BooleanField(null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -313,7 +313,7 @@ class Promo(models.Model):
 class Registration(models.Model):
     id = models.BigAutoField(primary_key=True)
     registration_time = models.DateTimeField(blank=True, null=True)
-    event = models.ForeignKey(Events, models.DO_NOTHING)
+    event = models.ForeignKey(Events, models.DO_NOTHING, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -372,7 +372,7 @@ class UserRoles(models.Model):
 class Users(models.Model):
     id = models.BigIntegerField(primary_key=True)
     email = models.CharField(max_length=255, blank=True, null=True)
-    is_verified = models.BooleanField()
+    is_verified = models.BooleanField(null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
     profile_image = models.CharField(max_length=255, blank=True, null=True)

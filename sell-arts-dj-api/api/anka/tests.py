@@ -43,7 +43,8 @@ class MutationTests(GraphQLTestCase):
     GRAPHQL_URL = "/sellarts/" 
 
     def test_feature_initiate_payment(self):
-      models.Orders.objects.get(id=1)
+      # models.Orders.objects.create(address="adads")
+      # models.Orders.objects.get(id=1)
       fake = Faker()
       variables = {
           "email": fake.email(),
