@@ -1,4 +1,3 @@
-
 from django.db import models
 
 
@@ -6,21 +5,20 @@ class ArtWorks(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
     created_at = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    height = models.FloatField(null=True)
-    is_featured = models.BooleanField(null=True)
-    price = models.FloatField(null=True)
-    # size = models.FloatField(null=True, default=0)
+    height = models.FloatField()
+    is_featured = models.BooleanField()
+    price = models.FloatField()
     stock = models.IntegerField(blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    width = models.FloatField(null=True)
+    width = models.FloatField()
     artist = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-    material_type = models.ForeignKey('MaterialType', models.DO_NOTHING, null=True)
+    material_type = models.ForeignKey('MaterialType', models.DO_NOTHING)
     owner = models.ForeignKey('Users', models.DO_NOTHING, related_name='artworks_owner_set', blank=True, null=True)
-    painting_type = models.ForeignKey('PaintingType', models.DO_NOTHING, null=True)
+    painting_type = models.ForeignKey('PaintingType', models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'art_works'
 
 
@@ -35,77 +33,8 @@ class ArtistProfiles(models.Model):
     user = models.OneToOneField('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'artist_profiles'
-
-
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group'
-
-
-class AuthGroupPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.BooleanField()
-    is_active = models.BooleanField()
-    date_joined = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
-
-class AuthUserGroups(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
 
 
 class Bid(models.Model):
@@ -118,7 +47,7 @@ class Bid(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'bid'
 
 
@@ -133,7 +62,7 @@ class Blogs(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'blogs'
 
 
@@ -145,7 +74,7 @@ class CartItem(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'cart_item'
 
 
@@ -157,7 +86,7 @@ class Catalog(models.Model):
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'catalog'
 
 
@@ -166,7 +95,7 @@ class CatalogArtworks(models.Model):
     artwork = models.ForeignKey(ArtWorks, models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'catalog_artworks'
 
 
@@ -177,7 +106,7 @@ class Colab(models.Model):
     requester = models.ForeignKey('Users', models.DO_NOTHING, related_name='colab_requester_set', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'colab'
 
 
@@ -189,7 +118,7 @@ class ColabRequest(models.Model):
     requester = models.ForeignKey('Users', models.DO_NOTHING, related_name='colabrequest_requester_set', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'colab_request'
 
 
@@ -201,53 +130,8 @@ class Comments(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'comments'
-
-
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.SmallIntegerField()
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'
 
 
 class Events(models.Model):
@@ -262,7 +146,7 @@ class Events(models.Model):
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'events'
 
 
@@ -271,7 +155,7 @@ class EventsMediaKeys(models.Model):
     media_keys = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'events_media_keys'
 
 
@@ -280,7 +164,7 @@ class EventsMediaUrls(models.Model):
     media_urls = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'events_media_urls'
 
 
@@ -291,7 +175,7 @@ class Favourite(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'favourite'
 
 
@@ -302,7 +186,7 @@ class Likes(models.Model):
     post = models.ForeignKey('Post', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'likes'
 
 
@@ -311,7 +195,7 @@ class MaterialType(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'material_type'
 
 
@@ -324,7 +208,7 @@ class Medias(models.Model):
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'medias'
 
 
@@ -337,7 +221,7 @@ class Notification(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'notification'
 
 
@@ -352,7 +236,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey('Orders', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'order_item'
 
 
@@ -373,7 +257,7 @@ class Orders(models.Model):
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'orders'
 
 
@@ -382,7 +266,7 @@ class PaintingType(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'painting_type'
 
 
@@ -394,7 +278,7 @@ class Payment(models.Model):
     order = models.ForeignKey(Orders, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'payment'
 
 
@@ -407,7 +291,7 @@ class Post(models.Model):
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'post'
 
 
@@ -422,7 +306,7 @@ class Promo(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'promo'
 
 
@@ -433,7 +317,7 @@ class Registration(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'registration'
 
 
@@ -444,7 +328,7 @@ class Subscribe(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, related_name='subscribe_user_set', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'subscribe'
 
 
@@ -458,7 +342,7 @@ class Tickets(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'tickets'
 
 
@@ -472,7 +356,7 @@ class Transaction(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'transaction'
 
 
@@ -481,7 +365,7 @@ class UserRoles(models.Model):
     role = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'user_roles'
 
 
@@ -497,5 +381,5 @@ class Users(models.Model):
     artist_profile = models.OneToOneField(ArtistProfiles, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'users'
