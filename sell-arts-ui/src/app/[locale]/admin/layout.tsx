@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, ChevronDown, LayoutDashboard, Users, ShoppingCart, FileText, Settings, Menu, PaintRoller, SlashIcon, ShoppingBag, DollarSign, Banknote, Rss, RssIcon, Heart, Paintbrush } from "lucide-react";
+import { Bell, ChevronDown, LayoutDashboard, Users, ShoppingCart, FileText, Settings, Menu, PaintRoller, SlashIcon, ShoppingBag, DollarSign, Banknote, Rss, RssIcon, Heart, Paintbrush, MessageCircleCodeIcon, MessageCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,8 +18,9 @@ const navItems = [
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Blogs", href: "/admin/blogs", icon: RssIcon },
   { name: "Painting Types", href: "/admin/paintingTypes", icon: PaintRoller },
-  { name: "Materials", href: "/admin/materials", icon: SlashIcon },
+  { name: "Materials", href: "/admin/materials", icon: SlashIcon},
   { name: "Arts", href: "/admin/arts", icon: Paintbrush },
+  { name: "Messages", href: "/admin/messages", icon: MessageCircle },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { name: "Favourites", href: "/admin/favorites", icon: Heart },
   { name: "Payments", href: "/admin/payments", icon: Banknote },

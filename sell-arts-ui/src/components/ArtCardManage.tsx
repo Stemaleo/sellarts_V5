@@ -26,12 +26,12 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
- const t = useTranslations();
+  const t = useTranslations();
   const handleDelete = async () => {
     setLoading(true);
     const res = await execute(deleteArtWork, artwork.id);
     setLoading(false);
-  
+
     if (res?.success) {
       // Notification réussie (succès)
       toast.success("L'œuvre a été supprimée avec succès.");
@@ -44,7 +44,7 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
   };
 
   const handleCancelDelete = () => {
-    setShowDeleteConfirmation(false); 
+    setShowDeleteConfirmation(false);
   };
 
   const handleEdit = () => {
@@ -60,7 +60,9 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
           <Badge className="absolute z-10 top-2 right-2 bg-red-500">Sold</Badge>
         )}
         <div className="relative h-48">
+        <Link href={`/arts/${artwork.id}`}>
           <Image src={artwork.mediaUrls[0]} alt={artwork.title} layout="fill" objectFit="cover" />
+        </Link>
         </div>
         <div className="p-4">
           <div className="flex justify-between items-center">
@@ -88,15 +90,22 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
               className=""
             />
           </div>
-            <div className="mt-4 flex gap-4">
+          <div className="mt-4 flex gap-4">
             <Link href={`arts/edit-artwork/${artwork.id}`}>
               <Button className="w-full md:w-auto">
                 <Pencil className="mr-2 h-4 w-4" /> Modifier
               </Button>
             </Link>
-            <Button onClick={() => setShowDeleteConfirmation(true)} className="w-full md:w-auto">
-                <Trash className="mr-2 h-4 w-4" /> Supprimer
-              </Button>
+            <Button
+              onClick={(event) => {
+                event.stopPropagation(); 
+                setShowDeleteConfirmation(true);
+              }}
+              className="w-full md:w-auto"
+            >
+              <Trash className="mr-2 h-4 w-4" /> Supprimer
+            </Button>
+
           </div>
         </div>
 
@@ -109,9 +118,8 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
                 <button
                   onClick={handleDelete}
                   disabled={loading}
-                  className={`px-4 py-2 rounded-lg ${
-                    loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 text-white hover:bg-red-600"
-                  }`}
+                  className={`px-4 py-2 rounded-lg ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 text-white hover:bg-red-600"
+                    }`}
                 >
                   {loading ? "Suppression..." : "Oui, Supprimer"}
                 </button>
@@ -125,7 +133,7 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
             </div>
           </div>
         )}
-         <ToastContainer position="top-right" autoClose={5000} hideProgressBar newestOnTop rtl aria-label={undefined} />
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar newestOnTop rtl aria-label={undefined} />
       </div>
     </>
   );

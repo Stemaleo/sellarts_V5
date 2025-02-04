@@ -32,9 +32,7 @@ export default async function UserArtworkGallery({ searchParams }: any) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {res.data.content.map((artwork) => (
-            <Link href={`/arts/${artwork.id}`}>
               <ArtCardManage key={artwork.id} artwork={artwork}></ArtCardManage>
-            </Link>
           ))}
         </div>
 
