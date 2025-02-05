@@ -8,7 +8,7 @@ COPY . .
 
 # Install dependencies
 RUN pip install poetry \
-    && poetry install --only main
+    && poetry lock && poetry install --only main
 
 # # Donner la permissions à entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
