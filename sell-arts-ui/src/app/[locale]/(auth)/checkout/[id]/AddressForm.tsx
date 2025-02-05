@@ -46,7 +46,7 @@ const AddressForm = ({ order }: { order: Order }) => {
     onSubmit: async (values) => {
       setLoadingPaymentLink(true);
       try {
-        const response = await axios.post("http://dj-api:8000/sellarts/", {
+        const response = await axios.post("http://dj-dev.sellarts.net/sellarts/", {
           query: INITIATE_PAYMENT_MUTATION,
           variables: values,
         });
