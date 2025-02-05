@@ -204,14 +204,14 @@ export default function CreateArtwork() {
             <div className="space-y-2">
               <Label htmlFor="price">{t("artsPage.price")} (FCFA)</Label>
               <Input id="price" type="number" name="price" onChange={form.handleChange} value={form.values.price} onBlur={form.handleBlur} placeholder="Enter price" />
-              <ErrorMessage error={form.errors.size} touched={form.touched.size} />
-              <ErrorMessage error={form.errors.artistId} touched={form.touched.artistId} />
+              <ErrorMessage error={form.errors.price} touched={form.touched.price} />
+              <ErrorMessage error={form.errors.price} touched={form.touched.price} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="size">{t("artsPage.size")} (Kg)</Label>
               <Input id="size" type="number" name="size" onChange={form.handleChange} value={form.values.size} onBlur={form.handleBlur} placeholder="Enter size" />
               <ErrorMessage error={form.errors.size} touched={form.touched.size} />
-              <ErrorMessage error={form.errors.artistId} touched={form.touched.artistId} />
+              <ErrorMessage error={form.errors.size} touched={form.touched.size} />
             </div>
             {/* <input type="text" name="s" defaultValue={params.get("artistId") ?? ""} /> */}
             <div className="space-y-2">

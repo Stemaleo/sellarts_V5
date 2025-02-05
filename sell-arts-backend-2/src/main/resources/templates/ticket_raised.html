@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .email-header h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .email-header img {
+            width: 60px;
+            margin: 20px auto;
+        }
+        .email-body p {
+            font-size: 16px;
+            margin: 15px 0;
+        }
+        .ticket-details {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .ticket-details p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        .ticket-details .high {
+            color: red;
+        }
+        .ticket-details .open {
+            color: green;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .email-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+    <title>Ticket Notification</title>
+</head>
+<body>
+<div class="email-container">
+    <div class="email-header">
+        <h1>Your ticket <span th:text="${ticket.id}">#HET-TK43111</span> has been opened</h1>
+        <img src="https://via.placeholder.com/60" alt="Folder Icon">
+    </div>
+    <div class="email-body">
+        <p>Hello <span th:text="${user.name}">John</span>,</p>
+        <p>Thank you for contacting us. Your ticket has been received and will be answered shortly. The details of your ticket are shown below.</p>
+        <div class="ticket-details">
+            <p><strong>Subject:</strong> <span th:text="${ticket.description}">Server offline, can't boot</span></p>
+<!--            <p><strong>Priority:</strong> <span class="high" th:class="${ticket.priority == 'High' ? 'high' : ''}" th:text="${ticket.priority}">High</span></p>-->
+            <p><strong>Status:</strong> <span class="open" th:class="${ticket.status == 'Open' ? 'open' : ''}" th:text="${ticket.status}">Open</span></p>
+        </div>
+        <a href="https://localhost.com/tickets/${ticket.id}"  class="btn">VIEW TICKET</a>
+    </div>
+    <div class="email-footer">
+        <p>© 2024 YourCompany. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

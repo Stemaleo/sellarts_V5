@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import { hostname } from "os";
 import createNextIntlPlugin from "next-intl/plugin";
-import { NEXTAUTH_URL, NEXTAUTH_URL_INTERNAL, NEXT_PUBLIC_SITE_URL} from "./secret";
+import { NEXTAUTH_URL, NEXTAUTH_URL_INTERNAL} from "./secret";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   experimental: {
     turbo: {},
     serverActions: {
-			allowedOrigins: ['http://localhost', 'http://dev.stellarts.net', 'dev.sellarts.front', 'dev.sellarts.net'],
+			allowedOrigins: ['http://localhost', 'http://localhost:8080', 'http://dev.stellarts.net', 'dev.sellarts.front', 'dev.sellarts.net', 'http://localhost:8080'],
       bodySizeLimit: "10mb",
     },
   },
