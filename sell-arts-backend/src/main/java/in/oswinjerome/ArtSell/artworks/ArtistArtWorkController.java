@@ -33,6 +33,8 @@ public class ArtistArtWorkController {
             throw new InvalidDataException("Images can't be empty");
         }
 
+        // Vérifier si size est bien reçu
+        System.out.println("Size reçu : " + storeDTO.getSize()); // 🔍 Debugging
         return artWorkService.store(storeDTO, files);
     }
 
@@ -49,11 +51,27 @@ public class ArtistArtWorkController {
     }
 
     // Mettre à jour le statut "featured" d'une œuvre d'art
+    @PostMapping("{artworkId}/featured") // TEMPORAIRE : Accepte aussi POST
     @PutMapping("{artworkId}/featured")
     @Secured({"ROLE_ARTIST", "ROLE_GALLERY", "ROLE_ADMIN"})
     public ResponseEntity<ResponseDTO> updateFeatured(@PathVariable String artworkId) {
         return artWorkService.updateFeatured(artworkId);
     }
+
+    @PutMapping("{artworkId}")
+    @Secured({"ROLE_ARTIST", "ROLE_GALLERY"})
+    public ResponseEntity<ResponseDTO> updateArtWork(
+            @PathVariable String artworkId,
+            @RequestPart("data") String jsonData,
+            @RequestPart(value = "images", required = false) List<MultipartFile> files) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        StoreArtWorkReqDTO storeDTO = mapper.readValue(jsonData, StoreArtWorkReqDTO.class);
+
+        return artWorkService.updateFeatured(artworkId);
+        //return artWorkService.updateFeatured(artworkId, storeDTO, files);
+    }
+
 
     @DeleteMapping("{artworkId}")
     @Secured({"ROLE_ARTIST", "ROLE_GALLERY", "ROLE_ADMIN"})
