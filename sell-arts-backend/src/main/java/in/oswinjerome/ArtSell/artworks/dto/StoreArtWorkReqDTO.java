@@ -25,6 +25,7 @@ public class StoreArtWorkReqDTO {
     private double width;
     private double height;
     private double price;
+    private Integer size;
 
     private Long artistId;
 }

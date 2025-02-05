@@ -1,6 +1,5 @@
 package in.oswinjerome.ArtSell.artworks.dto;
 
-import in.oswinjerome.ArtSell.enums.PaintingTypes;
 import in.oswinjerome.ArtSell.materialTypes.MaterialType;
 import in.oswinjerome.ArtSell.models.ArtWork;
 import in.oswinjerome.ArtSell.models.ArtistProfile;
@@ -13,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +28,7 @@ public class ArtWorkDTO {
     private double width;
     private double height;
     private double price;
+    private Integer size; // Ajout du champ manquant
     private String ownerName; // to display owner's name instead of full User details
 
     private List<String> mediaUrls;
@@ -93,6 +92,7 @@ public class ArtWorkDTO {
                 artWork.getWidth(),
                 artWork.getHeight(),
                 artWork.getPrice(),
+                artWork.getSize(),
                 artWork.getOwner().getName(),
                 mediaUrls,
                 artWork.getStock(),

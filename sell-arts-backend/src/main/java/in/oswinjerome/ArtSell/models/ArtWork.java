@@ -38,6 +38,7 @@ public class ArtWork {
 
     private double price;
 
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -45,6 +46,8 @@ public class ArtWork {
     private LocalDateTime updatedAt;
 
     private Integer stock = 1;
+    private Integer size = 2; // Integer accepte null
+
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
