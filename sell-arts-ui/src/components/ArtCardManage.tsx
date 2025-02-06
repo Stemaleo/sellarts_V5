@@ -103,7 +103,7 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
               }}
               className="w-full md:w-auto"
             >
-              <Trash className="mr-2 h-4 w-4" /> Supprimer
+              <Trash className="mr-2 h-4 w-4" /> Supprimer 
             </Button>
 
           </div>

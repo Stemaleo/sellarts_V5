@@ -15,23 +15,8 @@ import { deleteArtWork } from "@/actions/artwork";
 
 const ArtCard = ({ artwork }: { artwork: ArtWorkDTO }) => {
   const router = useRouter();
-  const { execute } = useActions();
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const handleDelete = async () => {
-    setLoading(true);
-    const res = await execute(deleteArtWork, artwork.id);
-    setLoading(false);
 
-    if (res?.success) {
-      toast.success("L'œuvre a été supprimée avec succès.");
-      router.push("/admin/arts");
-    } else {
-      toast.error("Échec de la suppression de l'œuvre.");
-    }
-    setShowDeleteConfirmation(false);
-  };
 
   return (
     <>
@@ -60,51 +45,7 @@ const ArtCard = ({ artwork }: { artwork: ArtWorkDTO }) => {
             <Badge variant="secondary">{artwork.materialType.name}</Badge>
             <Badge variant="secondary">{artwork.paintingType.name}</Badge>
           </div>
-          <div className="mt-4 flex gap-4">
-            <Link href={`/admin/arts/edit-artwork/${artwork.id}`}>
-              <Button className="w-full md:w-auto">
-                <Pencil className="mr-2 h-4 w-4" /> Modifier
-              </Button>
-            </Link>
-            <Button
-              onClick={(event) => {
-                event.stopPropagation();
-                setShowDeleteConfirmation(true);
-              }}
-              className="w-full md:w-auto"
-            >
-              <Trash className="mr-2 h-4 w-4" /> Supprimer
-            </Button>
-          </div>
         </div>
-
-        {/* Confirmation Modal */}
-        {showDeleteConfirmation && (
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-xs w-full">
-              <h3 className="text-lg font-semibold">Êtes-vous sûr de vouloir supprimer cette œuvre ?</h3>
-              <div className="mt-4 flex justify-between">
-                <button
-                  onClick={handleDelete}
-                  disabled={loading}
-                  className={`px-4 py-2 rounded-lg ${
-                    loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 text-white hover:bg-red-600"
-                  }`}
-                >
-                  {loading ? "Suppression..." : "Oui, Supprimer"}
-                </button>
-                <button
-                  onClick={() => setShowDeleteConfirmation(false)}
-                  className="px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
-                >
-                  Annuler
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <ToastContainer position="top-right" autoClose={5000} hideProgressBar newestOnTop rtl={false} />
       </div>
     </>
   );
