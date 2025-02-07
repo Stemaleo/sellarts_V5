@@ -4,7 +4,7 @@ from . import queries as queries
 from . import types as types
 from query_optimizer.fields import DjangoConnectionField
 class Query(graphene.ObjectType):
-    amessages = DjangoConnectionField(types.MessagesType)
+    messages = DjangoConnectionField(types.MessagesType)
 
 
     
