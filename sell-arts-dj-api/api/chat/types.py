@@ -52,6 +52,7 @@ class MessagesFilter(filter.FilterSet):
             field.name + "__id" if field.is_relation else field.name: ["exact"]
             for field in models.Messages._meta.fields
         }
+        
 
 
 class MessagesType(DjangoObjectType):

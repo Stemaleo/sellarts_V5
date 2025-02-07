@@ -21,6 +21,7 @@ class UsersFilter(filter.FilterSet):
             field.name + "__id" if field.is_relation else field.name: ["exact"]
             for field in models.Users._meta.fields
         }
+        fields['registered_at'] = ["exact", "isnull"]
 
 
 class UsersType(DjangoObjectType):

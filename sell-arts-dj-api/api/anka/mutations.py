@@ -28,7 +28,6 @@ class FeatureInitiatePayment(graphene.Mutation):
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
-
         headers = {
             "Authorization": "Token FqvbsxHBxTKmbZyNcPvvNbFm",
             "Accept": "application/vnd.api+json",
@@ -46,12 +45,12 @@ class FeatureInitiatePayment(graphene.Mutation):
                 "type": "payment_links",
                 "attributes": {
                     "title": "Paiement d'Oeuvres d'art",
-                    "description": "Paiements d'art",
-                    "amount_cents": 60004,
+                    "description": "Paiements d'oeuvres d'art",
+                    "amount_cents": 500,
                     "amount_currency": "EUR",
                     "shippable": True,
                     "reusable": False,
-                    "callback_url": "https://www.example.com/success",
+                    "callback_url": "http://dj-dev.sellarts.net/ipn/",
                     "order_reference": random_string(5),
                     "buyer": {
                         "contact": {

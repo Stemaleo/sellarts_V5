@@ -30,7 +30,7 @@ mutation (
     ticket: $ticket
     sender: $sender
     receiver: $receiver
-    isAdminMessage: $isAdminMessage
+    isAdmin: $isAdmin
     content: $content
   ) {
     success
@@ -50,7 +50,7 @@ mutation {
     sender: "101"
     receiver: "202"
     isAdmin: true
-    message: "Hello, how can I help you?"
+    content: "Hello, how can I help you?"
   ) {
     success
     message

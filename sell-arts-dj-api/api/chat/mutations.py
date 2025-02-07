@@ -8,7 +8,6 @@ class FeatureSendMessage(graphene.Mutation):
     """
     Mutation to send a message within a specific ticket.
     """
-    
 
     success: bool = graphene.Boolean(description="Indicates whether the message was successfully sent.")
     message: str = graphene.String(description="Response message in case of success or error.")
@@ -35,9 +34,10 @@ class FeatureSendMessage(graphene.Mutation):
             default_value="", 
             description="Content of the message being sent."
         )
+        
     class Meta:
         description = meta.feature_send_message
-    
+        
     @classmethod
     def mutate(cls, root, info, **kwargs):
         try:
