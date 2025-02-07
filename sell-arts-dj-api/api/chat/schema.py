@@ -1,10 +1,11 @@
 import graphene
 from . import mutations as mutations
-
+from . import queries as queries
+from . import types as types
+from query_optimizer.fields import DjangoConnectionField
 class Query(graphene.ObjectType):
-    greeting2 = graphene.String()
-    def resolve_greeting2(self, info, **kwargs):
-        return "Hello World!"
+    amessages = DjangoConnectionField(types.MessagesType)
+
 
     
 

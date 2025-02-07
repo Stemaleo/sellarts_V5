@@ -1,2 +1,2 @@
-class WalletTransactionsQuery(graphene.ObjectType):      
-    WalletTransactionsNode = DjangoConnectionField(types.WalletTransactionsType)
+from . import types as types
+from query_optimizer.fields import DjangoConnectionField
