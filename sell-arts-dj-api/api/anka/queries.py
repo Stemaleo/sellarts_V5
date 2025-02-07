@@ -1,2 +1,2 @@
-class WalletTransactionsQuery(graphene.ObjectType):      
-    WalletTransactionsNode = DjangoConnectionField(types.WalletTransactionsType)
+# class WalletTransactionsQuery(graphene.ObjectType):      
+#     WalletTransactionsNode = DjangoConnectionField(types.WalletTransactionsType)

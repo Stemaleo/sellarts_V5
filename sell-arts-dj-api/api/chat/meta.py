@@ -1,68 +1,68 @@
-feature_initiate_payment ="""
-# Mutation `featureInitiatePayment`
+feature_send_message ="""
+# Mutation `featureSendMessage`
 
-Cette mutation permet d'initier un paiement en fournissant les détails de l'utilisateur et du paiement.
-    **Paramètres :**
-    - `email` (String) : Adresse e-mail de l'utilisateur.
-    - `name` (String) : Nom complet de l'utilisateur.
-    - `address` (String) : Adresse de l'utilisateur.
-    - `city` (String) : Ville de résidence de l'utilisateur.
-    - `state` (String) : État ou région de résidence.
-    - `postalCode` (String) : Code postal.
-    - `phoneNumber` (String) : Numéro de Téléphone.
-    - `order` (ID) : Identifiant de la commande.
+This mutation allows sending a message within a specific ticket by providing sender, receiver, and message details.  
 
-    **Retourne :**
-    - `success` (Boolean) : Succès de l'opération.
-    - `message` (String) : Message de retour.
-    - `payment_link` (String) : Lien de paiement généré.
-    
-## **Syntaxe**
+## **Parameters:**  
+- `ticket` (ID) : The ID of the ticket where the message is sent.  
+- `sender` (ID) : The ID of the user sending the message.  
+- `receiver` (ID) : The ID of the user receiving the message.  
+- `isAdmin` (Boolean) : Specifies whether the message is from an administrator (default: `false`).  
+- `content` (String) : The content of the message (default: `""`).  
+
+## **Returns:**  
+- `success` (Boolean) : Indicates whether the message was sent successfully.  
+- `message` (String) : Response message in case of success or error.  
+- `ankaMessage` (Message) : The created message object.  
+
+---
+
+## **Syntax**
 ```graphql
 mutation (
-  $email: String!,
-  $name: String!,
-  $address: String!,
-  $city: String!,
-  $state: String!,
-  $postalCode: String!,
-  $phoneNumber: String!,
-  $order: ID!,
+  $ticket: ID!,
+  $sender: ID!,
+  $receiver: ID!,
+  $isAdmin: Boolean = false,
+  $content: String = ""
 ) {
-  featureInitiatePayment(
-    email: $email
-    name: $name
-    address: $address
-    city: $city
-    state: $state
-    postalCode: $postalCode
-    phoneNumber: $phoneNumber
-    order: $order
+  featureSendMessage(
+    ticket: $ticket
+    sender: $sender
+    receiver: $receiver
+    isAdminMessage: $isAdminMessage
+    content: $content
   ) {
     success
     message
-    paymentLink
+    ankaMessage {
+      id
+      content
+      createdAt
+    }
   }
 }
-```
 
-**Exemple de mutation :**
-```graphql
+
 mutation {
-    featureInitiatePayment(
-    email: "sheena70@example.com"
-    name: "Robert Davis"
-    address: "91899 Deborah Mountain"
-    city: "Erikashire"
-    state: "Washington"
-    postalCode: "28010"
-    phoneNumber: "0505050505"
-    order: 1
-    ) {
+  featureSendMessage(
+    ticket: "1"
+    sender: "101"
+    receiver: "202"
+    isAdmin: true
+    message: "Hello, how can I help you?"
+  ) {
     success
     message
-    paymentLink
+    ankaMessage {
+      id
+      content
+      createdAt
     }
+  }
 }
+
+
+
 ```
 """
