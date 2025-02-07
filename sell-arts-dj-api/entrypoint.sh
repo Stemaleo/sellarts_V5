@@ -6,8 +6,8 @@ set -e
 run_migrations() {
     echo "Running migrations..."
     poetry run python /app/api/manage.py collectstatic --noinput
-#   poetry run python /app/api/manage.py makemigrations
-#   poetry run python /app/api/manage.py migrate
+  poetry run python /app/api/manage.py makemigrations
+  poetry run python /app/api/manage.py migrate
 
 }
 
