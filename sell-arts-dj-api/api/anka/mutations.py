@@ -4,6 +4,7 @@ from api import env
 from . import meta as meta, models as models
 import random
 import string
+import logging
 
 
 def random_string(length=8):
@@ -37,7 +38,7 @@ class FeatureInitiatePayment(graphene.Mutation):
             "Content-Type": "application/json",  # Ajout pour spécifier que les données sont en JSON
         }
 
-        print(kwargs)
+        logging.warning(kwargs)
 
         # models.Orders.objects.get(id=1)
         # Données à envoyer
@@ -93,13 +94,14 @@ class FeatureInitiatePayment(graphene.Mutation):
 
         content = response.json()
 
-        print("Réponse:", content)
+        logging.warning("Réponse:", content)
 
 
         response_webhooks = requests.post(
             "https://api.anka.fyi/v1/payment/webhook", headers=headers, json=webhooks
         )
         print(response_webhooks.json())
+        logging.warning(response_webhooks.json())
         # print(content.)
         return FeatureInitiatePayment(
             success=True, message="Success", payment_link=content["redirect_url"]

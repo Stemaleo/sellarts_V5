@@ -10,6 +10,7 @@ def instant_payment_notification(request):
     """Endpoint for handling instant payment notifications (IPN)."""
     
     logger.warning(request)
+    logger.warning(request.__dict__)
 
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
