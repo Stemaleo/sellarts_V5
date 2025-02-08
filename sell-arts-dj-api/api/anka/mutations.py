@@ -62,7 +62,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                     "description": "Paiements d'oeuvres d'art",
                     "amount_cents": 500,
                     "amount_currency": "EUR",
-                    "shippable": True,
+                    "shippable": False,
                     "reusable": False,
                     "callback_url": "http://dj-dev.sellarts.net/",
                     "order_reference": random_string(5),
