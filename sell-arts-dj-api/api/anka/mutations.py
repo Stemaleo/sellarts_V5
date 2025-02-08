@@ -5,8 +5,10 @@ from . import meta as meta, models as models
 import random
 import string
 
+
 def random_string(length=8):
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+    return "".join(random.choices(string.ascii_letters + string.digits, k=length))
+
 
 class FeatureInitiatePayment(graphene.Mutation):
     success: bool = graphene.Boolean()
@@ -22,7 +24,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         postal_code = graphene.String(required=True)
         phone_number = graphene.String(required=True)
         order = graphene.ID(required=True)
-        
+
     class Meta:
         description = meta.feature_initiate_payment
 
@@ -34,12 +36,23 @@ class FeatureInitiatePayment(graphene.Mutation):
             "charset": "utf-8",
             "Content-Type": "application/json",  # Ajout pour spécifier que les données sont en JSON
         }
-        
-        # print(kwargs)
-        
+
+        print(kwargs)
+
         # models.Orders.objects.get(id=1)
         # Données à envoyer
-        
+
+
+        webhooks = {
+            "data": {
+                "type": "payment_webhooks",
+                "attributes": {
+                    "webhook_url": "http://dj-dev.sellarts.net/ipn/",
+                    "webhook_enabled": True,
+                },
+            }
+        }
+
         data = {
             "data": {
                 "type": "payment_links",
@@ -50,20 +63,20 @@ class FeatureInitiatePayment(graphene.Mutation):
                     "amount_currency": "EUR",
                     "shippable": True,
                     "reusable": False,
-                    "callback_url": "http://dj-dev.sellarts.net/ipn/",
+                    "callback_url": "http://dj-dev.sellarts.net/",
                     "order_reference": random_string(5),
                     "buyer": {
                         "contact": {
-                            "fullname": kwargs['name'],
-                            "phone_number": kwargs['phone_number'],
-                            "email": kwargs['email'],
+                            "fullname": kwargs["name"],
+                            "phone_number": kwargs["phone_number"],
+                            "email": kwargs["email"],
                         },
                         "address": {
-                            "street_line_1": kwargs['address'],
-                            "street_line_2": kwargs['address'],
-                            "city": kwargs['city'],
-                            "state": kwargs['state'],
-                            "zip": kwargs['postal_code'],
+                            "street_line_1": kwargs["address"],
+                            "street_line_2": kwargs["address"],
+                            "city": kwargs["city"],
+                            "state": kwargs["state"],
+                            "zip": kwargs["postal_code"],
                             "country": "FR",
                         },
                     },
@@ -71,13 +84,22 @@ class FeatureInitiatePayment(graphene.Mutation):
             }
         }
 
+        # response = requests.post(
+        #     "https://api.anka.fyi/v1/payment/links", headers=headers, json=data
+        # )
         response = requests.post(
             "https://api.anka.fyi/v1/payment/links", headers=headers, json=data
         )
+
         content = response.json()
-        
+
         print("Réponse:", content)
-        
+
+
+        response_webhooks = requests.post(
+            "https://api.anka.fyi/v1/payment/webhook", headers=headers, json=webhooks
+        )
+        print(response_webhooks.json())
         # print(content.)
         return FeatureInitiatePayment(
             success=True, message="Success", payment_link=content["redirect_url"]
