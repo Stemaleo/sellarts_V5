@@ -51,7 +51,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./sell-arts-dj-api:/app
-      - static:/static
+      - static:/app/static
       - migrations:/app/api/anka/migrations 
     ports:
       - 8000:8000
