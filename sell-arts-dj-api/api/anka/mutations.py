@@ -64,7 +64,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                     "amount_currency": "XOF",
                     "shippable": True,
                     "reusable": False,
-                    "callback_url": "http://dj-dev.sellarts.net/",
+                    "callback_url": "http://dev.sellarts.net/",
                     "order_reference": random_string(5),
                     "buyer": {
                         "contact": {
