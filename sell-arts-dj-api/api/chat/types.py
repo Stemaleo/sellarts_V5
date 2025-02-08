@@ -1,35 +1,36 @@
 from . import models as models
+from anka import models as anka_models
 from query_optimizer import DjangoObjectType, filter
 import graphene
 import django_filters
 
 
-# Conversations
-# class ConversationsFilter(filter.FilterSet):
-#     order_by = django_filters.OrderingFilter(
-#         fields=(
-#             [
-#                 field.name + "__id" if field.is_relation else field.name
-#                 for field in models.Conversations._meta.fields
-#             ]
-#         )
-#     )
+# Ticket
+class TicketFilter(filter.FilterSet):
+    order_by = django_filters.OrderingFilter(
+        fields=(
+            [
+                field.name + "__id" if field.is_relation else field.name
+                for field in anka_models.Tickets._meta.fields
+            ]
+        )
+    )
 
-#     class Meta:
-#         model = models.Conversations
-#         fields = {
-#             field.name + "__id" if field.is_relation else field.name: ["exact"]
-#             for field in models.Conversations._meta.fields
-#         }
+    class Meta:
+        model = anka_models.Tickets
+        fields = {
+            field.name + "__id" if field.is_relation else field.name: ["exact"]
+            for field in anka_models.Tickets._meta.fields
+        }
 
 
-# class ConversationsType(DjangoObjectType):
-#     id = graphene.ID(source="pk", required=True)
+class TicketsType(DjangoObjectType):
+    id = graphene.ID(source="pk", required=True)
 
-#     class Meta:
-#         model = models.Conversations
-#         filterset_class = ConversationsFilter
-#         interfaces = (graphene.relay.Node,)
+    class Meta:
+        model = anka_models.Tickets
+        filterset_class = TicketFilter
+        interfaces = (graphene.relay.Node,)
 
 
 
