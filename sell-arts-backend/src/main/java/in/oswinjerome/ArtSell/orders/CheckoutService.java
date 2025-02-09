@@ -95,7 +95,7 @@ public class CheckoutService {
                 throw new InvalidDataException("Artwork not in stock");
             }
 //                FIXME: Update stock after payment completed
-            artWork.setStock(artWork.getStock() - orderItem.getQuantity());
+            //artWork.setStock(artWork.getStock() - orderItem.getQuantity());
             artWorkRepo.save(artWork);
         }
         order.setOwner(user);

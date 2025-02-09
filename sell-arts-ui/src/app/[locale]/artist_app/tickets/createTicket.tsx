@@ -22,6 +22,7 @@ const validationSchema = yup.object({
 
 function CreateTicket() {
     const router = useRouter();
+    
 
     const initialValues: TicketType = {
         title: '',
@@ -29,15 +30,23 @@ function CreateTicket() {
     };
 
     const handleSubmit = async (values: TicketType, { setSubmitting, resetForm }: any) => {
-        const res = await createTicket(values);
-        setSubmitting(false);
+        console.log("Bouton cliqué !");
+        try {
+            console.log("Submitting ticket:", values);
+            const res = await createTicket(values);
+            setSubmitting(false);
 
-        if (res?.success) {
-            toast.success("Ticket Added");
-            resetForm();
-            router.refresh();
-        } else {
-            toast.error("Failed to create Ticket");
+            if (res?.success) {
+                toast.success("Ticket Added");
+                resetForm();
+                router.refresh();
+            } else {
+                console.error("API Error:", res);
+                toast.error(res.message || "Failed to create Ticket");
+            }
+        } catch (error) {
+            console.error("Request Error:", error);
+            toast.error("An error occurred while creating the ticket.");
         }
     };
 
@@ -46,7 +55,6 @@ function CreateTicket() {
             <CardHeader>
                 <CardTitle className='flex text-xl font-bold justify-between items-center'>
                     Create Tickets
-
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex">
@@ -75,7 +83,6 @@ function CreateTicket() {
                                     className='h-[150px]'
                                     value={values.description!}
                                     onChange={(e) => setFieldValue('description', e.target.value)}
-
                                     placeholder="Enter Ticket Description"
                                 />
                                 <FormikErrorMessage name="description" component="p" className="text-red-500 text-sm" />

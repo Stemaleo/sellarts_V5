@@ -4,23 +4,26 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Send } from "lucide-react";
-import axios from "axios";
-import { GET_MESSAGES_BY_TICKET, GET_ALL_TICKETS } from "@/actions/queries/querieMessages";
+import axios from "axios"; 
+import { getTickets } from "@/actions/tickets"; 
+import { GET_MESSAGES_BY_TICKET } from "@/actions/queries/querieMessages";
 import { SEND_MESSAGE_TICKET } from "@/actions/mutation/message/mutationMessage";
 
 interface Message {
-    node: {
+    node:{
         id: number;
-        sender: string;
+        sender: string; // Ajout de la propriété 'sender' dans l'interface
         content: string;
         createdAt: string;
         isAdmin?: boolean;
+      //   conversationId: number;
+      //   ticketNumber: string;
     }
 }
 
-export default function MessagesPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [tickets, setTickets] = useState<any[]>([]);
+export default function TicketConversation({ ticketId }: { ticketId: string }) {
+  const [messages, setMessages] = useState<Message[]>([]); 
+  const [tickets, setTickets] = useState<any[]>([]); 
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null); 
   const [reply, setReply] = useState(""); 
 
@@ -28,61 +31,51 @@ export default function MessagesPage() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.post("http://dj-dev.sellarts.net/sellarts/", {
-          query: GET_ALL_TICKETS,
-        });
-        
-        const fetchedTickets = response.data.data.tickets.edges.map((edge: any) => edge.node);
-        setTickets(fetchedTickets); // Mise à jour de l'état des tickets
+        const data = await getTickets(); 
+        setTickets(data?.data || []); 
       } catch (error) {
         console.error("Erreur lors de la récupération des tickets:", error);
       }
     };
 
     fetchTickets(); // Charger les tickets au montage du composant
-  }, []);  // Assure-toi que les tickets sont chargés dès le début
+  }, []);
 
-  // Récupération des messages pour le ticket sélectionné
   useEffect(() => {
     if (selectedTicket) {
       const fetchMessages = async () => {
         try {
-          const res = await axios.post("http://dj-dev.sellarts.net/sellarts/", {
+          const res = await axios.post("http://dj-dev.sellarts.net/sellarts/ ", {
             query: GET_MESSAGES_BY_TICKET,
-            variables: {
-              ticket_Id: selectedTicket.id,
-             }, 
+            variables: { ticket_Id: selectedTicket.id },
           });
-          if (res.data.errors) {
-            console.error("GraphQL errors:", res.data.errors);
-          } else {
-            setMessages(res.data.data.messages.edges || []);
-          }
-        } catch (error) {
-          console.log(selectedTicket.id);
+          console.log(res.data.data.messages.edges);
           
+           setMessages(res.data.data.messages.edges || []); // Mettre à jour l'état des messages
+        } catch (error) {
           console.error("Erreur lors de la récupération des messages:", error);
         }
       };
-  
+
       fetchMessages(); // Charger les messages lorsqu'un ticket est sélectionné
     }
-  }, [selectedTicket]); // Cela se déclenche chaque fois que selectedTicket change
-  
-  // Gestion de l'envoi de réponse
+  }, [selectedTicket]);
+
   const handleReply = async () => {
     if (!reply.trim() || !selectedTicket) return;
     try {
       const response = await axios.post("http://dj-dev.sellarts.net/sellarts/", {
         query: SEND_MESSAGE_TICKET,
         variables: {
-          ticket: selectedTicket.id,
-          sender: 602,
-          receiver: 478,  
-          isAdmin: false,
-          content: reply.trim(),
+            ticket: selectedTicket.id,
+            sender: 478,
+            receiver: 602,  
+            isAdmin: false,
+            content: reply.trim(),
         }
       });
+      console.log(response.data.data.featureSendMessage.ankaMessage, "message envoyé");
+      
 
       // Ajouter le message envoyé à la liste des messages
       setMessages([
@@ -90,10 +83,12 @@ export default function MessagesPage() {
         {
           node: {
             id: response.data.data.featureSendMessage.ankaMessage.id,
-            sender: "478", 
-            content: response.data.data.featureSendMessage.ankaMessage.content,
-            createdAt: response.data.data.featureSendMessage.ankaMessage.createdAt,
-            isAdmin: false,
+          sender: "478", 
+          content:response.data.data.featureSendMessage.ankaMessage.content,
+          createdAt: response.data.data.featureSendMessage.ankaMessage.createdAt,
+          isAdmin: false,
+        //   conversationId: selectedTicket.id,
+        //   ticketNumber: selectedTicket.ticketNumber,
           }
         },
       ]);
@@ -102,6 +97,13 @@ export default function MessagesPage() {
       console.error("Erreur lors de l'envoi du message:", error);
     }
   };
+
+  useEffect(() => {
+    if (ticketId) {
+      const ticket = tickets.find((ticket) => ticket.id === ticketId);
+      setSelectedTicket(ticket || null);
+    }
+  }, [ticketId, tickets]);
 
   return (
     <div className="flex h-screen p-6 bg-gray-100">
@@ -115,9 +117,10 @@ export default function MessagesPage() {
               className={`mb-4 cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
                 selectedTicket?.id === ticket.id ? "bg-gray-100" : ""
               }`}
-              onClick={() => setSelectedTicket(ticket)}  // Sélectionner le ticket ici
+              onClick={() => setSelectedTicket(ticket)}
             >
               <CardContent className="p-4 relative">
+                {/* Numéro du ticket en haut à droite */}
                 <div className="absolute top-2 right-2 bg-blue-600 text-white text-sm font-semibold rounded-md px-3 py-1">
                   N°TICK-{ticket.id}
                 </div>

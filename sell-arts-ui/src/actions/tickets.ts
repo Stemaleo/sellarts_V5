@@ -14,17 +14,24 @@ export const getTickets = async () => {
 };
 
 export const createTicket = async (formData: TicketType) => {
-    console.log(formData)
-    const res = await fetchHelper(process.env.API_URL + `/tickets`, {
-        method: "POST",
-        body: JSON.stringify({
-            ...formData,
-        }),
-    });
+    try {
+        
+        const res = await fetchHelper(process.env.API_URL + `/tickets`, {
+            method: "POST",
+            body: JSON.stringify(formData),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
 
-    const data: ApiResponse<TicketType[]> = await res.json();
+        const data: ApiResponse<TicketType[]> = await res.json();
+        console.log("API Response:", data);
 
-    return data;
+        return data;
+    } catch (error) {
+        console.error("Error creating ticket:", error);
+        return { success: false, message: "Failed to create ticket" };
+    }
 };
 
 export const deleteTicket = async (id: string) => {

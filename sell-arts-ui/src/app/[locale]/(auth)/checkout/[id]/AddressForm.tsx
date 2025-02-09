@@ -11,7 +11,7 @@ import { Order } from "@/lib/type";
 import { useFormik } from "formik";
 import { Lock } from "lucide-react";
 import axios from "axios";
-import { INITIATE_PAYMENT_MUTATION } from "@/actions/mutation/mutationPayement";
+import { INITIATE_PAYMENT_MUTATION } from "@/actions/mutation/payement/mutationPayement";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
