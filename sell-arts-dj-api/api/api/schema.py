@@ -1,13 +1,18 @@
 import graphene
 from anka.schema import Query as AnkaQuery, Mutation as AnkaMutation
+from chat.schema import Query as ChatQuery, Mutation as ChatMutation
+from users.schema import Mutation as UsersMutation
+
 
 # Query globale
-class Query(AnkaQuery, graphene.ObjectType):
+class Query(AnkaQuery, ChatQuery, graphene.ObjectType):
     pass
 
+
 # Mutation globale
-class Mutation(AnkaMutation, graphene.ObjectType):
+class Mutation(AnkaMutation, ChatMutation, UsersMutation, graphene.ObjectType):
     pass
+
 
 # Schema global
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "anka",
+    "chat"
 ]
 
 MIDDLEWARE = [
@@ -138,7 +139,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = "/static/"
-STATIC_ROOT = "/var/lib/static/"
+STATIC_ROOT = "/app/static/"  # Chemin correspondant au volume partagé
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 CORS_ALLOW_CREDENTIALS = True
