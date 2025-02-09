@@ -3,8 +3,8 @@ import TicketConversation from "@/components/TicketConversation";
 export default async function TicketPage({
   params,
 }: {
-  params: { ticketId: string } | Promise<{ ticketId: string }>;
+  params: Promise<{ ticketId: string }>;
 }) {
-  const resolvedParams = await params;
-    return <TicketConversation ticketId={resolvedParams.ticketId} />;
+  const { ticketId } = await params;
+  return <TicketConversation ticketId={ticketId} />;
 }
