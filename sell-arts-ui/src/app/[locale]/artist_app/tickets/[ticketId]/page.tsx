@@ -1,10 +1,6 @@
 import TicketConversation from "@/components/TicketConversation";
+import { PageProps } from 'next';
 
-export default async function TicketPage({
-  params,
-}: {
-  params: Promise<{ locale: string; ticketId: string }>;
-}) {
-  const { ticketId } = await params;
-  return <TicketConversation ticketId={ticketId} />;
+export default function TicketPage({ params }: PageProps<{ ticketId: string }>) {
+  return <TicketConversation ticketId={params.ticketId} />;
 }
