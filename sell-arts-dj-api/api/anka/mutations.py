@@ -43,7 +43,6 @@ class FeatureInitiatePayment(graphene.Mutation):
         # models.Orders.objects.get(id=1)
         # Données à envoyer
 
-
         webhooks = {
             "data": {
                 "type": "payment_webhooks",
@@ -96,12 +95,54 @@ class FeatureInitiatePayment(graphene.Mutation):
 
         logging.warning("Réponse:", content)
 
-
         response_webhooks = requests.post(
             "https://api.anka.fyi/v1/payment/webhook", headers=headers, json=webhooks
         )
         print(response_webhooks.json())
         logging.warning(response_webhooks.json())
+
+        {
+            "data": {
+                "type": "payment_links_orders",
+                "attributes": {
+                    "status": "captured",
+                    "internal_reference": "K9ZbG",
+                    "payee_total_cents": 50000,
+                    "payee_total_currency": "XOF",
+                    "platform_total_cents": 7622,
+                    "platform_total_currency": "EUR",
+                    "provider_total_cents": 50000,
+                    "provider_total_currency": "XOF",
+                    "payment_link": {
+                        "title": "Paiement d'Oeuvres d'art",
+                        "amount_cents": 50000,
+                        "amount_currency": "XOF",
+                        "callback_url": "http://dev.sellarts.net/",
+                        "description": "Paiements d'oeuvres d'art",
+                        "payment_token": "1R6Y8PUQ",
+                        "reusable": False,
+                        "shippable": True,
+                        "source": "api",
+                        "redirect_url": "https://pay.anka.fyi/1R6Y8PUQ?reference=K9ZbG&token=PAY-72PBHBQF",
+                    },
+                    "buyer": {
+                        "contact": {
+                            "fullname": "zejkfjke",
+                            "phone_number": "+225 05 04 84 1019",
+                            "email": "severindindji68@gmail.com",
+                        },
+                        "address": {
+                            "street_line_1": "JDJZJJDZHJ  UIZD UZD",
+                            "street_line_2": "sjkkjfjjk",
+                            "city": "iozodko",
+                            "state": "okzdo",
+                            "zip": "jkfzidok",
+                            "country": "CI",
+                        },
+                    },
+                },
+            }
+        }
         # print(content.)
         return FeatureInitiatePayment(
             success=True, message="Success", payment_link=content["redirect_url"]
