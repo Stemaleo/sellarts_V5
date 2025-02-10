@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 import Navbar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 
-export default async function LocaleLayout({ children, params }: { children: React.ReactNode;}) {
+export default async function LocaleLayout({ children, params }: { children: React.ReactNode; params: Promise<any> }) {
   const { locale } = await params;
 
   if (!routing.locales.includes(locale as any)) {
