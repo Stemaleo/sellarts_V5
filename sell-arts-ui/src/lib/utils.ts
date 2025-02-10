@@ -11,11 +11,11 @@ export function hasRole(session: Session | null, role: string) {
     return false;
   }
   // console.log("HERE", session);
-  // const res = session.user.authorities.filter((v) => {
-  //   return v.authority === role;
-  // });
+  const res = session.user.authorities.filter((v) => {
+    return v.authority === role;
+  });
 
-  // return res.length > 0;
+  return res.length > 0;
 }
 
 export function calculateTotalFileSize(fileList: File[]) {
