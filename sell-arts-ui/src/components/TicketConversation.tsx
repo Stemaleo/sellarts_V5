@@ -21,7 +21,7 @@ interface Message {
     }
 }
 
-export default function TicketConversation({ ticketId }: { ticketId: string }) {
+export default function TicketConversation() {
   const [messages, setMessages] = useState<Message[]>([]); 
   const [tickets, setTickets] = useState<any[]>([]); 
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null); 
@@ -98,12 +98,12 @@ export default function TicketConversation({ ticketId }: { ticketId: string }) {
     }
   };
 
-  useEffect(() => {
-    if (ticketId) {
-      const ticket = tickets.find((ticket) => ticket.id === ticketId);
-      setSelectedTicket(ticket || null);
-    }
-  }, [ticketId, tickets]);
+  // useEffect(() => {
+  //   if (ticketId) {
+  //     const ticket = tickets.find((ticket) => ticket.id === ticketId);
+  //     setSelectedTicket(ticket || null);
+  //   }
+  // }, [ticketId, tickets]);
 
   return (
     <div className="flex h-screen p-6 bg-gray-100">
