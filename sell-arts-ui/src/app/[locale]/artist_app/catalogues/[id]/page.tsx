@@ -1,13 +1,11 @@
 import { getACatalog } from "@/actions/catalog";
 import Image from "next/image";
+import { PageProps } from "@/lib/api";
 
-interface CatalogPageProps {
-  params: { id: string };
-}
 
-const CatalogPage = async ({ params }: CatalogPageProps) => {
-  const { id } = params;
-  const res = await getACatalog(id);
+const CatalogPage = async (props: PageProps) => {
+    const params = await props.params;
+  const res = await getACatalog(params.id);
 
   if (!res.success) {
     return <div className="text-center text-red-500">Catalogue introuvable</div>;
