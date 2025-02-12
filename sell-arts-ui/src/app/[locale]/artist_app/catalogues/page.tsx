@@ -43,7 +43,7 @@ const CataloguesPage = () => {
               <CardFooter className="flex items-center justify-end">
                 <DeleteCatalogButton catalogId={cat.id} />
                 <div>
-                  <NativeSharePopup useWindow={false} title={cat.name} url={ cat.id} />
+                  <NativeSharePopup useWindow={false} title={cat.name} url={'catalogs/' +  cat.id} />
                 </div>{" "}
               </CardFooter>
             </Card>

@@ -33,7 +33,7 @@ const ArtCard = ({ artwork }: { artwork: ArtWorkDTO }) => {
             <span className="text-xs text-gray-500 bg-primary/20 py-1 px-2 rounded-full inline h-auto">
               By, {artwork.ownerName}
             </span>
-            <NativeSharePopup url={artwork.id} title={artwork.title} />
+            <NativeSharePopup url={'arts/'+artwork.id} title={artwork.title} useWindow={false} />
           </div>
           <h2 className="text-lg font-semibold mb-0 mt-1 line-clamp-1">{artwork.title}</h2>
           <p className="text-gray-500 mb-1 text-sm line-clamp-1">{artwork.description}</p>

@@ -1,17 +1,11 @@
 import type { NextConfig } from "next";
 import { hostname } from "os";
 import createNextIntlPlugin from "next-intl/plugin";
-import { NEXTAUTH_URL, NEXTAUTH_URL_INTERNAL} from "./secret";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   basePath: '',
-  env: {
-    NEXTAUTH_URL: NEXTAUTH_URL,
-    NEXTAUTH_URL_INTERNAL: NEXTAUTH_URL_INTERNAL,
-    API_URL: NEXTAUTH_URL_INTERNAL
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
