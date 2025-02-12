@@ -26,7 +26,7 @@ export function NativeSharePopup({ url = "https://example.com", title = "Check o
   };
 
   const copyLink = () => {
-    navigator.clipboard.writeText(window?.location.href + "/" + url).then(() => {
+    navigator.clipboard.writeText(window?.location.href).then(() => {
       setCopied(true);
       toast.success("Coppied to clipboard");
 
@@ -43,6 +43,7 @@ export function NativeSharePopup({ url = "https://example.com", title = "Check o
         e.stopPropagation(); //
         e.preventDefault();
         shareNatively();
+        
       }}
     >
       {/* <Send className=" text-primary h-4 w-4" /> */}
