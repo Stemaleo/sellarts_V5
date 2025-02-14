@@ -222,5 +222,24 @@
   "editer": "Modifier",
   "Delete": "Supprimer",
   "edit-artwork": "Modifier une oeuvre d'art",
-  "update-artwork": "Modifier l'oeuvre"
+  "update-artwork": "Modifier l'oeuvre",
+  "overview": "Aperçu",
+  "revenu-total":"Revenu total",
+  "total-orders":"Total des commandes",
+  "from-last-month": "du mois dernier",
+  "average-order-value":"Valeur moyenne des commandes",
+  "artworks-listed": "Oeuvres répertoriées",
+  "artworks-sold": "Oeuvres vendues",
+  "artworks-viewed": "Oeuvres vues",
+  "artworks-downloaded": "Oeuvres téléchargées",
+  "artworks-liked": "Oeuvres aimées",
+  "top-selling-artworks": "Œuvres d’art les plus vendues",
+  "top-viewed-artworks": "Œuvres d'art les plus vues",
+  "top-downloaded-artworks": "Œuvres d'art les plus télécharg",
+  "top-liked-artworks": "Œuvres d'art les plus aimées",
+  "sales": "Ventes",
+  "loading": "Chargement...",
+  "find-an-artist": "Rechercher un artiste..."
+
+
 }

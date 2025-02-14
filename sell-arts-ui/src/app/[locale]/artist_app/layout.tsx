@@ -15,6 +15,7 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import NotificationButton from "@/components/notification-button";
+import { LocaleSwitcher } from "@/components/LocalSwitch";
 
 interface NavItem {
   title: string;
@@ -126,6 +127,7 @@ export default function ArtistLayout({ children }: { children: React.ReactNode }
               </div>
             </form>
           </div>
+          <LocaleSwitcher />
           <NotificationButton />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

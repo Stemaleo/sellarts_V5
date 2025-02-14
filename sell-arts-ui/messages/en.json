@@ -220,5 +220,21 @@
   "code": "Code",
   "active": "Active",
   "add-new": "Add New",
-  "add-new-promo-code": "Add new promo code"
+  "add-new-promo-code": "Add new promo code",
+  "overview": "Overview",
+  "revenu-total":"Total Revenue",
+  "total-orders":"Total Orders",
+  "from-last-month": "from last month",
+  "from-last-year": "from last year",
+  "average-order-value":"Average Order Value",
+  "artworks-listed": "Artworks Listed",
+  "top-selling-artworks": "Artworks Listed",
+  "sales": "Sales",
+  "loading": "Loading...",
+  "find-an-artist": "Find an artist..."
+
+
+
+
+
 }
