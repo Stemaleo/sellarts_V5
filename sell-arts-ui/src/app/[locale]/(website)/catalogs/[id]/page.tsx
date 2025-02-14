@@ -44,7 +44,7 @@ export default async function CatalogPage(props: PageProps) {
         <h3 className="text-2xl font-semibold mb-6">{t("catalog")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {res.data.artWorks.map((artwork) => (
-            <Link key={artwork.id} href={`arts/${artwork.id}`}>
+            <Link key={artwork.id} href={`/arts/${artwork.id}`}>
               <ArtCard artwork={artwork} />
             </Link>
           ))}
