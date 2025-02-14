@@ -1,31 +1,47 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 
+const ArtistFilter = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-interface ArtistFilterProps {
-  onFilterChange: (value: string) => void;
-}
+  const [title, setTitle] = useState(searchParams.get("title") || "");
 
-export default function ArtistFilter({ onFilterChange }: ArtistFilterProps) {
-  const [search, setSearch] = useState("");
-  const t = useTranslations();
+  const handleFilterChange = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    onFilterChange(e.target.value);
+    router.push(`?${params.toString()}`);
   };
-
   return (
-    <div className="mb-4">
-      <input
-        type="text"
-        placeholder={t("find-an-artist")}
-        value={search}
-        onChange={handleChange}
-        className="w-full p-2 border border-gray-300 rounded-md"
-      />
-    </div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleFilterChange("title", title);
+      }}
+      className="flex flex-col md:flex-row gap-4 mb-6"
+    >
+      <div className="flex-grow">
+        <Input
+          onChange={(e) => {
+            setTitle(e.target.value);
+          }}
+          type="text"
+          placeholder={""}
+          className="w-full"
+        />
+      </div>
+      <Button>Search</Button>
+    </form>
   );
-}
+};
+
+export default ArtistFilter;

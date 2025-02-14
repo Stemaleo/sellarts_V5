@@ -1,89 +1,55 @@
-"use client"; // Ajoutez cette ligne tout en haut du fichier
-
-import { useState, useEffect } from "react";
+import { use, useState, useTransition } from "react";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search, Palette, ShoppingCart } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { getAllArtistProfiles } from "@/actions/artists";
-import { Card, CardContent } from "@/components/ui/card";
-import { Palette, ShoppingCart } from "lucide-react";
+import { StarRatingComponent } from "@/components/star-rating";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/actions/nextAuth";
+import CustomPagination from "@/components/ui/custom-pagination";
+import { getTranslations } from "next-intl/server";
 import ArtistFilter from "./ArtistFilter";
-import { useTranslations } from "next-intl";
 
+export default async function ArtistGrid({ searchParams }: any) {
+  const search = await searchParams;
 
-export default function ArtistGrid() {
-  const [artists, setArtists] = useState<any[]>([]);
-  const [filteredArtists, setFilteredArtists] = useState<any[]>([]);
-  const [filter, setFilter] = useState<string>(""); // Filtre par nom
-  const [loading, setLoading] = useState<boolean>(true);
-  const t = useTranslations();
+  const artists = await getAllArtistProfiles(search["page"] || 0, search["title"] || "", "ARTIST", 6);
 
-  useEffect(() => {
-    async function fetchAllArtists() {
-      setLoading(true);
-      let allArtists: any[] = [];
-      let page = 0;
-      let pageSize = 10;
-      let hasMore = true;
-
-      while (hasMore) {
-        const response = await getAllArtistProfiles(page, "", "ARTIST", pageSize);
-        allArtists = [...allArtists, ...response.data.content];
-
-        if (response.data.content.length < pageSize) {
-          hasMore = false; // Arrêter si on a récupéré tous les artistes
-        } else {
-          page++;
-        }
-      }
-      setArtists(allArtists);
-      setFilteredArtists(allArtists);
-      setLoading(false);
-    }
-
-    fetchAllArtists();
-  }, []);
-
-  useEffect(() => {
-    if (filter) {
-      setFilteredArtists(artists.filter(artist => artist.userInfo?.name.toLowerCase().includes(filter.toLowerCase())));
-    } else {
-      setFilteredArtists(artists);
-    }
-  }, [filter, artists]);
+  const t = await getTranslations("artistsPage");
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">{t("artistsPage.Artists")}</h1>
-      <ArtistFilter onFilterChange={setFilter} />
+      <h1 className="text-3xl font-bold mb-6">{t("Artists")}</h1>
+      <ArtistFilter />
 
-      {loading ? (
-        <div className="flex justify-center items-center h-32">
-          <span className="text-lg font-semibold">{t("loading")}</span>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredArtists.map((artist) => (
-            <Link href={`/artists/${artist?.id}`} key={artist.id}>
-              <Card className="overflow-hidden">
-                <CardContent className="p-4">
-                  <div className="aspect-square relative mb-4">
-                    <Image src={artist.userInfo?.profileUrl ?? "https://picsum.photos/500?id=1"} alt={artist.userInfo?.name ?? ""} layout="fill" objectFit="cover" className="rounded-md" />
-                  </div>
-                  <h2 className="text-xl font-semibold mb-2 line-clamp-1">{artist.userInfo?.name}</h2>
-                  <div className="flex items-center text-sm text-gray-600 mb-1">
-                    <Palette className="w-4 h-4 mr-2" />
-                    {artist.noOfArtWorks?.toString()} œuvres
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    {artist.noOfOrders} achats
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+        {artists.data.content.map((artist) => (
+          <Link href={`/artists/${artist?.id}`} key={artist.id}>
+            <Card key={artist.id} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="aspect-square relative mb-4">
+                  <Image src={artist.userInfo?.profileUrl ?? "https://picsum.photos/500?id=1"} alt={artist.userInfo?.name ?? ""} layout="fill" objectFit="cover" className="rounded-md" />
+                </div>
+                <h2 className="text-xl font-semibold mb-2 line-clamp-1">{artist.userInfo?.name}</h2>
+                <div className="flex items-center text-sm text-gray-600 mb-1">
+                  <Palette className="w-4 h-4 mr-2" />
+                  {artist.noOfArtWorks?.toString()} {t("Artworks")}
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  {artist.noOfOrders} {t("Purchases")}
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+      <CustomPagination page={artists.data} />
     </div>
   );
 }
