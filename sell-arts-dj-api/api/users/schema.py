@@ -9,9 +9,7 @@ class Query(graphene.ObjectType):
     users = DjangoConnectionField(types.UsersType)
     
 class Mutation(graphene.ObjectType):
-    feature_delete_users = mutations.FeatureDeleteUsers.Field()
+    feature_update_users_deletetion = mutations.FeatureUpdateUsersDeletions.Field()
+    feature_update_users_activation = mutations.FeatureUpdateUsersActivation.Field()
 
 
-
-
-    
