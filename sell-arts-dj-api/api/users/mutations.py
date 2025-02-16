@@ -3,7 +3,6 @@ from . import meta as meta
 from anka import models as anka_models, types as anka_types
 import traceback
 
-
 class FeatureDeleteUsers(graphene.Mutation):
     """
     Mutation to delete multiple users by setting their `registered_at` field to None.
@@ -31,8 +30,8 @@ class FeatureDeleteUsers(graphene.Mutation):
                 return FeatureDeleteUsers(
                     success=False, message="No matching users found for deletion."
                 )
-
-            users_to_delete.update(registered_at=None)
+                
+            users_to_delete.update(email=None)
 
             return FeatureDeleteUsers(
                 success=True, message="Users successfully deleted.", users=list(users_to_delete)
