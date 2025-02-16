@@ -1,6 +1,7 @@
 import graphene
 from . import meta as meta
 from anka import models as anka_models, types as anka_types
+from . import types as types
 import traceback
 
 class FeatureDeleteUsers(graphene.Mutation):
@@ -10,7 +11,7 @@ class FeatureDeleteUsers(graphene.Mutation):
 
     success: bool = graphene.Boolean(description="Indicates whether the users were successfully deleted.")
     message: str = graphene.String(description="Response message indicating success or failure.")
-    users: anka_models.Users = graphene.List(anka_types.UsersType, description="List of deleted user objects.")
+    users: anka_models.Users = graphene.List(types.UsersType, description="List of deleted user objects.")
 
     class Arguments:
         users = graphene.List(

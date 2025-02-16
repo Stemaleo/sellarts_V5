@@ -8,7 +8,7 @@ class Query(graphene.ObjectType):
     def resolve_greeting(self, info, **kwargs):
         return "Hello World!"
 
-    users = DjangoConnectionField(types.UsersType)
+    # users = DjangoConnectionField(types.UsersType)
 
 class Greeting(graphene.Mutation):
     text = graphene.String()

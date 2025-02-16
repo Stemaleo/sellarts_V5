@@ -1,35 +1,39 @@
-from anka import models as anaka_models
 from anka import models as anka_models
 from query_optimizer import DjangoObjectType, filter
 import graphene
 import django_filters
 
-## Messages
+
+# Users
 class UsersFilter(filter.FilterSet):
     order_by = django_filters.OrderingFilter(
         fields=(
             [
                 field.name + "__id" if field.is_relation else field.name
-                for field in anaka_models.Users._meta.fields
+                for field in anka_models.Users._meta.fields
             ]
         )
     )
 
     class Meta:
-        model = anaka_models.Users
+        model = anka_models.Users
         fields = {
             field.name + "__id" if field.is_relation else field.name: ["exact"]
-            for field in anaka_models.Users._meta.fields
+            for field in anka_models.Users._meta.fields
         }
-        
+        fields['registered_at'] = ["exact", "isnull"]
+        fields['email'] = ["exact", "isnull"]
 
 
 class UsersType(DjangoObjectType):
     id = graphene.ID(source="pk", required=True)
 
     class Meta:
-        model = anaka_models.Users
+        model = anka_models.Users
         filterset_class = UsersFilter
         interfaces = (graphene.relay.Node,)
 
+
+
+# TODO: Others Type
 
