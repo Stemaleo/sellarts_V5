@@ -2,7 +2,7 @@ import logging
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from anka import models as anka_models
 logger = logging.getLogger(__name__)
 
 @csrf_exempt  # Désactive la protection CSRF si nécessaire (ex: webhook)
@@ -11,6 +11,14 @@ def instant_payment_notification(request):
     
     logger.warning(request)
     logger.warning(request.__dict__)
+    
+    data = request.__dict__['data']
+    
+    
+    
+    # if data['attributes']['status'] == 'captured':
+    #     anka_models.Orders
+        
 
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)

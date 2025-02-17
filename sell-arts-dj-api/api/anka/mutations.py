@@ -11,6 +11,88 @@ def random_string(length=8):
     return "".join(random.choices(string.ascii_letters + string.digits, k=length))
 
 
+
+
+
+
+
+ ## POST Label - curl
+#   curl -X "POST" "https://api.anka.local/v1/shipment/labels" \
+#        -H 'Authorization: Token 1234FHnZTzcEdRzoWXtabcd' \
+#        -H 'Content-Type: application/json' \
+#        -d $'{
+           
+shipment_data = {
+    "data": {
+      "type": "shipment_labels",
+      "attributes": {
+        "package": {
+          "items": [
+            {
+              "quantity": 2,
+              "price_currency": "EUR",
+              "hscode": "6204.43.4040",
+              "description": "Women Clothing - Short dresses - Multicolour -  Ankara",
+              "weight_grams": 500,
+              "price_cents": 1720
+            },
+            {
+              "quantity": 1,
+              "price_currency": "EUR",
+              "hscode": "6404.20.9000",
+              "description": "African beaded leather sandals",
+              "weight_grams": 1500,
+              "price_cents": 800
+            }
+          ],
+          "dimensions": {
+            "height_cm": 20,
+            "length_cm": 20,
+            "weight_grams": 2000,
+            "width_cm": 25
+          },
+          "description": "Fish/Vegetables/Crayfish/Mixed Spices"
+        },
+        "internal_reference": random_string(8),
+        "duty_code": "ddps",
+        "currency": "EUR",
+        "shipper": {
+          "contact": {
+            "email": "jane@doe.com",
+            "fullname": "Jane R. Doe",
+            "phone_number": "+2349038755333"
+          },
+          "address": {
+            "country": "CI",
+            "state": "Abidjan",
+            "street_line_1": "2 Abunama Close",
+            "city": "Abidjan",
+            "zip": "00225",
+            "street_line_2": "Apt. 101"
+          }
+        },
+        "recipient": {
+          "contact": {
+            "email": "john@doe.com",
+            "fullname": "John Z. Doe",
+            "phone_number": "+447865015511"
+          },
+          "address": {
+            "country": "FR",
+            "state": "",
+            "street_line_1": "81 Hardshaw Street",
+            "city": "Paris",
+            "zip": "00233",
+            "street_line_2": ""
+          }
+        }
+      }
+    }
+  }
+
+
+# ZA001277454S, 
+
 class FeatureInitiatePayment(graphene.Mutation):
     success: bool = graphene.Boolean()
     message: str = graphene.String()
@@ -144,6 +226,29 @@ class FeatureInitiatePayment(graphene.Mutation):
             }
         }
         # print(content.)
+        
+        
+        
+        
+        response_shipping = requests.post(
+            "https://api.anka.fyi/v1/shipment/labels", headers=headers, json=shipment_data
+        )
+
+        print(response_shipping)
+        shipment_content = response_shipping.json()
+        print("SHIPPING LABEL", shipment_content)  
+        label = "5Ga0R99r"
+        
+        response_shipping_label =  requests.get(
+            "https://api.anka.fyi/v1/shipment/labels/"+label, headers=headers
+        )
+        
+        print(response_shipping_label)
+        shipment_label_content = response_shipping_label.json()
+        print(shipment_label_content)
         return FeatureInitiatePayment(
             success=True, message="Success", payment_link=content["redirect_url"]
         )
+        
+
+
