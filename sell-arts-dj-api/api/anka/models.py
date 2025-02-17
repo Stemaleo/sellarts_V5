@@ -2,8 +2,6 @@ from django.db import models
 
 
         
-        
-        
 class ArtWorks(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
     created_at = models.DateTimeField(blank=True, null=True)
@@ -17,6 +15,8 @@ class ArtWorks(models.Model):
     width = models.FloatField(null=True)
     artist = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     material_type = models.ForeignKey('MaterialType', models.DO_NOTHING, null=True)
+    method = models.ForeignKey('artwork.Methods', models.DO_NOTHING, db_column="method", related_name='artwork_method', blank=True, null=True)
+    style = models.ForeignKey('artwork.Styles', models.DO_NOTHING, db_column="style", related_name='artwork_style', blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, related_name='artworks_owner_set', blank=True, null=True)
     painting_type = models.ForeignKey('PaintingType', models.DO_NOTHING)
 

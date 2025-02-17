@@ -1,0 +1,20 @@
+import graphene
+from . import mutations as mutations
+from . import queries as queries
+from . import types as types
+from query_optimizer.fields import DjangoConnectionField
+
+
+class Query(graphene.ObjectType):
+    methods = DjangoConnectionField(types.MethodsType)
+
+    
+
+class Mutation(graphene.ObjectType):
+    feature_create_method = mutations.FeatureCreateMethod.Field()
+    feature_update_method = mutations.FeatureUpdateMethod.Field()
+    feature_update_method_deletions = mutations.FeatureUpdateMethodDeletions.Field()    
+    feature_create_style = mutations.FeatureCreateStyle.Field()
+    feature_update_style = mutations.FeatureUpdateStyle.Field()
+    feature_update_style_deletions = mutations.FeatureUpdateStylesDeletions.Field()
+

@@ -12,9 +12,9 @@ class FeatureUpdateUsersDeletions(graphene.Mutation):
     Mutation to delete or restore multiple users by setting their `is_deleted` field accordingly.
     """
 
-    success = graphene.Boolean(description="Indicates whether the operation was successful.")
-    message = graphene.String(description="Response message indicating success or failure.")
-    users = graphene.List(types.UsersType, description="List of updated user objects.")
+    success: bool = graphene.Boolean(description="Indicates whether the operation was successful.")
+    message: str = graphene.String(description="Response message indicating success or failure.")
+    users: list[anka_models.Users] = graphene.List(types.UsersType, description="List of updated user objects.")
 
     class Arguments:
         users = graphene.List(
@@ -63,7 +63,7 @@ class FeatureUpdateUsersActivation(graphene.Mutation):
 
     success: bool = graphene.Boolean(description="Indicates whether the users were successfully updated.")
     message: str = graphene.String(description="Response message indicating success or failure.")
-    users: list = graphene.List(types.UsersType, description="List of updated user objects.")
+    users: list[anka_models.Users] = graphene.List(types.UsersType, description="List of updated user objects.")
 
     class Arguments:
         users = graphene.List(

@@ -1,15 +1,6 @@
 from django.db import models
 from anka import models as anka_models
 
-# class Conversations(models.Model):
-#     id = models.BigAutoField(primary_key=True)
-#     created_at = models.DateTimeField(blank=True, null=True)
-#     is_deleted = models.BooleanField(null=True, default=False)
-#     owner = models.ForeignKey(anka_models.Users, models.DO_NOTHING, related_name='conversations_owner', blank=True, null=True)
-#     class Meta:
-#         managed = True
-#         db_table = 'conversations'
-
 
 class Messages(models.Model):
     id = models.BigAutoField(primary_key=True)
