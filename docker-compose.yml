@@ -8,7 +8,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-      #- "5432:5432"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sellarts
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -17,8 +16,7 @@ services:
     restart: always
     networks:
       - dev_network
-    #env_file:
-      #- .env
+
 
 
   frontend:
@@ -31,15 +29,12 @@ services:
       - "9022:3000"
     environment:
       API_URL: http://backend:8080
-      PUBLIC_APP_DOMAIN: https://dev.sellarts.seter
     depends_on:
       - backend
     restart: always
     networks:
       - dev_network
 
-    #env_file:
-      #- .env
 
 
   dj-api:
@@ -52,13 +47,10 @@ services:
     volumes:
       - ./sell-arts-dj-api:/app
       - static:/app/static
-      - migrations:/app/api/anka/migrations 
     ports:
       - 8000:8000
     networks:
       - dev_network
-
-      
 
 volumes:
   static:
