@@ -438,8 +438,6 @@ class Users(models.Model):
     registered_at = models.DateTimeField(blank=True, null=True)
     artist_profile = models.OneToOneField(ArtistProfiles, models.DO_NOTHING, blank=True, null=True)
     is_deleted = models.BooleanField(null=True, default=False)
-    is_active = models.BooleanField(null=True, default=True)
-    is_deleted = models.BooleanField(null=True, default=False)
     is_active = models.BooleanField(null=True, default=True)   
     
     class Meta:

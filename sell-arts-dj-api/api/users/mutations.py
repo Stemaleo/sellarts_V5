@@ -42,6 +42,7 @@ class FeatureUpdateUsersDeletions(graphene.Mutation):
                     )
 
                 users_to_update.update(is_deleted=delete)
+                anka_models.ArtistProfiles.objects.filter(user__in=users_to_update).update(is_deleted=delete)
 
                 action = "deleted" if delete else "restored"
                 return FeatureUpdateUsersDeletions(
