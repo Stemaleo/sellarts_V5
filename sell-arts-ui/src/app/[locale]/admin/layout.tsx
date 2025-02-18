@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, ChevronDown, LayoutDashboard, Users, ShoppingCart, FileText, Settings, Menu, PaintRoller, SlashIcon, ShoppingBag, DollarSign, Banknote, Rss, RssIcon, Heart, Paintbrush, MessageCircleCodeIcon, MessageCircle } from "lucide-react";
+import { Bell, ChevronDown, LayoutDashboard, Users, ShoppingCart, FileText, Settings, Menu, PaintRoller, SlashIcon, ShoppingBag, DollarSign, Banknote, Rss, RssIcon, Heart, Paintbrush, MessageCircleCodeIcon, MessageCircle, Palette, Cog } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useSession } from "next-auth/react";
 import NotificationButton from "@/components/notification-button";
+import { LocaleSwitcher } from "@/components/LocalSwitch";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Blogs", href: "/admin/blogs", icon: RssIcon },
   { name: "Painting Types", href: "/admin/paintingTypes", icon: PaintRoller },
-  { name: "Materials", href: "/admin/materials", icon: SlashIcon},
+  { name: "Materials", href: "/admin/materials", icon: SlashIcon },
+  { name: "Style", href: "/admin/styles", icon: Palette },  // Changer l'icône ici
+  { name: "Method", href: "/admin/methods", icon: Cog  },   // Changer l'icône ici
   { name: "Arts", href: "/admin/arts", icon: Paintbrush },
   { name: "Messages", href: "/admin/messages", icon: MessageCircle },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
@@ -109,6 +112,8 @@ export default function SuperAdminDashboard({ children }: { children: React.Reac
 
             {/* Right side actions */}
             <div className="flex items-center space-x-4">
+              <LocaleSwitcher />
+
               <NotificationButton />
 
               <DropdownMenu>

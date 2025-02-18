@@ -137,6 +137,38 @@
     "your-bids": "Vos enchères",
     "bid-id": "Identifiant de l'enchère"
   },
+  "buttons": {
+    "switchs": {
+      "suspend": "Suspendre?",
+      "featured": "En vedette"
+    },
+    "delete": "Supprimer",
+    "edit": "Modifier"
+  },
+  "navItems": {
+    "admin": {
+      "dashboard": "dashboard",
+      "users": "Utilisateur",
+      "blogs": "Blogs",
+      "painting-types": "Types d'oeuvres",
+      "materials": "Types de Materiaux",
+      "style":"Style",
+      "method": "Techniques",
+      "arts": "Arts",
+      "messages": "Messages",
+      "orders": "Commandes",
+      "favourites": "Favories",
+      "payments": "Paiements"
+    },
+    "artist": {
+      "suspend": "Suspendre?",
+      "featured": "En vedette"
+    },
+    "gallery": {
+      "suspend": "Suspendre?",
+      "featured": "En vedette"
+    }
+  },
   "view-items": "Afficher les articles",
   "order-items": "Articles de commande",
   "complete-payment": "Terminer le paiement",
@@ -239,7 +271,12 @@
   "top-liked-artworks": "Œuvres d'art les plus aimées",
   "sales": "Ventes",
   "loading": "Chargement...",
-  "find-an-artist": "Rechercher un artiste..."
-
+ "methodMangement":{
+    "find-an-artist": "Rechercher un artiste...",
+    "existing-methods-types": "Types de méthodes existantes",
+    "are-you-sure": "Etes vous sûr?",
+    "remove": "Retirer",
+    "cancel": "Annuler"
+ }
 
 }

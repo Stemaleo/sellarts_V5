@@ -133,9 +133,44 @@
   "cart": {
     "add-to-cart": "Add to Cart"
   },
+
   "bids": {
     "your-bids": "Your Bids",
     "bid-id": "Bid ID"
+  },
+
+  "buttons": {
+    "switchs": {
+      "suspend": "Suspend?",
+      "featured": "Featured?"
+    },
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+
+  "navItems": {
+    "admin": {
+      "dashboard": "dashboard?",
+      "users": "Users",
+      "blogs": "Blogs",
+      "painting-types": "Painting Types",
+      "materials": "Materials",
+      "style":"Style",
+      "method": "Method",
+      "arts": "Arts",
+      "messages": "Messages",
+      "orders": "Orders",
+      "favourites": "Favourites",
+      "payments": "Payments"
+    },
+    "artist": {
+      "suspend": "Suspendre?",
+      "featured": "En vedette"
+    },
+    "gallery": {
+      "suspend": "Suspendre?",
+      "featured": "En vedette"
+    }
   },
   "view-items": "View Items",
   "order-items": "Order Items",
@@ -231,10 +266,11 @@
   "top-selling-artworks": "Artworks Listed",
   "sales": "Sales",
   "loading": "Loading...",
-  "find-an-artist": "Find an artist..."
-
-
-
-
-
+  "find-an-artist": "Find an artist...",
+  "methodMangement":{
+    "existing-methods-types": "Existing Methods Types",
+    "are-you-sure": "Are you sure?",
+    "remove": "Remove",
+    "cancel": "Cancel"
+ }
 }
