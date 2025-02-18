@@ -21,10 +21,10 @@ public interface UsersRepo extends JpaRepository<User, Long> {
 
 //    Long countAllByRegisteredAtBetween(LocalDateTime start, LocalDateTime end);
 
-   @Query("SELECT COUNT (u) FROM users u WHERE u.artistProfile IS NOT NULL")
+   @Query("SELECT COUNT (u) FROM users u WHERE u.artistProfile IS NOT NULL AND is_deleted = false")
     Long countAllArtists();
 
-    @Query("SELECT COUNT (u) FROM users u WHERE u.artistProfile IS NOT NULL AND (u.registeredAt BETWEEN :start AND :end)")
+    @Query("SELECT COUNT (u) FROM users u WHERE u.artistProfile IS NOT NULL AND is_deleted = false AND (u.registeredAt BETWEEN :start AND :end)")
     Long countAllArtistsRegisteredBetween(LocalDateTime start, LocalDateTime end);
 
 }
