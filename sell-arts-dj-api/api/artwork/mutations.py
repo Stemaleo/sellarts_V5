@@ -1,6 +1,6 @@
 import graphene
 from . import meta as meta, models as models, types as types
-from anka import models as anka_models
+from anka import models as anka_models, types as anka_types
 from django.db import transaction
 import traceback
 
@@ -203,7 +203,7 @@ class FeatureUpdateStylesDeletions(graphene.Mutation):
     def mutate(cls, root, info, **kwargs):
         try:
             with transaction.atomic():
-                styles_to_update = models.Styless.objects.filter(id__in=kwargs['styles'])
+                styles_to_update = models.Styles.objects.filter(id__in=kwargs['styles'])
 
                 if not styles_to_update.exists():
                     return FeatureUpdateStylesDeletions(
@@ -216,7 +216,7 @@ class FeatureUpdateStylesDeletions(graphene.Mutation):
                 return FeatureUpdateStylesDeletions(
                     success=True, 
                     message=f"styles successfully {action}.", 
-                    Styless=list(styles_to_update)
+                    Styles=list(styles_to_update)
                 )
         except Exception as error:
             error = traceback.format_exc()
@@ -229,6 +229,68 @@ class FeatureUpdateStylesDeletions(graphene.Mutation):
 
 
 
+class FeatureUpdateArtworkMethodAndStyle(graphene.Mutation):
+    """
+    Mutation to update method and style on a atwork.
+    """
+
+    success: bool = graphene.Boolean(description="Indicates whether the operation was successful.")
+    message: str = graphene.String(description="Response message indicating success or failure.")
+    artwork: anka_models.ArtWorks = graphene.List(types.ArtworksType, description="updated artwork objects.")
+
+    class Arguments:
+        method = graphene.ID(
+            required=True,
+            description="List of styles IDs to delete or restore."
+        )
+        style = graphene.ID(
+            required=True, 
+            description="Set to `true` to delete styles, or `false` to restore them."
+        )        
+        artwork = graphene.ID(
+            required=True, 
+            description="Set to `true` to delete styles, or `false` to restore them."
+        )
+
+    class Meta:
+        # description = meta.feature_update_users_deletions
+        pass
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs):
+        try:
+            with transaction.atomic():
+                style = models.Styles.objects.filter(id=kwargs['style'], is_deleted=False)
+                if not style.exists():
+                    return FeatureUpdateArtworkMethodAndStyle(
+                        success=False, message="No matching style found."
+                    )
+                    
+                method = models.Methods.objects.filter(id=kwargs['method'], is_deleted=False)      
+                if not method.exists():
+                    return FeatureUpdateArtworkMethodAndStyle(
+                        success=False, message="No matching method found."
+                    )
+                
+                artwork = anka_models.ArtWorks.objects.filter(id=kwargs['artwork'])
+                if not artwork.exists():
+                    return FeatureUpdateArtworkMethodAndStyle(
+                        success=False, message="No matching artwork found."
+                    )
+                
+                artwork.update(method=kwargs['method'], style=kwargs['style'])
+                action = "updated"
+                
+                return FeatureUpdateArtworkMethodAndStyle(
+                    success=True, 
+                    message=f"method and style successfully {action}.", 
+                    artwork=artwork
+                )
+        except Exception as error:
+            error = traceback.format_exc()
+            return FeatureUpdateArtworkMethodAndStyle(
+                success=False, message=f"Error while updating artwork method and style: {error}"
+            )
 
 
 

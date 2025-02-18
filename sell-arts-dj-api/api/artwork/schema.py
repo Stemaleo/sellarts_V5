@@ -17,4 +17,5 @@ class Mutation(graphene.ObjectType):
     feature_create_style = mutations.FeatureCreateStyle.Field()
     feature_update_style = mutations.FeatureUpdateStyle.Field()
     feature_update_style_deletions = mutations.FeatureUpdateStylesDeletions.Field()
+    feature_update_artwork_method_and_style = mutations.FeatureUpdateArtworkMethodAndStyle.Field()
 
