@@ -64,7 +64,7 @@ export default function TicketConversation() {
   const handleReply = async () => {
     if (!reply.trim() || !selectedTicket) return;
     try {
-      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL, {
+      const response = await axios.post(process.env.DJ_API_URL || "", {
         query: SEND_MESSAGE_TICKET,
         variables: {
             ticket: selectedTicket.id,
