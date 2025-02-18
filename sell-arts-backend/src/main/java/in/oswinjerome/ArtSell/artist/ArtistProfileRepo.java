@@ -33,7 +33,7 @@ public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
             "LEFT JOIN ap.user u " +
             "LEFT JOIN art_works aw ON aw.owner = u " +
             "LEFT JOIN OrderItem  oi ON oi.artWork = aw "+
-            "where ap.id = :artistId ap.is_deleted = false AND u.is_deleted=false "+
+            "where ap.id = :artistId AND ap.is_deleted = false AND u.is_deleted=false "+
             "GROUP BY ap")
    Optional< ArtistProfileDTO> getArtistWithStats(Long artistId);
 
