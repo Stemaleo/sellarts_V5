@@ -142,7 +142,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                 "attributes": {
                     "title": "Paiement d'Oeuvres d'art",
                     "description": "Paiements d'oeuvres d'art",
-                    "amount_cents": int(round(order.total_amount + orders_fees)),
+                    "amount_cents": int(round(order.total_amount)),
                     "amount_currency": "XOF",
                     "shippable": True,
                     "reusable": False,
