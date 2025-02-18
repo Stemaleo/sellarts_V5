@@ -17,7 +17,9 @@ class ArtWorks(models.Model):
     material_type = models.ForeignKey('MaterialType', models.DO_NOTHING, null=True)
     method = models.ForeignKey('artwork.Methods', models.DO_NOTHING, db_column="method", related_name='artwork_method', blank=True, null=True)
     style = models.ForeignKey('artwork.Styles', models.DO_NOTHING, db_column="style", related_name='artwork_style', blank=True, null=True)
-    owner = models.ForeignKey('Users', models.DO_NOTHING, related_name='artworks_owner_set', blank=True, null=True)
+    owner = models.ForeignKey('Users', models.DO_NOTHING, related_name='artworks_owner_set', blank=True, null=True)  
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
     painting_type = models.ForeignKey('PaintingType', models.DO_NOTHING)
 
     class Meta:
@@ -34,6 +36,8 @@ class ArtistProfiles(models.Model):
     location = models.CharField(max_length=255, blank=True, null=True)
     portfolio_url = models.CharField(max_length=255, blank=True, null=True)
     user = models.OneToOneField('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -48,6 +52,8 @@ class Bid(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -63,6 +69,8 @@ class Blogs(models.Model):
     is_publish = models.BooleanField(null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -75,6 +83,8 @@ class CartItem(models.Model):
     quantity = models.IntegerField(null=True)
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -87,6 +97,8 @@ class Catalog(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -96,6 +108,8 @@ class Catalog(models.Model):
 class CatalogArtworks(models.Model):
     catalog = models.ForeignKey(Catalog, models.DO_NOTHING, default=None)
     artwork = models.ForeignKey(ArtWorks, models.DO_NOTHING, default=None)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -107,6 +121,8 @@ class Colab(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     artist = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     requester = models.ForeignKey('Users', models.DO_NOTHING, related_name='colab_requester_set', blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -119,6 +135,8 @@ class ColabRequest(models.Model):
     status = models.CharField(max_length=255, blank=True, null=True)
     artist = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     requester = models.ForeignKey('Users', models.DO_NOTHING, related_name='colabrequest_requester_set', blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -131,6 +149,8 @@ class Comments(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     post = models.ForeignKey('Post', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -147,6 +167,8 @@ class Events(models.Model):
     owner_type = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -156,6 +178,8 @@ class Events(models.Model):
 class EventsMediaKeys(models.Model):
     events = models.ForeignKey(Events, models.DO_NOTHING)
     media_keys = models.CharField(max_length=255, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -165,6 +189,8 @@ class EventsMediaKeys(models.Model):
 class EventsMediaUrls(models.Model):
     events = models.ForeignKey(Events, models.DO_NOTHING)
     media_urls = models.CharField(max_length=255, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -176,6 +202,8 @@ class Favourite(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -187,6 +215,8 @@ class Likes(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     post = models.ForeignKey('Post', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -196,6 +226,8 @@ class Likes(models.Model):
 class MaterialType(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=255, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -209,6 +241,8 @@ class Medias(models.Model):
     key = models.CharField(max_length=255, blank=True, null=True)
     public_url = models.TextField(blank=True, null=True)
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -222,6 +256,8 @@ class Notification(models.Model):
     read_status = models.BooleanField(null=True)
     timestamp = models.DateTimeField()
     user = models.ForeignKey('Users', models.DO_NOTHING)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -237,6 +273,8 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(null=True)
     art_work = models.ForeignKey(ArtWorks, models.DO_NOTHING, blank=True, null=True)
     order = models.ForeignKey('Orders', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -255,9 +293,12 @@ class Orders(models.Model):
     postal_code = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
+    shipping_fees = models.DecimalField(max_digits=38, decimal_places=2, default=0, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -267,6 +308,8 @@ class Orders(models.Model):
 class PaintingType(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=255, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -279,6 +322,8 @@ class Payment(models.Model):
     order_status = models.CharField(max_length=255, blank=True, null=True)
     payment_id = models.CharField(max_length=255, blank=True, null=True)
     order = models.ForeignKey(Orders, models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -292,6 +337,8 @@ class Post(models.Model):
     media_key = models.CharField(max_length=255, blank=True, null=True)
     media_url = models.CharField(max_length=255, blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -307,6 +354,8 @@ class Promo(models.Model):
     is_active = models.BooleanField(null=True)
     is_percentage = models.BooleanField(null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -318,6 +367,8 @@ class Registration(models.Model):
     registration_time = models.DateTimeField(blank=True, null=True)
     event = models.ForeignKey(Events, models.DO_NOTHING, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -329,6 +380,8 @@ class Subscribe(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     artist = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, related_name='subscribe_user_set', blank=True, null=True)
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
         managed = True
@@ -343,7 +396,8 @@ class Tickets(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
     class Meta:
         managed = True
         db_table = 'tickets'
@@ -357,7 +411,8 @@ class Transaction(models.Model):
     initiator_type = models.CharField(max_length=255, blank=True, null=True)
     type = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
     class Meta:
         managed = True
         db_table = 'transaction'
@@ -366,7 +421,8 @@ class Transaction(models.Model):
 class UserRoles(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING)
     role = models.CharField(max_length=255, blank=True, null=True)
-
+    is_deleted = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
     class Meta:
         managed = True
         db_table = 'user_roles'
@@ -383,7 +439,7 @@ class Users(models.Model):
     registered_at = models.DateTimeField(blank=True, null=True)
     artist_profile = models.OneToOneField(ArtistProfiles, models.DO_NOTHING, blank=True, null=True)
     is_deleted = models.BooleanField(null=True, default=False)
-    is_active = models.BooleanField(null=True, default=True)
+    is_active = models.BooleanField(null=True, default=True)   
     
     class Meta:
         managed = True

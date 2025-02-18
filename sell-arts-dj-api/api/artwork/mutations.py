@@ -17,7 +17,6 @@ class FeatureCreateMethod(graphene.Mutation):
 
     class Arguments:
         name = graphene.String(required=True, description="Method's name")
-        owner = graphene.ID(required=True, description="Owner's ID")
         
     class Meta:
         description = meta.feature_create_method
@@ -26,8 +25,7 @@ class FeatureCreateMethod(graphene.Mutation):
     def mutate(cls, root, info, **kwargs):
         try:
             method = models.Methods.objects.create(
-                name=kwargs["name"],
-                owner=anka_models.Users.objects.get(id=kwargs["owner"], is_deleted=False)
+                name=kwargs["name"]
             )
             return FeatureCreateMethod(success=True, message="Method created successfully.", method=method)
         except Exception as error:
@@ -127,7 +125,6 @@ class FeatureCreateStyle(graphene.Mutation):
 
     class Arguments:
         name = graphene.String(required=True, description="style's name")
-        owner = graphene.ID(required=True, description="Owner's ID")
         
     class Meta:
         # description = meta.feature_create_Styles
@@ -137,8 +134,7 @@ class FeatureCreateStyle(graphene.Mutation):
     def mutate(cls, root, info, **kwargs):
         try:
             style = models.Styles.objects.create(
-                name=kwargs["name"],
-                owner=anka_models.Users.objects.get(id=kwargs["owner"], is_deleted=False)
+                name=kwargs["name"]
             )
             return FeatureCreateStyle(success=True, message="style created successfully.", style=style)
         except Exception as error:

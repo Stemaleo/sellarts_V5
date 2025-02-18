@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
 
-    @Query("SELECT e FROM artist_profiles e  ORDER BY random() LIMIT 5")
+    @Query("SELECT e FROM artist_profiles e  WHERE e.is_deleted=false ORDER BY random() LIMIT 5")
     List<ArtistProfile> findRandomRecords();
 
 
@@ -23,7 +23,7 @@ public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
             "LEFT JOIN ap.user u " +
             "LEFT JOIN art_works aw ON aw.owner = u " +
             "LEFT JOIN OrderItem  oi ON oi.artWork = aw "+
-            "WHERE ap.artistType = :type AND (:name IS NULL OR u.name LIKE %:name%) " +
+            "WHERE ap.artistType = :type AND (:name IS NULL OR u.name LIKE %:name%) AND ap.is_deleted = false AND u.is_deleted=false " +
             "GROUP BY ap")
     Page<ArtistProfileDTO> getAllWithStats(ArtistType type, String name, Pageable pagable);
 
@@ -33,7 +33,7 @@ public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
             "LEFT JOIN ap.user u " +
             "LEFT JOIN art_works aw ON aw.owner = u " +
             "LEFT JOIN OrderItem  oi ON oi.artWork = aw "+
-            "where ap.id = :artistId "+
+            "where ap.id = :artistId AND ap.is_deleted = false AND u.is_deleted=false "+
             "GROUP BY ap")
    Optional< ArtistProfileDTO> getArtistWithStats(Long artistId);
 

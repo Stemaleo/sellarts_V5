@@ -26,6 +26,9 @@ public class ArtistProfile {
     private String location;
     @Column(nullable = true)
     private String portfolioUrl;
+    
+    @Column(nullable = true)
+    private Boolean is_deleted;
 
     @Column(nullable = true)
     private String coverUrl;
