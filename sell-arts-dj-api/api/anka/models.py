@@ -293,6 +293,7 @@ class Orders(models.Model):
     postal_code = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
+    shipping_fees = models.DecimalField(max_digits=38, decimal_places=2, default=0.0, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)

@@ -124,6 +124,7 @@ class FeatureInitiatePayment(graphene.Mutation):
 
         # models.Orders.objects.get(id=1)
         # Données à envoyer
+        order = models.Orders.objects.get(id=kwargs['order'], is_deleted=False)
 
         webhooks = {
             "data": {
@@ -141,27 +142,27 @@ class FeatureInitiatePayment(graphene.Mutation):
                 "attributes": {
                     "title": "Paiement d'Oeuvres d'art",
                     "description": "Paiements d'oeuvres d'art",
-                    "amount_cents": 50000,
+                    "amount_cents": order.total_amount + order.shipping_fees,
                     "amount_currency": "XOF",
                     "shippable": True,
                     "reusable": False,
-                    "callback_url": "http://dev.sellarts.net/",
+                    "callback_url": "https://dev.sellarts.net/",
                     "order_reference": random_string(5),
-                    "buyer": {
-                        "contact": {
-                            "fullname": kwargs["name"],
-                            "phone_number": kwargs["phone_number"],
-                            "email": kwargs["email"],
-                        },
-                        "address": {
-                            "street_line_1": kwargs["address"],
-                            "street_line_2": kwargs["address"],
-                            "city": kwargs["city"],
-                            "state": kwargs["state"],
-                            "zip": kwargs["postal_code"],
-                            "country": "CI",
-                        },
-                    },
+                    # "buyer": {
+                    #     "contact": {
+                    #         "fullname": kwargs["name"],
+                    #         "phone_number": kwargs["phone_number"],
+                    #         "email": kwargs["email"],
+                    #     },
+                    #     "address": {
+                    #         "street_line_1": kwargs["address"],
+                    #         "street_line_2": kwargs["address"],
+                    #         "city": kwargs["city"],
+                    #         "state": kwargs["state"],
+                    #         "zip": kwargs["postal_code"],
+                    #         "country": "CI",
+                    #     },
+                    # },
                 },
             }
         }
@@ -169,6 +170,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         # response = requests.post(
         #     "https://api.anka.fyi/v1/payment/links", headers=headers, json=data
         # )
+        
         response = requests.post(
             "https://api.anka.fyi/v1/payment/links", headers=headers, json=data
         )
@@ -227,28 +229,28 @@ class FeatureInitiatePayment(graphene.Mutation):
         }
         # print(content.)
         
-        
-        
-        
-        response_shipping = requests.post(
-            "https://api.anka.fyi/v1/shipment/labels", headers=headers, json=shipment_data
-        )
+        # response_shipping = requests.post(
+        #     "https://api.anka.fyi/v1/shipment/labels", headers=headers, json=shipment_data
+        # )
 
-        print(response_shipping)
-        shipment_content = response_shipping.json()
-        print("SHIPPING LABEL", shipment_content)  
-        label = "5Ga0R99r"
+        # print(response_shipping)
+        # shipment_content = response_shipping.json()
+        # print("SHIPPING LABEL", shipment_content)  
+        # label = "5Ga0R99r"
         
-        response_shipping_label =  requests.get(
-            "https://api.anka.fyi/v1/shipment/labels/"+label, headers=headers
-        )
+        # response_shipping_label =  requests.get(
+        #     "https://api.anka.fyi/v1/shipment/labels/"+label, headers=headers
+        # )
         
-        print(response_shipping_label)
-        shipment_label_content = response_shipping_label.json()
-        print(shipment_label_content)
+        # print(response_shipping_label)
+        # shipment_label_content = response_shipping_label.json()
+        # print(shipment_label_content)
         return FeatureInitiatePayment(
             success=True, message="Success", payment_link=content["redirect_url"]
         )
         
 
 
+
+class FeatureGenerateShippingFees(graphene.Mutation):
+  pass
