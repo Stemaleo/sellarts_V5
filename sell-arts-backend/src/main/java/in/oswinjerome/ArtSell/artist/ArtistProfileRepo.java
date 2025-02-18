@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
 
-    @Query("SELECT e FROM artist_profiles e  ORDER BY random() LIMIT 5")
+    @Query("SELECT e FROM artist_profiles e  WHERE e.is_deleted=false ORDER BY random() LIMIT 5")
     List<ArtistProfile> findRandomRecords();
 
 
