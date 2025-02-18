@@ -124,8 +124,8 @@ class FeatureInitiatePayment(graphene.Mutation):
 
         # models.Orders.objects.get(id=1)
         # Données à envoyer
-        order = models.Orders.objects.get(id=kwargs['order'], is_deleted=False)
-        orders_fees = order.shipping_fees if order.shipping_fees is not None else 0
+        order = models.Orders.objects.get(id=kwargs['order'])
+        
         webhooks = {
             "data": {
                 "type": "payment_webhooks",
@@ -142,27 +142,27 @@ class FeatureInitiatePayment(graphene.Mutation):
                 "attributes": {
                     "title": "Paiement d'Oeuvres d'art",
                     "description": "Paiements d'oeuvres d'art",
-                    "amount_cents": int(round(order.total_amount)),
+                    "amount_cents": int(round(order.total_amount + (order.shipping_fees or 0))),
                     "amount_currency": "XOF",
                     "shippable": True,
                     "reusable": False,
                     "callback_url": "https://dev.sellarts.net/",
                     "order_reference": random_string(5),
-                    # "buyer": {
-                    #     "contact": {
-                    #         "fullname": kwargs["name"],
-                    #         "phone_number": kwargs["phone_number"],
-                    #         "email": kwargs["email"],
-                    #     },
-                    #     "address": {
-                    #         "street_line_1": kwargs["address"],
-                    #         "street_line_2": kwargs["address"],
-                    #         "city": kwargs["city"],
-                    #         "state": kwargs["state"],
-                    #         "zip": kwargs["postal_code"],
-                    #         "country": "CI",
-                    #     },
-                    # },
+                    "buyer": {
+                        "contact": {
+                            "fullname": kwargs["name"],
+                            "phone_number": kwargs["phone_number"],
+                            "email": kwargs["email"],
+                        },
+                        "address": {
+                            "street_line_1": kwargs["address"],
+                            "street_line_2": kwargs["address"],
+                            "city": kwargs["city"],
+                            "state": kwargs["state"],
+                            "zip": kwargs["postal_code"],
+                            "country": "CI",
+                        },
+                    },
                 },
             }
         }
