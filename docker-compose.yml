@@ -52,6 +52,8 @@ services:
     networks:
       - dev_network
 
+      
+
 volumes:
   static:
     external: true 

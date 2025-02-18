@@ -28,7 +28,7 @@ export default function MessagesPage() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.post(process.env.DJ_API_URL || "", {
+        const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
           query: GET_ALL_TICKETS,
         });
         
@@ -47,7 +47,7 @@ export default function MessagesPage() {
     if (selectedTicket) {
       const fetchMessages = async () => {
         try {
-          const res = await axios.post(process.env.DJ_API_URL || "", {
+          const res = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
             query: GET_MESSAGES_BY_TICKET,
             variables: {
               ticket_Id: selectedTicket.id,
@@ -73,7 +73,7 @@ export default function MessagesPage() {
   const handleReply = async () => {
     if (!reply.trim() || !selectedTicket) return;
     try {
-      const response = await axios.post(process.env.DJ_API_URL || "", {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
         query: SEND_MESSAGE_TICKET,
         variables: {
           ticket: selectedTicket.id,

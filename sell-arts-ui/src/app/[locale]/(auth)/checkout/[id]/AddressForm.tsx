@@ -46,7 +46,7 @@ const AddressForm = ({ order }: { order: Order }) => {
     onSubmit: async (values) => {
       setLoadingPaymentLink(true);
       try {
-        const response = await axios.post(process.env.DJ_API_URL || "", {
+        const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
           query: INITIATE_PAYMENT_MUTATION,
           variables: values,
         });
