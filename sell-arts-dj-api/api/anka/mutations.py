@@ -125,7 +125,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         # models.Orders.objects.get(id=1)
         # Données à envoyer
         order = models.Orders.objects.get(id=kwargs['order'], is_deleted=False)
-        orders_fees = order.shipping_fees or 0
+        orders_fees = order.shipping_fees if order.shipping_fees is not None else 0
         webhooks = {
             "data": {
                 "type": "payment_webhooks",
