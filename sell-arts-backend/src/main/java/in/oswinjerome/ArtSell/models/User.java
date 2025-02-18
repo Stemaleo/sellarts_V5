@@ -29,6 +29,7 @@ public class User implements UserDetails {
 
     private String name;
     private String email;
+    private Boolean is_deleted;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
