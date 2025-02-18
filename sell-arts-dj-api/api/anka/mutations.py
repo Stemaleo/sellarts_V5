@@ -252,5 +252,5 @@ class FeatureInitiatePayment(graphene.Mutation):
 
 
 
-class FeatureGenerateShippingFees(graphene.Mutation):
-  pass
+# class FeatureGenerateShippingFees(graphene.Mutation):
+#   pass
