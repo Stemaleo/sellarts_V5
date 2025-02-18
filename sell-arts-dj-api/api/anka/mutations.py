@@ -125,7 +125,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         # models.Orders.objects.get(id=1)
         # Données à envoyer
         order = models.Orders.objects.get(id=kwargs['order'], is_deleted=False)
-
+        oder_fees = order.shipping_fees if order.shipping_fees is not None else 0
         webhooks = {
             "data": {
                 "type": "payment_webhooks",
@@ -142,7 +142,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                 "attributes": {
                     "title": "Paiement d'Oeuvres d'art",
                     "description": "Paiements d'oeuvres d'art",
-                    "amount_cents": int(order.total_amount + order.shipping_fees),
+                    "amount_cents": round(order.total_amount +  oder_fees),
                     "amount_currency": "XOF",
                     "shippable": True,
                     "reusable": False,
