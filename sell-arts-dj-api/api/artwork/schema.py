@@ -7,7 +7,7 @@ from query_optimizer.fields import DjangoConnectionField
 
 class Query(graphene.ObjectType):
     methods = DjangoConnectionField(types.MethodsType)
-
+    styles = DjangoConnectionField(types.StylesType)
     
 
 class Mutation(graphene.ObjectType):
@@ -18,4 +18,5 @@ class Mutation(graphene.ObjectType):
     feature_update_style = mutations.FeatureUpdateStyle.Field()
     feature_update_style_deletions = mutations.FeatureUpdateStylesDeletions.Field()
     feature_update_artwork_method_and_style = mutations.FeatureUpdateArtworkMethodAndStyle.Field()
-
+   
+    
