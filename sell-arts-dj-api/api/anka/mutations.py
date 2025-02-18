@@ -125,7 +125,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         # models.Orders.objects.get(id=1)
         # Données à envoyer
         order = models.Orders.objects.get(id=kwargs['order'], is_deleted=False)
-        oder_fees = order.shipping_fees or 0
+        orders_fees = order.shipping_fees or 0
         webhooks = {
             "data": {
                 "type": "payment_webhooks",
@@ -142,18 +142,18 @@ class FeatureInitiatePayment(graphene.Mutation):
                 "attributes": {
                     "title": "Paiement d'Oeuvres d'art",
                     "description": "Paiements d'oeuvres d'art",
-                    "amount_cents": round(order.total_amount +  oder_fees),
+                    "amount_cents": int(round(order.total_amount + orders_fees)),
                     "amount_currency": "XOF",
                     "shippable": True,
                     "reusable": False,
                     "callback_url": "https://dev.sellarts.net/",
                     "order_reference": random_string(5),
-                    "buyer": {
-                        "contact": {
-                            "fullname": kwargs["name"],
-                            "phone_number": kwargs["phone_number"],
-                            "email": kwargs["email"],
-                        },}
+                    # "buyer": {
+                    #     "contact": {
+                    #         "fullname": kwargs["name"],
+                    #         "phone_number": kwargs["phone_number"],
+                    #         "email": kwargs["email"],
+                    #     },
                     #     "address": {
                     #         "street_line_1": kwargs["address"],
                     #         "street_line_2": kwargs["address"],
