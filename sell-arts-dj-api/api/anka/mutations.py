@@ -130,7 +130,7 @@ class FeatureInitiatePayment(graphene.Mutation):
             "data": {
                 "type": "payment_webhooks",
                 "attributes": {
-                    "webhook_url": "http://dj-dev.sellarts.net/ipn/",
+                    "webhook_url": "https://dj-dev.sellarts.net/ipn/",
                     "webhook_enabled": True,
                 },
             }
