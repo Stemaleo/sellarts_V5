@@ -29,6 +29,8 @@ def instant_payment_notification(request):
             
             if data['type'] == 'payment_links_orders':
                 if data['attributes']['status'] == 'captured':
+                    logger.warning("Ref: %s", reference.split('SELLARTS'))
+                    logger.warning("Ref: %s", reference.split('SELLARTS'))
                     reference: str =  data['attributes']['internal_reference']            
                     order = anka_models.Orders.objects.get(id=int(reference.split('SELLARTS')[-1]))
                     order.status = 'PENDING'
@@ -38,7 +40,7 @@ def instant_payment_notification(request):
                     order_items = anka_models.OrderItem.objects.filter(order=order.id).values('id', 'quantity', 'art_work')
                     for order_item in order_items:
                         artwork = anka_models.ArtWorks.objects.get(id=order_item['art_work'])
-                        artwork.quantity -= order_item['quantity']
+                        artwork.stock -= order_item['quantity']
                         artwork.save()
                         
                         # Create a new order item in the platform's system
