@@ -147,7 +147,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                     "shippable": True,
                     "reusable": False,
                     "callback_url": "https://dev.sellarts.net/",
-                    "order_reference": random_string(5),
+                    "order_reference": random_string(5)+"SELLARTS"+str(order.id),
                     "buyer": {
                         "contact": {
                             "fullname": kwargs["name"],
