@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { CREATE_METHOD } from "@/actions/mutation/admin/methodsType/createMutation";
 
-export default function CreateForm() {
+export default function CreateForm({onCreateSuccess}: {onCreateSuccess: () => void}) {
   const router = useRouter();
 
   const form = useFormik({
@@ -40,7 +40,7 @@ export default function CreateForm() {
         if (res.success) {
           formikHelpers.resetForm();
           toast.success("Created...");
-          router.refresh();
+          onCreateSuccess();
         } else {
           toast.error(res.message);
         }

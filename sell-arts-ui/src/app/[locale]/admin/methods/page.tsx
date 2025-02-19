@@ -47,7 +47,7 @@ export default function MethodeTypeManagement() {
 
   return (
     <div className="space-y-6">
-      <CreateForm />
+      <CreateForm onCreateSuccess={fetchMethods} />
       <Card>
         <CardHeader>
           <CardTitle>Methods Types Management</CardTitle>
@@ -88,7 +88,7 @@ export default function MethodeTypeManagement() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <DeleteButton methodId={method.node.id} />
+                          <DeleteButton methodId={method.node.id} onDeleteSuccess={fetchMethods} />
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

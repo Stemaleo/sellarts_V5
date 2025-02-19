@@ -4,7 +4,7 @@ import { AlertDialogAction } from "@/components/ui/alert-dialog";
 import { DELETE_METHOD } from "@/actions/mutation/admin/methodsType/deleteMutation";
 
 
-const DeleteButton = ({ methodId }: { methodId: number }) => {
+const DeleteButton = ({ methodId, onDeleteSuccess }: { methodId: number; onDeleteSuccess: () => void }) => {
   const router = useRouter();
 
   const handleDelete = async () => {
@@ -26,8 +26,9 @@ const DeleteButton = ({ methodId }: { methodId: number }) => {
 
       // Vérifiez si la suppression a été effectuée avec succès
       const success = data?.data?.featureUpdateMethodDeletions?.success;
+      
       if (success) {
-        router.refresh();
+        onDeleteSuccess();
       }
     } catch (error) {
       console.error("Erreur lors de l'appel à la mutation:", error);

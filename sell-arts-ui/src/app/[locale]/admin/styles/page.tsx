@@ -86,7 +86,7 @@ export default function StyleTypeManagement() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <EditButton methodId={style.node.id} methodName={style.node.name} onUpdate={fetchStyle} />
+                      <EditButton styleId={style.node.id} styleName={style.node.name} onUpdate={fetchStyle} />
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
@@ -103,7 +103,7 @@ export default function StyleTypeManagement() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <DeleteButton methodId={style.node.id} />
+                            {/* <DeleteButton styleId={style.node.id} /> */}
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

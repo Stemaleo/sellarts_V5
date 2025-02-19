@@ -6,16 +6,16 @@ import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader,
 import { Input } from "@/components/ui/input";
 import { Paintbrush } from "lucide-react";
 import axios from "axios";
-import { EDIT_METHOD } from "@/actions/mutation/admin/methodsType/editMutation";
+import { EDIT_STYLE } from "@/actions/mutation/admin/stylesType/editMutation";
 
 interface EditButtonProps {
-    methodId: number;
-    methodName: string;
+    styleId: number;
+    styleName: string;
     onUpdate: () => void;
   }
   
-  export default function EditButton({ methodId, methodName, onUpdate }: EditButtonProps) {
-    const [name, setName] = useState<string>(methodName);
+  export default function EditButton({ styleId, styleName, onUpdate }: EditButtonProps) {
+    const [name, setName] = useState<string>(styleName);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -24,8 +24,8 @@ interface EditButtonProps {
     setError(null);
     try {
       await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-        query: EDIT_METHOD,
-        variables: { id: methodId, name },
+        query: EDIT_STYLE,
+        variables: { id:styleId , name: styleName },
       });
       onUpdate();
     } catch (err) {
