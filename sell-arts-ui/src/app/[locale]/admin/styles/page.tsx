@@ -11,36 +11,43 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import DeleteButton from "./deleteButton";
 import { GET_ALL_METHODS } from "@/actions/queries/admin/methods/getAllMethod";
+import EditButton from "./editButton";
+import { GET_ALL_STYLES } from "@/actions/queries/admin/style/getAllStyle";
 
-export default function MethodeTypeManagement() {
-  const [methods, setMethods] = useState([]);
+
+// ✅ Ajout du type pour éviter l'erreur "never"
+type MethodType = {
+  node: {
+    id: number;
+    name: string;
+  };
+};
+
+export default function StyleTypeManagement() {
+  const [styles, setStyle] = useState<MethodType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Déplacer fetchStyle en dehors du useEffect
+  const fetchStyle = async () => {
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: GET_ALL_STYLES,
+      });
+      setStyle(response.data.data.styles.edges);
+      console.log(response.data.data.styles.edges);
+    } catch (err) {
+      setError("Error loading methods");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMethods = async () => {
-      try {
-        const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-          query: GET_ALL_METHODS,
-        });
-        setMethods(response.data.data.methods.edges);
-        console.log(methods);
-
-
-      } catch (err) {
-        setError("Error loading methods");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMethods();
+    fetchStyle();
   }, []);
 
-  console.log(methods);
-
-
   if (loading) return <p>Loading...</p>;
-  // if (error) return <p>{error}</p>;
 
   return (
     <div className="space-y-6">
@@ -59,9 +66,8 @@ export default function MethodeTypeManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {methods.map((method, index) => {
-                // Assurez-vous que `method.node` existe
-                if (!method.node) {
+              {styles.map((style, index) => {
+                if (!style.node) {
                   return (
                     <TableRow key={index}>
                       <TableCell colSpan={2} className="text-center">
@@ -72,14 +78,15 @@ export default function MethodeTypeManagement() {
                 }
 
                 return (
-                  <TableRow key={method.node.id}> {/* Utilisez method.node.id */}
+                  <TableRow key={style.node.id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center">
                         <Paintbrush className="mr-2 h-4 w-4" />
-                        {method.node.name} {/* Utilisez method.node.name */}
+                        {style.node.name}
                       </div>
                     </TableCell>
                     <TableCell>
+                      <EditButton methodId={style.node.id} methodName={style.node.name} onUpdate={fetchStyle} />
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
@@ -91,12 +98,12 @@ export default function MethodeTypeManagement() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the method type "{method.node.name}".
+                              This action cannot be undone. This will permanently delete the method type "{style.node.name}".
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <DeleteButton methodId={method.node.id} /> {/* Utilisez method.node.id */}
+                            <DeleteButton methodId={style.node.id} />
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
@@ -105,10 +112,10 @@ export default function MethodeTypeManagement() {
                 );
               })}
             </TableBody>
-
           </Table>
         </CardContent>
       </Card>
     </div>
   );
 }
+
