@@ -29,8 +29,8 @@ def instant_payment_notification(request):
             
             if data['type'] == 'payment_links_orders':
                 if data['attributes']['status'] == 'captured':
-                    logger.warning("Ref: %s", reference.split('SELLARTS'))
-                    logger.warning("Ref: %s", reference.split('SELLARTS'))
+                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
+                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
                     reference: str =  data['attributes']['internal_reference']            
                     order = anka_models.Orders.objects.get(id=int(reference.split('SELLARTS')[-1]))
                     order.status = 'PENDING'
