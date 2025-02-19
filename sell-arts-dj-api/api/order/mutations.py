@@ -3,7 +3,7 @@ import graphene
 from anka import models as anka_models
 from anka.fees import get_value
 from . import types as types
-from . import fees as fees
+
 
 
 
@@ -20,7 +20,7 @@ class FeatureGenerateShippingFees(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, **kwargs):
         try: 
-            items = []
+            
             order = anka_models.Orders.objects.get(id=kwargs['order'])
             order_items = anka_models.OrderItem.objects.filter(order=order.id).values('id', 'quantity', 'art_work')
             total_size = 0
