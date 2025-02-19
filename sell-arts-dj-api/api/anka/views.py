@@ -12,7 +12,7 @@ def instant_payment_notification(request):
     logger.warning(request)
     logger.warning(request.__dict__)
     
-    data = request.__dict__['data']
+    # data = request.__dict__['data']
     
     
     
