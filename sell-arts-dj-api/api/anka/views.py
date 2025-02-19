@@ -12,7 +12,8 @@ def instant_payment_notification(request):
     logger.warning(request)
     logger.warning(request.__dict__)
     
-    data = request.__dict__['data']
+    # request.post
+    # data = request.__dict__['data']
     
     
     
@@ -21,6 +22,8 @@ def instant_payment_notification(request):
         
 
     if request.method != "POST":
+        data = json.loads(request.body)
+        logger.warning(data)
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 
     try:

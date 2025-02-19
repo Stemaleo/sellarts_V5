@@ -30,10 +30,10 @@ public interface ArtWorkRepo extends JpaRepository<ArtWork, String> {
     @Query("SELECT a FROM art_works a WHERE a.owner = :owner AND a.isFeatured = :featured")
     List<ArtWork> findAllByOwnerAndFeatured(User owner, boolean featured);
 
-    @Query("SELECT art FROM art_works as art WHERE art.owner = :owner AND art.title LIKE %:title% AND CONCAT('',art.paintingType.id) LIKE LOWER(CONCAT('%', :paintingType, '%'))")
+    @Query("SELECT art FROM art_works as art WHERE art.owner = :owner AND art.is_deleted = false AND art.title LIKE %:title% AND CONCAT('',art.paintingType.id) LIKE LOWER(CONCAT('%', :paintingType, '%'))")
     Page<ArtWork> findAllByOwner(User owner,String title,String paintingType,  Pageable pageable);
 
-    @Query("SELECT art FROM art_works as art WHERE art.title LIKE %:title% AND CONCAT('',art.paintingType.id) LIKE LOWER(CONCAT('%', :paintingType, '%'))")
+    @Query("SELECT art FROM art_works as art WHERE art.title LIKE %:title% AND CONCAT('',art.paintingType.id) LIKE LOWER(CONCAT('%', :paintingType, '%')) AND art.is_deleted = false")
     Page<ArtWork> findAll(String title, String paintingType , Pageable pageable);
 
 
@@ -49,7 +49,7 @@ public interface ArtWorkRepo extends JpaRepository<ArtWork, String> {
     int updateStatusForUsers(@Param("oldType") PaintingType oldType, @Param("newType") PaintingType newType);
 
 
-    @Query("SELECT e FROM art_works e ORDER BY random() LIMIT 5")
+    @Query("SELECT e FROM art_works e WHERE art.is_deleted = false ORDER BY random() LIMIT 5")
     List<ArtWork> findRandomRecords();
 
     Long countByOwner(User owner);
