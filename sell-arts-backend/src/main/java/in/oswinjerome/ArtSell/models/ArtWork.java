@@ -38,8 +38,8 @@ public class ArtWork {
 
     private double price;
 
-    @Column(nullable = true)
-    private Boolean is_deleted;
+    // @Column(nullable = true)
+    private Boolean is_deleted = false;
     
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -97,7 +97,10 @@ def find_closest_higher_value(lst, target):
 
 def get_tarif(tarif_dict: dict, country: str, poids: int):
     """Retourne le tarif pour un pays et un poids donnés."""
+    print(poids, "poids")
     poids_lists = tarif_dict.get('FR').keys()
+    
+
     poids = find_closest_higher_value(poids_lists, poids)
     return tarif_dict.get(country, {}).get(poids, 0)
 
@@ -105,6 +108,7 @@ def get_tarif(tarif_dict: dict, country: str, poids: int):
 
 # Exécution
 def get_value(country, poids):
+    print(poids, "mypoids")
     text = extract_text_from_pdf(pdf_path)
     zones_texts = extract_zone(pdf_path)
     zones, tarifs = parse_zones_and_tarifs(text, zones_texts)
