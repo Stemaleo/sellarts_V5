@@ -5,13 +5,14 @@ from . import meta as meta, models as models
 import random
 import string
 import logging
+from . import fees as fees
+
+
+
 
 
 def random_string(length=8):
     return "".join(random.choices(string.ascii_letters + string.digits, k=length))
-
-
-
 
 
 
@@ -91,6 +92,8 @@ shipment_data = {
   }
 
 
+
+
 # ZA001277454S, 
 
 class FeatureInitiatePayment(graphene.Mutation):
@@ -125,7 +128,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         # models.Orders.objects.get(id=1)
         # Données à envoyer
         order = models.Orders.objects.get(id=kwargs['order'])
-        
+        internal_reference = random_string(5)+"SELLARTS"+str(order.id)
         webhooks = {
             "data": {
                 "type": "payment_webhooks",
@@ -147,7 +150,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                     "shippable": True,
                     "reusable": False,
                     "callback_url": "https://dev.sellarts.net/",
-                    "order_reference": random_string(5),
+                    "order_reference": internal_reference,
                     "buyer": {
                         "contact": {
                             "fullname": kwargs["name"],
@@ -252,5 +255,3 @@ class FeatureInitiatePayment(graphene.Mutation):
 
 
 
-# class FeatureGenerateShippingFees(graphene.Mutation):
-#   pass
