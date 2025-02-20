@@ -85,20 +85,6 @@ export interface ArtWork {
   artistId?: string | null;
 }
 
-export interface ArtWorkSend {
-  title: string;
-  description: string;
-  paintingTypeId: string;
-  materialTypeId: string;
-  // methodId: string;
-  // styleId: string;
-  width: string;
-  height: string;
-  price: number;
-  size: number;
-  artistId?: string | null;
-}
-
 export interface ArtWorkWithRelatedToArtWorkDTO {
   id: string;
   title: string;
@@ -128,8 +114,8 @@ export interface ArtWorkDTO {
   description: string;
   paintingType: PaintingType;
   materialType: MaterialType;
-  metodeType: MethodType;
-  styleType: StyleType;
+  // metodeType: MethodType;
+  // styleType: StyleType;
   width: number;
   height: number;
   size: number;

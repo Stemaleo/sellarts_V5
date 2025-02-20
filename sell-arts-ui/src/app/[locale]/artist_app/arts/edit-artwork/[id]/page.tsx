@@ -34,6 +34,7 @@ export default function EditArtwork() {
 
   const mapArtWorkToFormValues = (artwork: ArtWorkDTO) => {
     return {
+      id: artwork.id,
       title: artwork.title,
       description: artwork.description,
       paintingTypeId: artwork.paintingType.id.toString(),
@@ -106,6 +107,7 @@ export default function EditArtwork() {
 
   const form = useFormik({
     initialValues: {
+      id: "",
       title: "",
       description: "",
       paintingTypeId: "",

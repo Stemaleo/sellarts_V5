@@ -14,7 +14,7 @@ import * as yup from "yup";
 import { toast } from "sonner";
 import { createArtWork } from "@/actions/artwork";
 import { useActions } from "@/lib/hooks";
-import { ArtWork, MaterialType, PaintingType, StyleType, MethodType, ArtWorkSend } from "@/lib/type";
+import { ArtWork, MaterialType, PaintingType, StyleType, MethodType } from "@/lib/type";
 import { getAllPaintingTypes } from "@/actions/paintingType";
 import { getAllMaterialTypes } from "@/actions/materialType";
 import { useSearchParams } from "next/navigation";
