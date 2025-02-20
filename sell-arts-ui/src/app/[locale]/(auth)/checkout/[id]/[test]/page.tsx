@@ -12,17 +12,17 @@ import Link from "next/link";
 import { use, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import AddressForm from "./AddressForm";
+import AddressForm from "../AddressForm";
 
-export default async function Component({
-  params,
-}: {
-  params: Promise<{
-    id: string;
-  }>;
-}) {
-  const { id } = await params;
+export default async function Component({ params }: { params: { id: string; orderType: string } }) {
+  const { id, orderType } = params;
+  console.log("Order ID:", id);
+  console.log("Order Type:", orderType);
   const res = await getAOrder(id);
+  // const initialValue = 12685
+  // const feeStorage = window.localStorage.getItem(id);
+  // const fees = feeStorage ? JSON.parse(feeStorage) : initialValue;
+
 
   if (!res.success) {
     return <div>Unable to load data.</div>;
@@ -57,6 +57,10 @@ export default async function Component({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>{order.totalAmount} FCFA</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Shipping fees</span>
+                <span>1000 FCFA</span>
               </div>
               <div className="flex justify-between font-medium">
                 <span>Total</span>

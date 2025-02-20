@@ -37,7 +37,7 @@ export const deleteCartItem = async (artId: string) => {
   return data;
 };
 
-export const checkOutCart = async () => {
+export const  checkOutCart = async () => {
   const res: Response = await fetchHelper(process.env.API_URL + "/checkout", {
     method: "POST",
   });

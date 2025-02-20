@@ -16,12 +16,34 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { getAllCartThunk } from "@/redux/features/cartFeature";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import axios from "axios";
+import { FEATEUR_GENERATE_FEES } from "@/actions/mutation/artist/shipping/mutationShipping";
 
 export function CartPopupComponent() {
   const { execute, loading, data } = useActions<Order>();
   const { items: cartItems, addingStatus } = useSelector((state: RootState) => state.cart);
   const dispatch = useDispatch<AppDispatch>();
+  const [fee, setFee] = useState("");
   const { status } = useSession();
+
+
+  
+  const handleShipping = async (orderId: string) => {
+    console.log('1');
+    try {
+      console.log('2');
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: FEATEUR_GENERATE_FEES,
+        variables: { order: orderId, },
+      });
+      console.log('3');
+      const res = response.data.data.featureGenerateFees; 
+      setFee(response.data.data.featureGenerateFees.order.shippingFees);
+      console.log('4');
+    } catch (err) {
+      setError("Failed to update method");
+    }
+  };
   useEffect(() => {
     if (status === "authenticated") {
       dispatch(getAllCartThunk("s"));
@@ -61,17 +83,6 @@ export function CartPopupComponent() {
                       <p className="mt-1 text-sm text-muted-foreground">FCFA {item.price?.toFixed(2)} each</p>
                     </div>
                     <div className="flex flex-1 items-end justify-between text-sm">
-                      {/* <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8">
-                          <Minus className="h-4 w-4" />
-                          <span className="sr-only">Decrease quantity</span>
-                        </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <Button variant="outline" size="icon" className="h-8 w-8">
-                          <Plus className="h-4 w-4" />
-                          <span className="sr-only">Increase quantity</span>
-                        </Button>
-                      </div> */}
                       <Button
                         variant="ghost"
                         size="sm"
@@ -106,10 +117,14 @@ export function CartPopupComponent() {
                 execute(checkOutCart).then((res) => {
                   dispatch(getAllCartThunk(""));
                   if (res?.success) {
-                    console.log(res.data.id);
+                    // console.log(res.data.id);
+                    handleShipping(res.data.id);
+                    console.log('#######################');
+                    console.log(fee);
                     
                     toast.info("Wait till you are redirected to payments page.");
-                    router.push("/checkout/" + res.data.id);
+                    router.push(`/checkout/${res.data.id}/${fee}`);
+
                   }
                 });
               }}
@@ -118,29 +133,6 @@ export function CartPopupComponent() {
             >
               Checkout
             </Button>
-
-            {/* <Button
-              className="w-full"
-              onClick={() => {
-                toast.info("Wait till you are redirected to payments page.");
-                console.log();
-                
-                // Vous récupérez ici l'ID de l'article depuis la réponse (supposée)
-                setTimeout(() => {
-                  // Simulez une réponse avec un id pour l'article
-                  const res = { data: { id: "17716194" } }; // Remplacez ceci par la réponse réelle
-
-                  // Vérifiez si l'ID est présent dans la réponse avant la redirection
-                  if (res?.data?.id) {
-                    router.push("/checkout/" + res.data.id); // Redirection avec l'ID récupéré
-                  }
-                }, 4000); // Délai de 4 secondes avant la redirection
-              }}
-              loading={loading}
-              disabled={cartItems?.length === 0}
-            >
-              Checkout
-            </Button> */}
 
           </div>
           <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
@@ -157,3 +149,7 @@ export function CartPopupComponent() {
     </Sheet>
   );
 }
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+
