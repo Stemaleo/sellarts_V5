@@ -17,7 +17,7 @@ class ArtWorks(models.Model):
     material_type = models.ForeignKey('MaterialType', models.DO_NOTHING, null=True)
     method = models.ForeignKey('artwork.Methods', models.DO_NOTHING, db_column="method", related_name='artwork_method', blank=True, null=True)
     style = models.ForeignKey('artwork.Styles', models.DO_NOTHING, db_column="style", related_name='artwork_style', blank=True, null=True)
-    size = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
+    size = models.IntegerField(blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, related_name='artworks_owner_set', blank=True, null=True)  
     is_deleted = models.BooleanField(null=True, default=False)
     is_active = models.BooleanField(null=True, default=True)
