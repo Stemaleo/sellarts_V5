@@ -12,10 +12,9 @@ import { Label } from "@/components/ui/label";
 import ErrorMessage from "@/components/ErrorMessage";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { CREATE_METHOD } from "@/actions/mutation/admin/methodsType/createMutation";
 import { CREATE_STYLE } from "@/actions/mutation/admin/stylesType/createMutation";
 
-export default function CreateForm() {
+export default function CreateForm({onCreateSuccess}: {onCreateSuccess: () => void}) {
   const router = useRouter();
 
   const form = useFormik({
@@ -36,12 +35,12 @@ export default function CreateForm() {
           },
         });
 
-        const res = response.data.data.featureCreateMethod;
+        const res = response.data.data.featureCreateStyle;
         
         if (res.success) {
           formikHelpers.resetForm();
           toast.success("Created...");
-          router.refresh();
+          onCreateSuccess();
         } else {
           toast.error(res.message);
         }
@@ -56,13 +55,13 @@ export default function CreateForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Style Types Management</CardTitle>
-        <CardDescription>Add, remove, and manage Style Types for your art selling platform.</CardDescription>
+        <CardTitle>Methods Types Management</CardTitle>
+        <CardDescription>Add, remove, and manage Methods Types for your art selling platform.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit} className="space-y-4">
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="name">New Style Types</Label>
+            <Label htmlFor="name">New Methods Types</Label>
             <div className="flex space-x-2">
               <div className="w-full">
                 <Input

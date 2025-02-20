@@ -14,7 +14,7 @@ import * as yup from "yup";
 import { toast } from "sonner";
 import { createArtWork } from "@/actions/artwork";
 import { useActions } from "@/lib/hooks";
-import { ArtWork, MaterialType, PaintingType } from "@/lib/type";
+import { ArtWork, MaterialType, PaintingType, StyleType, MethodType, ArtWorkSend } from "@/lib/type";
 import { getAllPaintingTypes } from "@/actions/paintingType";
 import { getAllMaterialTypes } from "@/actions/materialType";
 import { useSearchParams } from "next/navigation";
@@ -22,6 +22,10 @@ import Link from "next/link";
 import { calculateTotalFileSize, hasRole } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { GET_ALL_METHODS } from "@/actions/queries/admin/methods/getAllMethod";
+import axios from "axios";
+import { GET_ALL_STYLES } from "@/actions/queries/admin/style/getAllStyle";
+import { UPDATE_METHOD_STYLE } from "@/actions/mutation/artwork/mutationsArtwork";
 export default function CreateArtwork() {
   const t = useTranslations();
   const [images, setImages] = useState<File[]>([]);
@@ -30,12 +34,78 @@ export default function CreateArtwork() {
   const { data: session } = useSession();
   const { data: paintingTypes, execute: fetchPaintingTypes, loading: paintingTypeLoading } = useActions<PaintingType[]>();
   const { data: materialTypes, execute: fetchMaterialTypes, loading: materialTypesLoading } = useActions<MaterialType[]>();
+  const [styles, setStyles] = useState<StyleType[]>([]);
+  const [methods, setMethods] = useState<MethodType[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
+   // Récupération des styles
+   const fetchStyles = async () => {
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: GET_ALL_STYLES,
+      });
+
+      if (response.data?.data?.styles?.edges) {
+        const stylesList = response.data.data.styles.edges.map((edge: any) => edge.node);
+        setStyles(stylesList);
+      }
+    } catch (err) {
+      setError("Erreur lors du chargement des styles.");
+    }
+  };
+
+  const handleMethodStyle = async ({idArtwork, styleId, methodId}: {idArtwork: string, styleId: string, methodId: string}) => {
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: UPDATE_METHOD_STYLE,
+        variables: {
+          artwork: idArtwork,
+          method: methodId, 
+          style: styleId,
+        },
+      });
+
+      const { data } = response;
+      
+      if (data.errors) {
+        console.error("Erreur de suppression:", data.errors);
+        return;
+      }
+
+      // Vérifiez si la suppression a été effectuée avec succès
+      const success = data?.data?.featureUpdateArtworkMethodAndStyle?.success;
+      
+      // if (success) {
+      //   onDeleteSuccess();
+      // }
+    } catch (error) {
+      console.error("Erreur lors de l'appel à la mutation:", error);
+    }
+  };
+
+
+  // Récupération des méthodes
+  const fetchMethods = async () => {
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: GET_ALL_METHODS,
+      });
+
+      if (response.data?.data?.methods?.edges) {
+        const methodsList = response.data.data.methods.edges.map((edge: any) => edge.node);
+        setMethods(methodsList);
+      }
+    } catch (err) {
+      setError("Erreur lors du chargement des méthodes.");
+    }
+  };
   useEffect(() => {
     fetchPaintingTypes(getAllPaintingTypes);
     fetchMaterialTypes(getAllMaterialTypes);
+    fetchMethods();
+    fetchStyles();
   }, []);
-
+ 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -46,7 +116,7 @@ export default function CreateArtwork() {
       // }
       setImages((prev) => [...prev, ...newImages]);
     }
-  };
+  };     
 
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
@@ -54,10 +124,13 @@ export default function CreateArtwork() {
 
   const form = useFormik({
     initialValues: {
+      id: "",
       title: "",
       description: "",
       paintingTypeId: "",
       materialTypeId: "",
+      methodId: "",
+      styleId: "",
       width: "",
       height: "",
       price: 0,
@@ -65,10 +138,13 @@ export default function CreateArtwork() {
       artistId: params.get("artistId"),
     },
     validationSchema: yup.object({
+      id: yup.string(),
       title: yup.string().required().max(50),
       description: yup.string().required().min(50),
       paintingTypeId: yup.string().required("Type of painting is required"),
       materialTypeId: yup.string().required("Type of material is required"),
+      methodId: yup.string().required("Type of method is required"),
+      styleId: yup.string().required("Type of style is required"),
       width: yup.number().required(),
       height: yup.number().required(),
       price: yup.number().required(),
@@ -76,6 +152,16 @@ export default function CreateArtwork() {
       artistId: yup.string().nullable(),
     }),
     async onSubmit(values, formikHelpers) {
+      const {id,  methodId, styleId, ...restValues } = values;
+      const filteredValues = restValues as ArtWork;
+      //filteredValues<ArtwokSend>
+      // console.log("zhdz");
+      // console.log(values);
+      // console.log("#################filteredValues#################");
+      // console.log(filteredValues);
+      // console.log("#################filteredValues#################");
+      // console.log(methodId, styleId);
+      
 
       if (images.length == 0) {
         toast.error("Images is required to create a art work.");
@@ -90,8 +176,15 @@ export default function CreateArtwork() {
           toast.error("File size exceeds 10MB limit.");
           return;
         }
-        const res = await execute(createArtWork, values, images);
+        const res = await execute(createArtWork, filteredValues, images);
         if (res?.success) {
+          handleMethodStyle({
+            idArtwork: res.data.id,
+            styleId: styleId,
+            methodId: methodId,
+
+          })
+    
           toast.success("Created...");
           formikHelpers.resetForm();
           setImages([]);
@@ -188,6 +281,56 @@ export default function CreateArtwork() {
               <ErrorMessage error={form.errors.materialTypeId} touched={form.touched.materialTypeId} />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="type">{t("type-of-method")}</Label>
+              <Select
+                name="methodId"
+                onValueChange={(val) => {
+                  form.setFieldValue("methodId", val);
+                }}
+                value={form.values.methodId}
+              >
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {methods?.map((pt) => {
+                    return (
+                      <SelectItem value={pt.id.toString()} key={pt.id}>
+                        {pt.name}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <ErrorMessage error={form.errors.methodId} touched={form.touched.methodId} />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="type">{t("type-of-style")}</Label>
+              <Select
+                name="styleId"
+                onValueChange={(val) => {
+                  form.setFieldValue("styleId", val);
+                }}
+                value={form.values.styleId}
+              >
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {styles?.map((pt) => {
+                    return (
+                      <SelectItem value={pt.id.toString()} key={pt.id}>
+                        {pt.name}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <ErrorMessage error={form.errors.styleId} touched={form.touched.styleId} />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="width">{t("width-cm")}</Label>
@@ -254,3 +397,11 @@ export default function CreateArtwork() {
     </div>
   );
 }
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+
+function setStyles(edges: any) {
+  throw new Error("Function not implemented.");
+}
+

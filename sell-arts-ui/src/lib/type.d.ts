@@ -71,10 +71,13 @@ export interface LoginResponse {
 }
 
 export interface ArtWork {
+  id: string;
   title: string;
   description: string;
   paintingTypeId: string;
   materialTypeId: string;
+  // methodId: string;
+  // styleId: string;
   width: string;
   height: string;
   price: number;
@@ -82,6 +85,19 @@ export interface ArtWork {
   artistId?: string | null;
 }
 
+export interface ArtWorkSend {
+  title: string;
+  description: string;
+  paintingTypeId: string;
+  materialTypeId: string;
+  // methodId: string;
+  // styleId: string;
+  width: string;
+  height: string;
+  price: number;
+  size: number;
+  artistId?: string | null;
+}
 
 export interface ArtWorkWithRelatedToArtWorkDTO {
   id: string;
@@ -112,6 +128,8 @@ export interface ArtWorkDTO {
   description: string;
   paintingType: PaintingType;
   materialType: MaterialType;
+  metodeType: MethodType;
+  styleType: StyleType;
   width: number;
   height: number;
   size: number;
@@ -134,6 +152,16 @@ export interface ArtWorkWithRelated {
 }
 
 export interface PaintingType {
+  id: number;
+  name: string;
+}
+
+export interface MethodType {
+  id: number;
+  name: string;
+}
+
+export interface StyleType {
   id: number;
   name: string;
 }
@@ -370,3 +398,5 @@ export interface TopSelling {
   artwork: ArtWorkDTO;
   count: number;
 }
+
+

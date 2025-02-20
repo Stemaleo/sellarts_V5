@@ -102,11 +102,11 @@ export default async function ArtworkDetail({ params }: any) {
           <p className="mb-6">{art.description}</p>
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <p className="font-semibold">{t("common.type")}</p>
+              <p className="font-semibold">{t("common.methode")}</p>
               <p>{art.paintingType.name}</p>
             </div>
             <div>
-              <p className="font-semibold">{t("common.category")}</p>
+              <p className="font-semibold">{t("common.style")}</p>
               <p>{art.materialType.name}</p>
             </div>
             <div>
