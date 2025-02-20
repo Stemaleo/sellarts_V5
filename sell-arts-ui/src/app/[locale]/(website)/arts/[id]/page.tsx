@@ -1,10 +1,10 @@
-// "use client"
+
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShoppingCart, Heart } from "lucide-react";
-import { getArtWorkById } from "@/actions/artwork";
+import { fetchMethodAndStyle, getArtWorkById } from "@/actions/artwork";
 import { PaintingType, paintingTypeToText } from "@/lib/constants";
 import AddToCartBtn from "./AddToCartBtn";
 import SelectImage from "@/components/SelectImage";
@@ -14,6 +14,10 @@ import ArtCard from "@/components/ArtCard";
 import MakeProposalBtn from "./MakeProposalBtn";
 import moment from "moment";
 import { getTranslations } from "next-intl/server";
+import { GET_ARTWORK_BY_ID } from "@/actions/queries/artwork/querieArtwork";
+import axios from "axios";
+import { useState } from "react";
+import { MethodType, StyleType } from "@/lib/type";
 
 interface Artwork {
   id: number;
@@ -71,6 +75,10 @@ export default async function ArtworkDetail({ params }: any) {
   const pars = await params;
   const res = await getArtWorkById(pars.id);
   const t = await getTranslations();
+  const respo = await fetchMethodAndStyle(pars.id)
+  
+
+
 
   if (!res.success) {
     return <div>Unable to load</div>;
@@ -102,12 +110,12 @@ export default async function ArtworkDetail({ params }: any) {
           <p className="mb-6">{art.description}</p>
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <p className="font-semibold">{t("common.type")}</p>
-              <p>{art.paintingType.name}</p>
+              <p className="font-semibold">{t("common.style")}</p>
+              <p>{respo.data.artworks.edges[0].node.style.name}</p>
             </div>
             <div>
-              <p className="font-semibold">{t("common.category")}</p>
-              <p>{art.materialType.name}</p>
+              <p className="font-semibold">{t("common.method")}</p>
+              <p>{respo.data.artworks.edges[0].node.method.name}</p>
             </div>
             <div>
               <p className="font-semibold">{t("common.material")}</p>
@@ -141,3 +149,7 @@ export default async function ArtworkDetail({ params }: any) {
     </div>
   );
 }
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+

@@ -3,6 +3,8 @@
 import { PageableResponse } from "@/lib/api";
 import { fetchHelper } from "@/lib/fetchHelper";
 import { ApiResponse, ArtWork, ArtWorkDTO, ArtWorkWithRelated } from "@/lib/type";
+import { GET_ARTWORK_BY_ID } from "./queries/artwork/querieArtwork";
+import axios from "axios";
 
 export const createArtWork = async (artWork: ArtWork, images: File[]) => {
   const formData = new FormData();
@@ -104,6 +106,26 @@ export const getArtWorkById = async (artworkId: string) => {
 
   return data;
 };
+
+export const fetchMethodAndStyle = async (artWorkID: string) => {
+  try {
+    const res = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+      query: GET_ARTWORK_BY_ID,
+      variables: {
+        id: artWorkID,
+      },
+    });
+
+    console.log("myresponse", res.data); // ✅ Affiche seulement les données JSON
+    return res.data; // ✅ Retourne uniquement les données utiles
+  } catch (err) {
+    console.error("Error fetching method and style:", err);
+    return null; // ✅ Retourne `null` en cas d'erreur au lieu d'un objet erreur
+  }
+};
+
+
+
 
 export const updateFeaturedStatusOfArtWork = async (artworkId: string) => {
   const res = await fetchHelper(process.env.API_URL + `/artists/artworks/${artworkId}/featured`, {
