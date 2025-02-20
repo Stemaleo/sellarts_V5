@@ -27,8 +27,7 @@ public class ArtistProfile {
     @Column(nullable = true)
     private String portfolioUrl;
     
-    @Column(nullable = true)
-    private Boolean is_deleted;
+    private Boolean is_deleted = false;
 
     @Column(nullable = true)
     private String coverUrl;
