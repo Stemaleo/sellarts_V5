@@ -109,6 +109,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         state = graphene.String(required=True)
         postal_code = graphene.String(required=True)
         phone_number = graphene.String(required=True)
+        is_the_same_addres = graphene.Boolean(default_value=False)
         order = graphene.ID(required=True)
 
     class Meta:
@@ -128,6 +129,12 @@ class FeatureInitiatePayment(graphene.Mutation):
         # models.Orders.objects.get(id=1)
         # Données à envoyer
         order = models.Orders.objects.get(id=kwargs['order'])
+        order.city = kwargs['city']
+        order.phone = kwargs['phone_number']
+        order.state = kwargs['state']
+        order.address = kwargs['address']
+        # order.country_code = kwargs['phone_number']
+        
         internal_reference = random_string(5)+"SELLARTS"+str(order.id)
         webhooks = {
             "data": {

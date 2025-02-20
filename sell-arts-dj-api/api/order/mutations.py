@@ -27,16 +27,17 @@ class FeatureGenerateShippingFees(graphene.Mutation):
             for order_item in order_items:
                 artwork = anka_models.ArtWorks.objects.get(id=order_item['art_work'])
                 print(artwork.size)
-                total_size  += (artwork.size or 0) + 3
+                total_size  += artwork.size  + 3
                 print("ici")
-                
+                # order.country_code
+                print(total_size, "total_size")
+                order.size = float(total_size)             
+            # print(total_size, "total_size2")
         
-            order.shipping_fees = get_value(total_size, order.country_code) + (get_value(total_size, order.country_code) * 0.3)
-            print("erer")
-            order.amount = order.total_amount
-            order.total_amount = order.total_amount + (get_value(total_size, order.country_code) + (get_value(total_size, order.country_code) * 0.3))
-            order.size = total_size
-            print("erer")
+            order.shipping_fees = float(get_value('FR', total_size) + (get_value('FR', total_size) * 0.3))
+            
+            # order.amount = float(order.total_amount)
+            # #TODO add country code
             order.save()           
 
             return FeatureGenerateShippingFees(
