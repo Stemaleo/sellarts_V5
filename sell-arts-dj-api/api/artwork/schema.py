@@ -8,6 +8,7 @@ from query_optimizer.fields import DjangoConnectionField
 class Query(graphene.ObjectType):
     methods = DjangoConnectionField(types.MethodsType)
     styles = DjangoConnectionField(types.StylesType)
+    artworks = DjangoConnectionField(types.ArtworksType)
     
 
 class Mutation(graphene.ObjectType):
