@@ -212,7 +212,7 @@ class FeatureUpdateStylesDeletions(graphene.Mutation):
                 return FeatureUpdateStylesDeletions(
                     success=True, 
                     message=f"styles successfully {action}.", 
-                    Styles=list(styles_to_update)
+                    styles=list(styles_to_update)
                 )
         except Exception as error:
             error = traceback.format_exc()
