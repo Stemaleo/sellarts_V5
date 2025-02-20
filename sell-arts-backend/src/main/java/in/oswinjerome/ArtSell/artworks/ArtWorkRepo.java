@@ -50,7 +50,7 @@ public interface ArtWorkRepo extends JpaRepository<ArtWork, String> {
 
 
     @Query("SELECT e FROM art_works e WHERE art.is_deleted = false ORDER BY random() LIMIT 5")
-    List<ArtWork> findRandomRecords();
+    Page<ArtWork> findRandomRecords();
 
     Long countByOwner(User owner);
 
