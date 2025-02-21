@@ -48,6 +48,9 @@ public class Order {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+    
+    private Boolean is_deleted = false;
+
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
