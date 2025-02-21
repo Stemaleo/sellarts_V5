@@ -82,10 +82,13 @@ def parse_zones_and_tarifs(text, zones_text):
 def generate_tarif_structure(zones, tarifs):
     """Génère un dictionnaire permettant d'obtenir un tarif en fonction du pays et du poids."""
     tarif_dict = {}
+    my_countries = {}
     
     for zone, countries in zones.items():
         for country in countries:
-            tarif_dict[country.split('(')[-1].removesuffix(")")] = {int(poids): int(tarifs[poids][zone]) for poids in tarifs if zone in tarifs[poids]}
+            tarif_dict[country.split('(')[-1].removesuffix(")").strip()] = {int(poids): int(tarifs[poids][zone]) for poids in tarifs if zone in tarifs[poids]}
+            # my_countries[country] = country.split('(')[-1].removesuffix(")").strip()
+    # print(my_countries)
     return tarif_dict
 
 def find_closest_higher_value(lst, target):

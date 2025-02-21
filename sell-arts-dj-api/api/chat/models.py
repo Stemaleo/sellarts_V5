@@ -1,5 +1,5 @@
 from django.db import models
-from anka import models as anka_models
+
 
 
 class Messages(models.Model):

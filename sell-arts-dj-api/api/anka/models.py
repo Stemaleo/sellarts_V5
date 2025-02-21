@@ -301,6 +301,7 @@ class Orders(models.Model):
     total_amount = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
     amount = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    country = models.ForeignKey('order.Country', models.DO_NOTHING, db_column="country", related_name="orders_country", blank=True, null=True)
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     is_deleted = models.BooleanField(null=True, default=False)
     is_active = models.BooleanField(null=True, default=True)
