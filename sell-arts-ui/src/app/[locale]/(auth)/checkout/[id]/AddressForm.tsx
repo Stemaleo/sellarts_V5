@@ -55,7 +55,7 @@ const AddressForm = ({ order }: { order: Order }) => {
           query: INITIATE_PAYMENT_MUTATION,
           variables: values,
         });
-
+        console.log("Response :", response);
         if (response.data.data.featureInitiatePayment.success) {
           const paymentUrl = response.data.data.featureInitiatePayment.paymentLink;
           setPaymentLink(paymentUrl);
