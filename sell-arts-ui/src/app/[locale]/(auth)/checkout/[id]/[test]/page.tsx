@@ -14,10 +14,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import AddressForm from "../AddressForm";
 
-export default async function Component({ params }: { params: { id: string; test: string } }) {
-  console.log(params)
+export default async function Component({ params }: { params: Promise<{ id: string; test: string; }> }) {
+  const { id, test } = await params
 
-  const { id, test } =  params;
+  // const { id, test } =  ;
   console.log("Order ID:", id);
   console.log("Order Type:", test);
   const res = await getAOrder(id);
