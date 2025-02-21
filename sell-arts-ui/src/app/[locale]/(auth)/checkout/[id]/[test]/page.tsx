@@ -14,10 +14,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import AddressForm from "../AddressForm";
 
-export default async function Component({ params }: { params: { id: string; orderType: string } }) {
-  const { id, orderType } = params;
+export default async function Component({ params }: { params: { id: string; test: string } }) {
+  console.log(params)
+
+  const { id, test } =  params;
   console.log("Order ID:", id);
-  console.log("Order Type:", orderType);
+  console.log("Order Type:", test);
   const res = await getAOrder(id);
   // const initialValue = 12685
   // const feeStorage = window.localStorage.getItem(id);
@@ -60,11 +62,11 @@ export default async function Component({ params }: { params: { id: string; orde
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping fees</span>
-                <span>1000 FCFA</span>
+                <span>{test} FCFA</span>
               </div>
               <div className="flex justify-between font-medium">
                 <span>Total</span>
-                <span>{order.totalAmount} FCFA</span>
+                <span>{Number(order.totalAmount) + Number(test)} FCFA</span>
               </div>
             </div>
           </Card>

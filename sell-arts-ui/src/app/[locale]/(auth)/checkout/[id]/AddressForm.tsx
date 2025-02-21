@@ -33,17 +33,22 @@ const AddressForm = ({ order }: { order: Order }) => {
       address: order.address ?? "",
       city: order.city ?? "",
       state: order.state ?? "",
+      billing: order.billing ?? "",
       order: order.id ?? "",
       postalCode: order.postalCode ?? "",
     },
     validationSchema: yup.object({
       phone: yup.string().required(),
       address: yup.string().required(),
+      billing: yup.string(),
       city: yup.string().required(),
       state: yup.string().required(),
       postalCode: yup.string().required(),
     }),
     onSubmit: async (values) => {
+      console.log("##################");
+      console.log(values);
+      
       setLoadingPaymentLink(true);
       try {
         const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
@@ -119,7 +124,11 @@ const AddressForm = ({ order }: { order: Order }) => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox id="billing" defaultChecked />
+          <Checkbox
+              id="billing"
+              checked={form.values.billing}
+              onCheckedChange={(checked) => form.setFieldValue("billing", checked)}
+            />
             <Label htmlFor="billing">The billing address is the same as the shipping address</Label>
           </div>
           {order.status != "WAITING_PAYMENT" && <p className="text-red-500">Already paid</p>}
@@ -130,7 +139,7 @@ const AddressForm = ({ order }: { order: Order }) => {
             size="lg"
             onClick={() => router.push(paymentLink)}
           >
-            Pay {order.totalAmount}
+            Pay
           </Button>
 
           <Button
@@ -140,7 +149,7 @@ const AddressForm = ({ order }: { order: Order }) => {
             size="lg"
             type="submit"
           >
-            Générer un lien de paiement {order.totalAmount}
+            Générer un lien de paiement
           </Button>
         </div>
       </form>

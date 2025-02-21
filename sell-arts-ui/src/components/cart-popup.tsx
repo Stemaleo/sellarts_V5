@@ -23,7 +23,6 @@ export function CartPopupComponent() {
   const { execute, loading, data } = useActions<Order>();
   const { items: cartItems, addingStatus } = useSelector((state: RootState) => state.cart);
   const dispatch = useDispatch<AppDispatch>();
-  const [fee, setFee] = useState("");
   const { status } = useSession();
 
 
@@ -35,10 +34,12 @@ export function CartPopupComponent() {
       const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
         query: FEATEUR_GENERATE_FEES,
         variables: { order: orderId, },
+      }).then((response) => {
+        console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
+         
+        router.push(`/checkout/${orderId}/${response.data.data.featureGenerateFees.order.shippingFees}`);
       });
-      console.log('3');
-      const res = response.data.data.featureGenerateFees; 
-      setFee(response.data.data.featureGenerateFees.order.shippingFees);
+
       console.log('4');
     } catch (err) {
       setError("Failed to update method");
@@ -118,13 +119,9 @@ export function CartPopupComponent() {
                   dispatch(getAllCartThunk(""));
                   if (res?.success) {
                     // console.log(res.data.id);
-                    handleShipping(res.data.id);
-                    console.log('#######################');
-                    console.log(fee);
-                    
+                    handleShipping(res.data.id)
                     toast.info("Wait till you are redirected to payments page.");
-                    router.push(`/checkout/${res.data.id}/${fee}`);
-
+                    console.log('#######################');                    
                   }
                 });
               }}

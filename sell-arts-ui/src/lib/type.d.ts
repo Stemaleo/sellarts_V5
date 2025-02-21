@@ -197,7 +197,7 @@ export interface Order {
   createdAt: Date;
   updatedAt: Date;
   status: "WAITING_PAYMENT" | "PENDING" | "ACCEPTED" | "SHIPPED" | "DELIVERED" | "RETURNED" | "CANCELED";
-
+  billing: boolean;
   phone: string;
   address: string;
   city: string;
