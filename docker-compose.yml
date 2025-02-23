@@ -1,0 +1,64 @@
+
+services:
+  backend:
+    image: sell-arts-backend:latest
+    container_name: backend
+    build:
+      context: ./sell-arts-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sellarts
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=FoD,Q]m6Get>;H7a
+
+    restart: always
+    networks:
+      - dev_network
+
+
+
+  frontend:
+    image: sell-arts-frontend:latest
+    container_name: frontend
+    build:
+      context: ./sell-arts-ui
+      dockerfile: Dockerfile
+    ports:
+      - "9022:3000"
+    environment:
+      API_URL: http://backend:8080
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - dev_network
+
+
+
+  dj-api:
+    image: dj-api
+    container_name: dj-api
+    restart: always
+    build:
+      context: ./sell-arts-dj-api
+      dockerfile: Dockerfile
+    volumes:
+      - ./sell-arts-dj-api:/app
+      - static:/app/static
+    ports:
+      - 8000:8000
+    networks:
+      - dev_network
+
+      
+
+volumes:
+  static:
+    external: true 
+  migrations:
+
+networks:
+  dev_network:
+     external: true 

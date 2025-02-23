@@ -1,0 +1,47 @@
+name: Deploy to Remote Server via SSH
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"content\": \"SellArts: Code pushed | build started....\"}" \
+          $DISCORD_WEBHOOK_URL
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install SSH client
+        run: sudo apt-get update && sudo apt-get install -y openssh-client
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Run commands on remote server
+        run: |
+          ssh -o StrictHostKeyChecking=no oswin@home.oswinjerome.in << 'EOF'
+          cd /home/oswin/Docker/sellArts
+          git pull origin main
+          docker compose down
+          docker compose up --build -d
+            
+          EOF
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"content\": \"SellArts Deployed Successfully\"}" \
+          $DISCORD_WEBHOOK_URL
