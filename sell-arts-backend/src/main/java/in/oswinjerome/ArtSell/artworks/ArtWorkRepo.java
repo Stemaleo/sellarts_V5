@@ -63,13 +63,14 @@ public interface ArtWorkRepo extends JpaRepository<ArtWork, String> {
 
 
     @Query("SELECT new in.oswinjerome.ArtSell.analytics.TopSellingArtworkDTO(a,COUNT(oi)) FROM art_works a " +
-           "WHERE a.is_deleted = false " +
-           "JOIN OrderItem oi ON oi.artWork = a GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
+           "JOIN OrderItem oi ON oi.artWork = a " +
+           "WHERE a.is_deleted = false " + 
+           "GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
     List<TopSellingArtworkDTO> findTopSelling();
-
+    
     @Query("SELECT new in.oswinjerome.ArtSell.analytics.TopSellingArtworkDTO(a,COUNT(oi)) FROM art_works a " +
-            "WHERE a.is_deleted = false " +
-            "JOIN OrderItem oi ON oi.artWork = a WHERE a.owner = :user GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
+            "JOIN OrderItem oi ON oi.artWork = a " +
+            "WHERE a.is_deleted = false AND a.owner = :user GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
     List<TopSellingArtworkDTO> findTopSelling(User user);
 
 }
