@@ -14,7 +14,8 @@ export function NativeSharePopup({ url = "https://example.com", title = "Check o
       try {
         await navigator.share({
           title: title,
-          url: (useWindow ? window?.location.href + "/" : window.location.origin + "/") + url,
+          // url: (useWindow ? window?.location.href + "/" : window.location.origin + "/") + url,
+          url: (useWindow ? window.location.origin + "/arts/" : window.location.origin + "/") + url,
         });
         toast.success("Shared successfully", {
           description: "The link has been shared using your device's share menu.",
@@ -26,10 +27,10 @@ export function NativeSharePopup({ url = "https://example.com", title = "Check o
   };
 
   const copyLink = () => {
-    navigator.clipboard.writeText(window?.location.href + "/" + url).then(() => {
+    const shareUrl = (useWindow ? window.location.origin + "/arts/" : window.location.origin + "/") + url;
+    navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
       toast.success("Coppied to clipboard");
-
       setTimeout(() => setCopied(false), 2000);
     });
   };

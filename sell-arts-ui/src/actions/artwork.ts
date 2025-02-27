@@ -35,6 +35,16 @@ export const deleteArtWork = async (artworkId: string) => {
   return data;
 };
 
+export const dJdeleteArtWork = async (artworkId: string) => {
+  const res = await fetchHelper(process.env.API_URL + `/artists/artworks/${artworkId}`, {
+    method: "DELETE", // Méthode DELETE pour supprimer l'œuvre
+  });
+
+  const data: ApiResponse<any> = await res.json(); // On peut adapter le type de retour en fonction de ce que l'API retourne
+
+  return data;
+};
+
 
 export const updateArtWork = async (artworkId: string, artWork: ArtWork, images: File[]) => {
   const formData = new FormData();

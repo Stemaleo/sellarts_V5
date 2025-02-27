@@ -19,7 +19,7 @@ import "react-toastify/dist/ReactToastify.css"; // Importer les styles pour Toas
 
 import { updateFeaturedStatusOfArtWork, deleteArtWork } from "@/actions/artwork";
 
-const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
+const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = true }: { artwork: ArtWorkDTO; redirectUrl?: string; useWindow?: boolean }) => {
   const path = usePathname();
   const router = useRouter();
   const { execute } = useActions();
@@ -35,7 +35,7 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
     if (res?.success) {
       // Notification réussie (succès)
       toast.success("L'œuvre a été supprimée avec succès.");
-      router.push("/artist_app/arts"); // Redirection après la suppression
+      router.push(redirectUrl); // Redirection après la suppression
     } else {
       // Notification échouée
       toast.error("Échec de la suppression de l'œuvre.");
@@ -69,7 +69,7 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
             <span className="text-xs text-gray-500 bg-primary/20 py-1 px-2 rounded-full inline h-auto">
               By, {artwork.ownerName}
             </span>
-            <div className="">{<NativeSharePopup url={artwork.id} title={artwork.title} />}</div>
+            <div className="">{<NativeSharePopup url={artwork.id} title={artwork.title} useWindow={useWindow} />}</div>
           </div>
           <h2 className="text-lg font-semibold mb-0 mt-1 line-clamp-1">{artwork.title}</h2>
           <p className="text-gray-500 mb-1 text-sm line-clamp-1">{artwork.description}</p>

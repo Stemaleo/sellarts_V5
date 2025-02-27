@@ -12,6 +12,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import ArtCard from "@/components/ArtCard";
 import { getAllPaintingTypes } from "@/actions/paintingType";
+import ArtCardManage from "@/components/ArtCardManage";
 
 export default async function UserArtworkGallery({ searchParams }: any) {
   const search = await searchParams;
@@ -26,7 +27,8 @@ export default async function UserArtworkGallery({ searchParams }: any) {
       <ArtFilter paintingTypes={res2.data} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {res.data.content.map((artwork) => (
-          <ArtCard key={artwork.id} artwork={artwork}></ArtCard>
+          // <ArtCard key={artwork.id} artwork={artwork}></ArtCard>
+          <ArtCardManage key={artwork.id} artwork={artwork} redirectUrl ={"/admin/arts"} useWindow={true}></ArtCardManage>
         ))}
       </div>
 
@@ -35,10 +37,10 @@ export default async function UserArtworkGallery({ searchParams }: any) {
       {/* Pagination placeholder */}
       <div className="mt-8 flex justify-center">
         <Button variant="outline" disabled={res.data.page.number == 0} className="mx-2">
-          <Link href={"/artist_app/arts?page=" + (res.data.page.number - 1)}>Previous</Link>
+          <Link href={"/admin/arts?page=" + (res.data.page.number - 1)}>Previous</Link>
         </Button>
         <Button variant="outline" disabled={res.data.page.number >= res.data.page.totalPages - 1} className="mx-2">
-          <Link href={"/artist_app/arts?page=" + (res.data.page.number + 1)}>Next</Link>
+          <Link href={"/admin/arts?page=" + (res.data.page.number + 1)}>Next</Link>
         </Button>
       </div>
     </div>
