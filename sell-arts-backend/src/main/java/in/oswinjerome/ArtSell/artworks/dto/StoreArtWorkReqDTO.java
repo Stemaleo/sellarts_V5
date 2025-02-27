@@ -21,6 +21,7 @@ public class StoreArtWorkReqDTO {
 
     @NotBlank
     private Long materialTypeId;
+    private Boolean is_deleted = false;
 
     @NotBlank
     private String materialUsed;
