@@ -29,8 +29,8 @@ public class NotificationService {
         map.put("user", user);
         String content = thymleafService.generateHtmlString("welcome_email",map);
         mailService.sendHtmlEmail(user.getEmail(),null,"Welcome to SellArts",content);
-
     }
+    
     public void sendRaiseTicket(User user, Ticket ticket) {
         Map<String,Object> map = new HashMap<>();
         map.put("user", user);
