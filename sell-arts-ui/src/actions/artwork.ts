@@ -5,6 +5,7 @@ import { fetchHelper } from "@/lib/fetchHelper";
 import { ApiResponse, ArtWork, ArtWorkDTO, ArtWorkWithRelated } from "@/lib/type";
 import { GET_ARTWORK_BY_ID } from "./queries/artwork/querieArtwork";
 import axios from "axios";
+import { UPDATE_ARTWORK_DELETIONS } from "./mutation/artwork/mutationsArtwork";
 
 export const createArtWork = async (artWork: ArtWork, images: File[]) => {
   const formData = new FormData();
@@ -35,14 +36,27 @@ export const deleteArtWork = async (artworkId: string) => {
   return data;
 };
 
-export const dJdeleteArtWork = async (artworkId: string) => {
-  const res = await fetchHelper(process.env.API_URL + `/artists/artworks/${artworkId}`, {
-    method: "DELETE", // Méthode DELETE pour supprimer l'œuvre
+export const dJdeleteArtWork = async (artworkIds: [string]) => {
+  const query = UPDATE_ARTWORK_DELETIONS;
+
+  const variables = {
+    artworks: artworkIds,
+    isDeleted: true
+  };
+
+  const res = await fetchHelper(process.env.NEXT_PUBLIC_DJ_API_URL || "" , {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables
+    })
   });
 
-  const data: ApiResponse<any> = await res.json(); // On peut adapter le type de retour en fonction de ce que l'API retourne
-
-  return data;
+  const data = await res.json();
+  return data.data.featureUpdateArtworkDeletions;
 };
 
 

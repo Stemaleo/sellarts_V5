@@ -17,7 +17,7 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Importer les styles pour Toast
 
-import { updateFeaturedStatusOfArtWork, deleteArtWork } from "@/actions/artwork";
+import { updateFeaturedStatusOfArtWork, deleteArtWork, dJdeleteArtWork } from "@/actions/artwork";
 
 const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = true }: { artwork: ArtWorkDTO; redirectUrl?: string; useWindow?: boolean }) => {
   const path = usePathname();
@@ -29,8 +29,10 @@ const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = 
   const t = useTranslations();
   const handleDelete = async () => {
     setLoading(true);
-    const res = await execute(deleteArtWork, artwork.id);
-    setLoading(false);
+    const res = await execute(dJdeleteArtWork, [artwork.id]);
+
+    console.log(res);
+    // setLoading(false);
 
     if (res?.success) {
       // Notification réussie (succès)
