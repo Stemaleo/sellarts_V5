@@ -29,15 +29,42 @@ export default function Component() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await getAllUsers(currentPage, userType);
-      if (res.success) {
+      try {
+        // Get basic user data
+        const res = await getAllUsers(currentPage, userType);
+        
+        if (res.success && res.data?.content) {
+          // Get active status for each user
+          const usersWithStatus = await Promise.all(
+            res.data.content.map(async (user: any) => {
+              const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+                query: GET_USERS_BY_ID,
+                variables: { id: user.id },
+              });
 
-        // res.data
-        setUsers(res.data);
+              const isActive = response.data?.data?.users?.edges?.[0]?.node?.isActive || false;
+              
+              return {
+                ...user,
+                isActive
+              };
+            })
+          );
+
+          setUsers({
+            ...res.data,
+            content: usersWithStatus
+          });
+        }
+      } catch (error) {
+        toast.error("Erreur lors de la récupération des utilisateurs");
+        console.error("Erreur:", error);
       }
     };
+
     fetchUsers();
   }, [currentPage, userType]);
+
 
   const deleteUser = async (userId: number) => {
     try {
@@ -62,37 +89,10 @@ export default function Component() {
     }
   };
   
-  const [userStatuses, setUserStatuses] = useState<{[key: number]: boolean}>({});
 
-  const getUserById = async (userId: number) => {
-    try {
-      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-        query: GET_USERS_BY_ID,
-        variables: { id: userId },
-      });
-      console.log("RESPONSE", response.data);
 
-      if (response.data?.data?.users?.edges?.[0]?.node) {
-        const isActive = Boolean(response.data.data.users.edges[0].node.isActive);
-        console.log("ISACTIVE", isActive);
-        setUserStatuses(prev => ({
-          ...prev,
-          [userId]: isActive
-        }));
-      }
 
-    } catch (error) {
-      toast.error("Erreur lors de la récupération du statut de l'utilisateur");
-      console.error("Erreur lors de la récupération :", error);
-    }
-  };
 
-  useEffect(() => {
-    users.content?.forEach((user: any) => {
-      getUserById(user.id);
-    });
-    console.log("USERSTATUS", userStatuses);
-  }, [users.content]);
 
 
   const susBtnUserByAdmin = async (userId: number, status: boolean) => {
@@ -145,9 +145,9 @@ export default function Component() {
                   <TableCell>
                     <Switch
                         // defaultChecked={Boolean(getUserById(user.id))}
-                        defaultChecked={user.isActive}
+                        defaultChecked={!user.isActive}
                         onCheckedChange={() => {
-                          susBtnUserByAdmin(user.id, userStatuses[user.id]);
+                          susBtnUserByAdmin(user.id, user.isActive);
                         }}
                         className=""
                       />
