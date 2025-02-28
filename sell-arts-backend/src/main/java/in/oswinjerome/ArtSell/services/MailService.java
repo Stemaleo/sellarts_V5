@@ -31,7 +31,7 @@ public class MailService {
             if(cc!=null) {
                 helper.setCc(cc);
             }
-            helper.setFrom("contact-info@sellarts.net");
+            helper.setFrom("sellarts@sellarts.net");
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
 
@@ -50,7 +50,7 @@ public class MailService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(text, true);
-            helper.setFrom("contact-info@sellarts.net");
+            helper.setFrom("sellarts@sellarts.net");
 
 
             // Add attachment
