@@ -15,6 +15,7 @@ class FeatureGenerateShippingFees(graphene.Mutation):
 
     class Arguments:
         order = graphene.ID(required=True)
+        country = graphene.ID(required=True)
         
 
     @classmethod
