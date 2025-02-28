@@ -25,6 +25,7 @@ export default function Component() {
   const [users, setUsers] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<{ status: boolean; id: number | null }>({ status: false, id: null });
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -43,7 +44,7 @@ export default function Component() {
         variables: { users: [userId], delete: true },
       });
   
-      if (response.data) {
+      if (response.data.data.featureUpdateUsersDeletion.success) {
         toast.success("Utilisateur supprimé avec succès");
   
         // Mise à jour sécurisée en s'assurant que `users.content` est bien un tableau
@@ -59,23 +60,37 @@ export default function Component() {
     }
   };
   
+  const [userStatuses, setUserStatuses] = useState<{[key: number]: boolean}>({});
+
   const getUserById = async (userId: number) => {
     try {
       const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
         query: GET_USERS_BY_ID,
         variables: { id: userId },
       });
-  
-      if (response.data) {
-        console.log(response.data);   
-        return response.data.data.users.edges[0].node.isActive; 
+      console.log("RESPONSE", response.data);
+
+      if (response.data?.data?.users?.edges?.[0]?.node) {
+        const isActive = Boolean(response.data.data.users.edges[0].node.isActive);
+        console.log("ISACTIVE", isActive);
+        setUserStatuses(prev => ({
+          ...prev,
+          [userId]: isActive
+        }));
       }
+
     } catch (error) {
-      toast.error("Erreur lors de la suppression de l'utilisateur");
-      console.error("Erreur lors de la suppression :", error);
-      return true; 
+      toast.error("Erreur lors de la récupération du statut de l'utilisateur");
+      console.error("Erreur lors de la récupération :", error);
     }
   };
+
+  useEffect(() => {
+    users.content?.forEach((user: any) => {
+      getUserById(user.id);
+    });
+    console.log("USERSTATUS", userStatuses);
+  }, [users.content]);
 
 
   const susBtnUserByAdmin = async (userId: number, status: boolean) => {
@@ -97,6 +112,7 @@ export default function Component() {
   if (!users || users.length === 0) {
     return <div>Impossible de charger les utilisateurs</div>;
   }
+  
 
   return (
     <div className="container mx-auto p-4">
@@ -126,9 +142,10 @@ export default function Component() {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
                     <Switch
-                        defaultChecked={Boolean(!getUserById(user.id)) }
+                        // defaultChecked={Boolean(getUserById(user.id))}
+                        defaultChecked={Boolean()}
                         onCheckedChange={() => {
-                          susBtnUserByAdmin(user.id, Boolean(getUserById(user.id)));
+                          susBtnUserByAdmin(user.id, userStatuses[user.id]);
                         }}
                         className=""
                       />
