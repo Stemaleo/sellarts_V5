@@ -1,6 +1,7 @@
 import graphene
 from . import meta as meta
 from anka import models as anka_models
+from order import models as order_models
 from . import types as types
 import traceback
 import traceback
@@ -108,3 +109,57 @@ class FeatureUpdateUsersActivation(graphene.Mutation):
                 success=False,
                 message=f"An error occurred while updating users: {error}"
             )
+
+
+class FeatureUpdateUserCountry(graphene.Mutation):
+    """
+    Mutation to update the country of a user.
+    """
+
+    success = graphene.Boolean(description="Whether the operation was successful")
+    message = graphene.String(description="Success/error message")
+    user = graphene.Field(types.UsersType, description="Updated user")
+
+    class Arguments:
+        user = graphene.ID(required=True, description="ID of the user to update")
+        country = graphene.ID(required=True, description="ID of the country to set")
+
+    class Meta:
+        description = "Update a user's country"
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs):
+        try:
+            with transaction.atomic():
+                user = anka_models.Users.objects.filter(id=kwargs['user']).first()
+
+                if not user:
+                    return FeatureUpdateUserCountry(
+                        success=False,
+                        message="User not found"
+                    )
+
+                country = order_models.Country.objects.filter(id=kwargs['country']).first()
+
+                if not country:
+                    return FeatureUpdateUserCountry(
+                        success=False,
+                        message="Country not found"
+                    )
+
+                user.country = country
+                user.save()
+
+                return FeatureUpdateUserCountry(
+                    success=True,
+                    message="User country updated successfully",
+                    user=user
+                )
+
+        except Exception as error:
+            error = traceback.format_exc()
+            return FeatureUpdateUserCountry(
+                success=False,
+                message=f"An error occurred while updating user country: {error}"
+            )
+

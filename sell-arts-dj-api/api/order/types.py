@@ -1,4 +1,5 @@
 from anka import models as anka_models
+from order import models as order_models
 from query_optimizer import DjangoObjectType, filter
 import graphene
 import django_filters
@@ -60,4 +61,32 @@ class OrderItemType(DjangoObjectType):
     class Meta:
         model = anka_models.OrderItem
         filterset_class = OrderItemFilter
+        interfaces = (graphene.relay.Node,)
+        
+        
+# Country
+class CountryFilter(filter.FilterSet):
+    order_by = django_filters.OrderingFilter(
+        fields=(
+            [
+                field.name + "__id" if field.is_relation else field.name
+                for field in order_models.Country._meta.fields
+            ]
+        )
+    )
+
+    class Meta:
+        model = order_models.Country
+        fields = {
+            field.name + "__id" if field.is_relation else field.name: ["exact", "in"]
+            for field in order_models.Country._meta.fields
+        }
+
+
+class CountryType(DjangoObjectType):
+    id = graphene.ID(source="pk", required=True)
+
+    class Meta:
+        model = order_models.Country
+        filterset_class = CountryFilter
         interfaces = (graphene.relay.Node,)

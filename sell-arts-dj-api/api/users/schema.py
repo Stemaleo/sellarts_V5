@@ -12,5 +12,6 @@ class Query(graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     feature_update_users_deletion = mutations.FeatureUpdateUsersDeletions.Field()
     feature_update_users_activation = mutations.FeatureUpdateUsersActivation.Field()
+    feature_update_user_country = mutations.FeatureUpdateUserCountry.Field()
 
 

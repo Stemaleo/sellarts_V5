@@ -444,6 +444,7 @@ class Users(models.Model):
     profile_image_url = models.TextField(blank=True, null=True)
     registered_at = models.DateTimeField(blank=True, null=True)
     artist_profile = models.OneToOneField(ArtistProfiles, models.DO_NOTHING, blank=True, null=True)
+    country = models.ForeignKey('order.Country', models.DO_NOTHING, db_column="country", related_name='users_country', blank=True, null=True)
     is_deleted = models.BooleanField(null=True, default=False)
     is_active = models.BooleanField(null=True, default=True)   
     
