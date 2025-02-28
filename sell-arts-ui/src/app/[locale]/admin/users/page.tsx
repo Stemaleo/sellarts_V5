@@ -31,6 +31,8 @@ export default function Component() {
     const fetchUsers = async () => {
       const res = await getAllUsers(currentPage, userType);
       if (res.success) {
+
+        // res.data
         setUsers(res.data);
       }
     };
@@ -143,7 +145,7 @@ export default function Component() {
                   <TableCell>
                     <Switch
                         // defaultChecked={Boolean(getUserById(user.id))}
-                        defaultChecked={Boolean()}
+                        defaultChecked={user.isActive}
                         onCheckedChange={() => {
                           susBtnUserByAdmin(user.id, userStatuses[user.id]);
                         }}
