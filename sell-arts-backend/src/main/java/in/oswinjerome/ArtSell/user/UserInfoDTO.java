@@ -33,7 +33,9 @@ public class UserInfoDTO {
         if(roles.contains("ADMIN")) {
             dto.setType("ADMIN");
         }else if(roles.contains("ARTIST")) {
-            dto.setType("ARTIST");
+            dto.setType("ARTIST");        }
+        else if(roles.contains("GALLERY")) {
+            dto.setType("GALLERY");
         }else{
             dto.setType("USER");
         }
