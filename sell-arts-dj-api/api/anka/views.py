@@ -229,6 +229,7 @@ The SellArts Team
                     # print(response_shipping_label)
                     shipment_label_content = response_shipping_label.json()
                     logger.warning("Received Instant Payment Notification: ici4")
+                    logger.warning(shipment_label_content)
                     # print(shipment_label_content)
             return JsonResponse(
                 {"success": True, "message": "Notification received"}, status=200
