@@ -171,7 +171,7 @@ export default function ArtworkGallery({ children }: { children: ReactNode }) {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <h2 className="text-2xl font-bold mb-4">Filters</h2>
+            <h2 className="text-2xl font-bold mb-4">Filtersssss</h2>
             <FilterContent />
           </SheetContent>
         </Sheet>

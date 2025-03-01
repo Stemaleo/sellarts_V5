@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, X } from "lucide-react";
 import { useFormik } from "formik";
-import ErrorMessage from "@/components/ErrorMessage";
+import ErrorMessage from "@/app/[locale]/ErrorMessage";
 import * as yup from "yup";
 import { toast } from "sonner";
 import { updateArtWork, getArtWorkById } from "@/actions/artwork"; // Ajoute les actions d'édition

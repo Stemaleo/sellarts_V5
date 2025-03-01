@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 
 export const metadata: Metadata = {
   title: "SellArts",
@@ -30,7 +31,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased" cz-shortcut-listen="true">
-        <ClientWrapper>{children}</ClientWrapper>
+        <CurrencyProvider>
+          <ClientWrapper>{children}</ClientWrapper>
+        </CurrencyProvider>
       </body>
     </html>
   );

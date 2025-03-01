@@ -17,7 +17,7 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import SearchSheet from "./SearchSheet";
 import NotificationButton from "./notification-button";
 import { LocaleSwitcher } from "./LocalSwitch";
-import { CurrencySwitcher } from "./currencySwitch ";
+import CurrencySelector from "./CurrencySelector";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -86,7 +86,7 @@ export default function Navbar() {
           </Link>
           <div className="flex gap-0 md:gap-5 items-center">
             <div>
-              <CurrencySwitcher />
+            <CurrencySelector />
             </div>
             <div className="hidden md:block">
               <LocaleSwitcher />

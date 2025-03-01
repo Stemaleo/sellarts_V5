@@ -2,7 +2,7 @@
 
 import { resetPassword } from "@/actions/auth";
 import logo from "@/assets/logo.png";
-import ErrorMessage from "@/components/ErrorMessage";
+import ErrorMessage from "@/app/[locale]/ErrorMessage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

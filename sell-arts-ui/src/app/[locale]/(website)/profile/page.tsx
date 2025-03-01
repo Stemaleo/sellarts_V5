@@ -2,7 +2,7 @@
 
 import { changePassword, getCurrentUserInfo } from "@/actions/auth";
 import { updateProfileInfo } from "@/actions/profile";
-import ErrorMessage from "@/components/ErrorMessage";
+import ErrorMessage from "@/app/[locale]/ErrorMessage";
 import { ProfilePictureUploadComponent } from "@/components/profile-picture-upload";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

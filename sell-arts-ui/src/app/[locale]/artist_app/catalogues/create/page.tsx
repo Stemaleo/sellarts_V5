@@ -1,6 +1,6 @@
 "use client";
 
-import ErrorMessage from "@/components/ErrorMessage";
+import ErrorMessage from "@/app/[locale]/ErrorMessage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

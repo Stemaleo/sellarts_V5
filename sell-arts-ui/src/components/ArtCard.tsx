@@ -12,10 +12,24 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useActions } from "@/lib/hooks";
 import { deleteArtWork } from "@/actions/artwork";
+import { useCurrency } from "@/context/CurrencyContext";
+
 
 const ArtCard = ({ artwork }: { artwork: ArtWorkDTO }) => {
   const router = useRouter();
+  const { currency } = useCurrency();
 
+  const exchangeRates: Record<string, number> = {
+    XOF: 1,
+    USD: 600,
+    EUR: 655,
+  };
+
+
+  // (pour les prix de base en USD ou EURO, on va multiplier)
+  const convertPrice = (priceXOF: number, targetCurrency: string) => {
+    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
+  };
 
   return (
     <>
@@ -33,20 +47,21 @@ const ArtCard = ({ artwork }: { artwork: ArtWorkDTO }) => {
             <span className="text-xs text-gray-500 bg-primary/20 py-1 px-2 rounded-full inline h-auto">
               By, {artwork.ownerName}
             </span>
-            <NativeSharePopup url={'arts/'+artwork.id} title={artwork.title} useWindow={false} />
+            <NativeSharePopup url={'arts/' + artwork.id} title={artwork.title} useWindow={false} />
           </div>
           <h2 className="text-lg font-semibold mb-0 mt-1 line-clamp-1">{artwork.title}</h2>
           <p className="text-gray-500 mb-1 text-sm line-clamp-1">{artwork.description}</p>
           <div className="flex justify-between items-center mb-4">
-            <span className="font-bold">FCFA {artwork.price}</span>
+            <span className="font-bold">                        {convertPrice(artwork.price, currency)} {currency}
+            </span>
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">{artwork.materialType.name}</Badge>
             <Badge variant="secondary">{artwork.paintingType.name}</Badge>
           </div>
-          
+
         </div>
-        </div>
+      </div>
     </>
   );
 };

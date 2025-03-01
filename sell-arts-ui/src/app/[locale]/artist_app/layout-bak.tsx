@@ -97,6 +97,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <form></form>
           </div>
           <LocaleSwitcher />
+          <LocaleSwitcher />
           <NotificationButton />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

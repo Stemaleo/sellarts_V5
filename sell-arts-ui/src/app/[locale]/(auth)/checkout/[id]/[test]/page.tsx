@@ -15,13 +15,26 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import AddressForm from "../AddressForm";
+import { useCurrency } from "@/context/CurrencyContext";
+
 
 export default function Component({ params }: { params: { id: string } }) {
   const [order, setOrder] = useState<any>(null);
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [fee, setFee] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { currency } = useCurrency();
 
+  const exchangeRates: Record<string, number> = {
+    XOF: 1,
+    USD: 600,
+    EUR: 655,
+  };
+
+  // (pour les prix de base en USD ou EURO, on va multiplier)
+  const convertPrice = (priceXOF: number, targetCurrency: string) => {
+    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
+  };
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -77,7 +90,8 @@ export default function Component({ params }: { params: { id: string } }) {
                   <div className="flex-1 space-y-1">
                     <h3 className="font-semibold m-0">{item.artWork.title}</h3>
                     <p className="text-sm text-muted-foreground m-0">By {item.artWork.ownerName}</p>
-                    <p className="text-sm">{item.artWork.price} FCFA</p>
+                    <p className="text-sm"> {convertPrice(item.price, currency)} {currency}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -86,11 +100,11 @@ export default function Component({ params }: { params: { id: string } }) {
             <div className="border-t p-4 space-y-4">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>{order.totalAmount} FCFA</span>
+                <span>{convertPrice(order.totalAmount, currency)} {currency}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping fees</span>
-                <span>{fee} FCFA</span>
+                <span>{convertPrice(fee, currency)} {currency}</span>
               </div>
               <div className="flex justify-between font-medium">
                 <span>Total</span>

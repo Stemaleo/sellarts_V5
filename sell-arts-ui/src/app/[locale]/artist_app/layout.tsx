@@ -128,6 +128,7 @@ export default function ArtistLayout({ children }: { children: React.ReactNode }
             </form>
           </div>
           <LocaleSwitcher />
+          <LocaleSwitcher />
           <NotificationButton />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

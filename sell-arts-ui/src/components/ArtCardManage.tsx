@@ -10,6 +10,7 @@ import { useActions } from "@/lib/hooks";
 import { Button } from "@/components/ui/button";
 import { Trash, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useCurrency } from "@/context/CurrencyContext";
 
 import Link from "next/link";
 
@@ -45,6 +46,21 @@ const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = 
     setShowDeleteConfirmation(false);
   };
 
+  const { currency } = useCurrency();
+
+  const exchangeRates: Record<string, number> = {
+    XOF: 1,
+    USD: 600,
+    EUR: 655,
+  };
+
+
+  // (pour les prix de base en USD ou EURO, on va multiplier)
+  const convertPrice = (priceXOF: number, targetCurrency: string) => {
+    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
+  };
+
+
   const handleCancelDelete = () => {
     setShowDeleteConfirmation(false);
   };
@@ -62,9 +78,9 @@ const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = 
           <Badge className="absolute z-10 top-2 right-2 bg-red-500">Sold</Badge>
         )}
         <div className="relative h-48">
-        <Link href={`/arts/${artwork.id}`}>
-          <Image src={artwork.mediaUrls[0]} alt={artwork.title} layout="fill" objectFit="cover" />
-        </Link>
+          <Link href={`/arts/${artwork.id}`}>
+            <Image src={artwork.mediaUrls[0]} alt={artwork.title} layout="fill" objectFit="cover" />
+          </Link>
         </div>
         <div className="p-4">
           <div className="flex justify-between items-center">
@@ -76,7 +92,8 @@ const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = 
           <h2 className="text-lg font-semibold mb-0 mt-1 line-clamp-1">{artwork.title}</h2>
           <p className="text-gray-500 mb-1 text-sm line-clamp-1">{artwork.description}</p>
           <div className="flex justify-between items-center mb-4">
-            <span className="font-bold">FCFA {artwork.price}</span>
+            <span className="font-bold">{convertPrice(artwork.price, currency)} {currency}
+            </span>
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">{artwork.materialType.name}</Badge>
@@ -100,12 +117,12 @@ const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = 
             </Link>
             <Button
               onClick={(event) => {
-                event.stopPropagation(); 
+                event.stopPropagation();
                 setShowDeleteConfirmation(true);
               }}
               className="w-full md:w-auto"
             >
-              <Trash className="mr-2 h-4 w-4" /> Supprimer 
+              <Trash className="mr-2 h-4 w-4" /> Supprimer
             </Button>
 
           </div>

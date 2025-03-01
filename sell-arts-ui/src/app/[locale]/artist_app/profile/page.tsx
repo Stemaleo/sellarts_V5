@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Paintbrush, User, MapPin, Link, Camera, Palette, Instagram, Twitter } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import ErrorMessage from "@/components/ErrorMessage";
+import ErrorMessage from "@/app/[locale]/ErrorMessage";
 import { getArtistProfile, registerArtistProfile, updateArtistProfile } from "@/actions/profile";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
