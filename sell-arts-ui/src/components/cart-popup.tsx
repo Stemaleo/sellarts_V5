@@ -29,21 +29,22 @@ export function CartPopupComponent() {
   
   const handleShipping = async (orderId: string) => {
     console.log('1');
-    try {
-      console.log('2');
-      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-        query: FEATEUR_GENERATE_FEES,
-        variables: { order: orderId, },
-      }).then((response) => {
-        console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
-         
-        router.push(`/checkout/${orderId}/${response.data.data.featureGenerateFees.order.shippingFees}`);
-      });
+    router.push(`/checkout/${orderId}/${2}`);
 
-      console.log('4');
-    } catch (err) {
-      setError("Failed to update method");
-    }
+    // try {
+    //   console.log('2');
+    //   const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+    //     query: FEATEUR_GENERATE_FEES,
+    //     variables: { order: orderId, },
+    //   }).then((response) => {
+    //     console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
+         
+    //   });
+
+    //   console.log('4');
+    // } catch (err) {
+    //   setError("Failed to update method");
+    // }
   };
   useEffect(() => {
     if (status === "authenticated") {

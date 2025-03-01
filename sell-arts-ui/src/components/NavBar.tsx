@@ -17,6 +17,7 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import SearchSheet from "./SearchSheet";
 import NotificationButton from "./notification-button";
 import { LocaleSwitcher } from "./LocalSwitch";
+import { CurrencySwitcher } from "./currencySwitch ";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -83,7 +84,10 @@ export default function Navbar() {
           <Link href="/" className="text-2xl font-bold text-gray-800 w-[250px]">
             <Image width={300} src={logo} id="logo" alt="Logo" />
           </Link>
-          <div className="flex gap-0 md:gap-4 items-center">
+          <div className="flex gap-0 md:gap-5 items-center">
+            <div>
+              <CurrencySwitcher />
+            </div>
             <div className="hidden md:block">
               <LocaleSwitcher />
             </div>

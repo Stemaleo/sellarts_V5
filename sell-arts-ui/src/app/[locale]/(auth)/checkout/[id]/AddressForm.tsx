@@ -1,5 +1,3 @@
-"use client";
-
 import { updateOrderAddress } from "@/actions/cart";
 import ErrorMessage from "@/components/ErrorMessage";
 import { Button } from "@/components/ui/button";
@@ -7,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActions } from "@/lib/hooks";
-import { Order } from "@/lib/type";
+import { CountryType, Order } from "@/lib/type";
 import { useFormik } from "formik";
 import { Lock } from "lucide-react";
 import axios from "axios";
@@ -16,20 +14,71 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import * as yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { GET_ALL_COUNTRY } from "@/actions/queries/register/registerQuerie";
+import { FEATEUR_GENERATE_FEES } from "@/actions/mutation/artist/shipping/mutationShipping";
 
-const AddressForm = ({ order }: { order: Order }) => {
+interface Val{
+  id: string
+}
+const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
   const { execute, loading } = useActions();
   const router = useRouter();
+  const [allCountry, setAllCountry] = useState<CountryType[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [paymentLink, setPaymentLink] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loadingPaymentLink, setLoadingPaymentLink] = useState(false);
 
+
+  const fetchAllCountry = async () => {
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: GET_ALL_COUNTRY,
+      });
+
+
+      if (response.data?.data?.country?.edges) {
+        const allCountryList = response.data.data.country.edges.map((edge: any) => edge.node);
+        console.log('La liste des pays');
+
+        console.log(response.data.data.country);
+        setAllCountry(allCountryList);
+      }
+
+    } catch (err) {
+      setError("Error loading methods");
+    }
+  };
+
+  const handleShipping = async (orderId: string, countryId: string) => {
+    setLoadingPaymentLink(true)
+    try {
+      console.log('2');
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: FEATEUR_GENERATE_FEES,
+        variables: { order: orderId,
+          country: countryId
+         },
+      }).then((response) => {
+        console.log("######################LA REPONSE##############################");
+        console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
+         setFee(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
+         setLoadingPaymentLink(false)
+      });
+
+      console.log('4');
+    } catch (err) {
+      setError("Failed to update method");
+    }
+  };
   const form = useFormik({
     initialValues: {
       email: order.owner?.email ?? "",
       name: order.owner?.name ?? "",
       phone: order.phone ?? "",
+      allCountry:  "",
       address: order.address ?? "",
       city: order.city ?? "",
       state: order.state ?? "",
@@ -40,6 +89,7 @@ const AddressForm = ({ order }: { order: Order }) => {
     validationSchema: yup.object({
       phone: yup.string().required(),
       address: yup.string().required(),
+      allCountry: yup.string().required(),
       billing: yup.string(),
       city: yup.string().required(),
       state: yup.string().required(),
@@ -48,7 +98,7 @@ const AddressForm = ({ order }: { order: Order }) => {
     onSubmit: async (values) => {
       console.log("##################");
       console.log(values);
-      
+
       setLoadingPaymentLink(true);
       try {
         const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
@@ -69,6 +119,11 @@ const AddressForm = ({ order }: { order: Order }) => {
       setLoadingPaymentLink(false);
     },
   });
+
+
+  useEffect(() => {
+    fetchAllCountry();
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(paymentLink);
@@ -123,18 +178,35 @@ const AddressForm = ({ order }: { order: Order }) => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-          <Checkbox
-              id="billing"
-              checked={form.values.billing}
-              onCheckedChange={(checked) => form.setFieldValue("billing", checked)}
-            />
-            <Label htmlFor="billing">The billing address is the same as the shipping address</Label>
+          <div className="space-y-2">
+            <Label htmlFor="type">Pays</Label>
+            <Select
+              name="country"
+              onValueChange={(val) => {
+                form.setFieldValue("allCountry", val);
+                handleShipping(order.id, val);
+              }}
+              value={form.values.allCountry}
+            >
+              <SelectTrigger id="type">
+                <SelectValue placeholder="Selectionner un pays" />
+              </SelectTrigger>
+              <SelectContent>
+                {allCountry?.map((pt) => {
+                  return (
+                    <SelectItem value={pt.id.toString()} key={pt.id}>
+                      {pt.name}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            <ErrorMessage error={form.errors.allCountry} touched={form.touched.allCountry} />
           </div>
           {order.status != "WAITING_PAYMENT" && <p className="text-red-500">Already paid</p>}
           <Button
-            disabled={loading || order.status !== "WAITING_PAYMENT"}
-            loading={loading}
+            disabled={loadingPaymentLink || order.status !== "WAITING_PAYMENT"}
+            loading={loadingPaymentLink}
             className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90"
             size="lg"
             onClick={() => router.push(paymentLink)}
@@ -143,8 +215,8 @@ const AddressForm = ({ order }: { order: Order }) => {
           </Button>
 
           <Button
-            disabled={loading || order.status !== "WAITING_PAYMENT"}
-            loading={loading}
+            disabled={loadingPaymentLink || order.status !== "WAITING_PAYMENT"}
+            loading={loadingPaymentLink}
             className="w-full bg-[#FFC300] hover:bg-[#FFC300]/90"
             size="lg"
             type="submit"

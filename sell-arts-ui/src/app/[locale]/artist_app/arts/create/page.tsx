@@ -397,11 +397,4 @@ export default function CreateArtwork() {
     </div>
   );
 }
-function setError(arg0: string) {
-  throw new Error("Function not implemented.");
-}
-
-function setStyles(edges: any) {
-  throw new Error("Function not implemented.");
-}
 

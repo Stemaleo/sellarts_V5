@@ -152,6 +152,11 @@ export interface StyleType {
   name: string;
 }
 
+export interface CountryType {
+  id: number;
+  name: string;
+}
+
 export interface BlogType {
   id?: string;
   title?: string;

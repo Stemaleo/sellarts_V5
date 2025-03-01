@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Palette, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
 import Image from "next/image";
 import { useFormik } from "formik";
@@ -19,15 +19,81 @@ import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { SelectValue } from "@radix-ui/react-select";
+import axios from "axios";
+import { GET_COUNTRY_REGISTER } from "@/actions/queries/register/registerQuerie";
+import { CountryType } from "@/lib/type";
+import { SEND_COUNTRY_ID } from "@/actions/mutation/register/registerMutation";
+
+interface resData {
+
+  id: number;
+  // countries: CountryType[];
+
+}
 export default function Component() {
   const { execute, loading } = useActions();
   const t = useTranslations("register");
+  const [country, setCountry] = useState<CountryType[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCountry = async () => {
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: GET_COUNTRY_REGISTER,
+      });
+
+      
+      if (response.data?.data?.country?.edges) {
+        const countryList = response.data.data.country.edges.map((edge: any) => edge.node);
+              console.log('La liste des pays');
+      
+      console.log(response.data.data.country);
+        setCountry(countryList);
+      }
+      
+    } catch (err) {
+      setError("Error loading methods");
+    } 
+  };
+
+  const handleUserIdAndCountry = async (useriD: number , countryId: string, values: any) => {
+    try {
+      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+        query: SEND_COUNTRY_ID,
+        variables: { user: useriD,
+          country: countryId
+         },
+      }).then(async(response) =>  {
+        console.log("##########################################");
+        toast.success(t("loggingIn") + "...");
+        console.log(response.data.data!?.featureUpdateUserCountry!?.user)
+          const res = await signIn("credentials", {
+          redirect: true,
+          callbackUrl: values.type == "artist" || values.type == "gallery" ? "/artist_app/profile" : "/",
+          ...values,
+
+          // router.push("/login");
+        });
+      });
+
+      console.log('4');
+    } catch (err) {
+      setError("Failed to update method");
+    }
+  };
+
+  useEffect(()=> {  
+    fetchCountry();
+  }, []);
 
   const router = useRouter();
   const form = useFormik({
     initialValues: {
       name: "",
       email: "",
+      country: "",
       password: "",
       confirmPassword: "",
       type: "customer",
@@ -35,6 +101,7 @@ export default function Component() {
     validationSchema: Yup.object({
       password: Yup.string().min(6, "Min 6 characters required").required("Required"),
       confirmPassword: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
+      country: Yup.string().required("Required"),
       email: Yup.string().email("Invalid email address").required("Required"),
       name: Yup.string().required("Required"),
       type: Yup.string().required("Required"),
@@ -43,13 +110,10 @@ export default function Component() {
       const res = await execute(register, values);
 
       if (res?.success) {
-        toast.success(t("loggingIn") + "...");
-        // router.push("/login");
-        const res = await signIn("credentials", {
-          redirect: true,
-          callbackUrl: values.type == "artist" || values.type == "gallery" ? "/artist_app/profile" : "/",
-          ...values,
-        });
+        const userId = (res?.data as resData).id
+        handleUserIdAndCountry(userId , values.country, values);
+ 
+       
       }
       if (!res?.success) {
         toast.error(res?.message);
@@ -127,6 +191,30 @@ export default function Component() {
                   <ErrorMessage error={form.errors.email} touched={form.touched.email} />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="type">{t("select-country")}</Label>
+                  <Select
+                    name="country"
+                    onValueChange={(val) => {
+                      form.setFieldValue("country", val);
+                    }}
+                    value={form.values.country}
+                  >
+                    <SelectTrigger id="type">
+                      <SelectValue placeholder={t("select-country")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {country?.map((pt) => {
+                        return (
+                          <SelectItem value={pt.id.toString()} key={pt.id}>
+                            {pt.name}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <ErrorMessage error={form.errors.country} touched={form.touched.country} />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="password">{t("password")}</Label>
                   <Input id="password" name="password" onChange={form.handleChange} onBlur={form.handleBlur} value={form.values.password} required type="password" />
                   <ErrorMessage error={form.errors.password} touched={form.touched.password} />
@@ -153,3 +241,4 @@ export default function Component() {
     </div>
   );
 }
+
