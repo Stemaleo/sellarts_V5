@@ -159,19 +159,29 @@ The SellArts Team
                         artwork.stock -= order_item["quantity"]
                         artwork.save()
 
-                        items.append(
-                            {
-                                "quantity": order_item["quantity"],
-                                "price_currency": "XOF",
-                                "hscode": "6204.43.4040",
-                                "description": artwork.description,
-                                "weight_grams": artwork.size * 1000,
-                                "price_cents": artwork.price,
-                            }
-                        )
+                        # Truncate description to 90 characters and ensure price_cents is integer
+                        items.append({
+                            "quantity": order_item["quantity"],
+                            "price_currency": "XOF",
+                            "hscode": "6204.43.4040",
+                            "description": artwork.description[:90],
+                            "weight_grams": artwork.size * 1000,
+                            "price_cents": int(artwork.price),
+                        })
                         
-                    owner: anka_models.Users =  order.owner
-                    owner_profile: anka_models.ArtistProfiles =  owner.artist_profile
+                    owner: anka_models.Users = order.owner
+                    owner_profile: anka_models.ArtistProfiles = owner.artist_profile
+                    
+                    # Ensure address fields are not blank
+                    shipper_address = {
+                        "street_line_1": owner_profile.location or "Not Specified",
+                        "street_line_2": owner_profile.location or "Not Specified",
+                        "city": owner_profile.location or "Abidjan",
+                        "state": owner_profile.location or "Abidjan",
+                        "zip": "00225",
+                        "country": "CI",
+                    }
+
                     shipment_data = {
                         "data": {
                             "type": "shipment_labels",
@@ -184,7 +194,8 @@ The SellArts Team
                                         "weight_grams": order.size,
                                         "width_cm": 25,
                                     },
-                                    "description": "Arts Works",
+                                    "description": "Art Works Package - Fine Art Shipping Contents",
+                                    "package_content": "Paintings Drawings Artwork",
                                 },
                                 "internal_reference": data["attributes"][
                                     "internal_reference"
@@ -197,14 +208,7 @@ The SellArts Team
                                         "phone_number": "+225 0505050505",
                                         "email": owner.email,
                                     },
-                                    "address": {
-                                        "street_line_1": owner_profile.location or "",
-                                        "street_line_2": owner_profile.location or "",
-                                        "city": owner_profile.location or "",
-                                        "state": owner_profile.location or "",
-                                        "zip": "00225",
-                                        "country": "CI",
-                                    },
+                                    "address": shipper_address,
                                 },
                                 "recipient": data["attributes"]["buyer"],
                             },
