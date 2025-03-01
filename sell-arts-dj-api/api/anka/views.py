@@ -105,7 +105,7 @@ def instant_payment_notification(request):
             data = json.loads(request.body.decode("utf-8"))[
                 "data"
             ]  # Convertit le corps en JSON
-            logger.warning("Received Instant Payment Notification: %s", data)
+            # logger.warning("Received Instant Payment Notification: %s", data)
 
             if data["type"] == "payment_links_orders":
                 if data["attributes"]["status"] == "captured":
@@ -168,7 +168,8 @@ The SellArts Team
                                 "weight_grams": artwork.size * 1000,
                                 "price_cents": artwork.price,
                             }
-                        ),
+                        )
+                        
                     owner: anka_models.Users =  order.owner
                     owner_profile: anka_models.ArtistProfiles =  owner.artist_profile
                     shipment_data = {
@@ -209,19 +210,26 @@ The SellArts Team
                             },
                         }
                     }
+                    
+
+                    logger.warning("Received Instant Payment Notification: ici1")
                     response_shipping = requests.post(
                         "https://api.anka.fyi/v1/shipment/labels", headers=headers, json=shipment_data
                     )
-                    
+                    logger.warning("Received Instant Payment Notification: ici2")
+                    # print(response_shipping)
+
                     response_shipping_label =  requests.get(
-                        "https://api.anka.fyi/v1/shipment/labels/"+data["attributes"][
+                        "https://api.anka.fyi/v1/shipment/labels/"+ data["attributes"][
                                     "internal_reference"
                                 ], headers=headers
                     )
+                    logger.warning("Received Instant Payment Notification: ici3")
                     
-                    print(response_shipping_label)
+                    # print(response_shipping_label)
                     shipment_label_content = response_shipping_label.json()
-                    print(shipment_label_content)
+                    logger.warning("Received Instant Payment Notification: ici4")
+                    # print(shipment_label_content)
             return JsonResponse(
                 {"success": True, "message": "Notification received"}, status=200
             )

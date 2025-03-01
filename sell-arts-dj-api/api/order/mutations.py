@@ -42,7 +42,7 @@ class FeatureGenerateShippingFees(graphene.Mutation):
             order.shipping_fees = float(get_value('FR', total_size) + (get_value('FR', total_size) * 0.3))
             
             # order.amount = float(order.total_amount)
-            # #TODO add country code
+            # TODO add country code
             order.save()           
 
             return FeatureGenerateShippingFees(
