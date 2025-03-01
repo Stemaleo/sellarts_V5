@@ -30,6 +30,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
   const [paymentLink, setPaymentLink] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loadingPaymentLink, setLoadingPaymentLink] = useState(false);
+  const [pushPayment, setPushPayment] = useState(false);
 
 
   const fetchAllCountry = async () => {
@@ -63,7 +64,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
          },
       }).then((response) => {
         console.log("######################LA REPONSE##############################");
-        console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
+        console.log(response.data.data)
          setFee(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
          setLoadingPaymentLink(false)
       });
@@ -108,9 +109,15 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
         console.log("Response :", response);
         if (response.data.data.featureInitiatePayment.success) {
           const paymentUrl = response.data.data.featureInitiatePayment.paymentLink;
-          setPaymentLink(paymentUrl);
-          setShowPopup(true);
-          toast.success("Lien de paiement généré avec succès !");
+          if (pushPayment) {
+            router.push(paymentUrl);
+            toast.success("Redirecting to payment page...");
+          } else {
+            setPaymentLink(paymentUrl);
+            setShowPopup(true);
+            toast.success("Payment link generated successfully!");
+          }
+          
         }
       } catch (error) {
         console.error("Erreur lors de la génération du lien :", error);
@@ -209,7 +216,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
             loading={loadingPaymentLink}
             className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90"
             size="lg"
-            onClick={() => router.push(paymentLink)}
+            onClick={() => setPushPayment(true)}
           >
             Pay
           </Button>
