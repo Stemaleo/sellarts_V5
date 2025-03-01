@@ -111,7 +111,7 @@ export default function Component({ params }: { params: Promise<{ id: string , t
               </div>
               <div className="flex justify-between font-medium">
                 <span>Total</span>
-                <span>{Number(order.totalAmount) + Number(fee)} FCFA</span>
+                <span>{convertPrice(Number(order.totalAmount) + Number(fee), currency)} {currency}</span>
               </div>
             </div>
           </Card>

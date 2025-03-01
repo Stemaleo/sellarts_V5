@@ -19,10 +19,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { GET_ALL_COUNTRY } from "@/actions/queries/register/registerQuerie";
 import { FEATEUR_GENERATE_FEES } from "@/actions/mutation/artist/shipping/mutationShipping";
 
-interface Val{
-  id: string
+interface AddressFormProps {
+  order: Order;
+  setFee: any;
+  currency?: string;  // Make it optional here
 }
-const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
+
+const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
   const { execute, loading } = useActions();
   const router = useRouter();
   const [allCountry, setAllCountry] = useState<CountryType[]>([]);
@@ -31,7 +34,6 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [loadingPaymentLink, setLoadingPaymentLink] = useState(false);
   const [pushPayment, setPushPayment] = useState(false);
-
 
   const fetchAllCountry = async () => {
     try {
@@ -80,6 +82,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
       name: order.owner?.name ?? "",
       phone: order.phone ?? "",
       allCountry:  "",
+      currency: 'XOF', 
       address: order.address ?? "",
       city: order.city ?? "",
       state: order.state ?? "",
@@ -106,6 +109,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
           query: INITIATE_PAYMENT_MUTATION,
           variables: values,
         });
+        console.log("##################", values);
         console.log("Response :", response);
         if (response.data.data.featureInitiatePayment.success) {
           const paymentUrl = response.data.data.featureInitiatePayment.paymentLink;

@@ -67,7 +67,7 @@ export default function ClientComponent({ params }: ClientProps) {
 <div className="min-h-screen">
       <div className="">
         <div className="flex flex-col-reverse md:grid gap-8 md:grid-cols-[1fr,380px]">
-          <AddressForm order={order} setFee={setFee} />
+          <AddressForm order={order} setFee={setFee} currency={currency}/>
 
           <Card className="flex flex-col md:h-[calc(100vh)] shadow border-0 rounded-none bg-slate-50">
             <div className="flex-1 overflow-y-auto p-4">
