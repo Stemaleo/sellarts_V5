@@ -18,13 +18,14 @@ import AddressForm from "../AddressForm";
 import { useCurrency } from "@/context/CurrencyContext";
 
 
-export default function Component({ params }: { params: { id: string } }) {
+export default function Component({ params }: { params: Promise<{ id: string , test: string }> }) {
   const [order, setOrder] = useState<any>(null);
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [fee, setFee] = useState(0);
   const [loading, setLoading] = useState(true);
   const { currency } = useCurrency();
-
+  const [id, setId] = useState<string>("");
+  const [res, setRes] = useState<any>(null);
   const exchangeRates: Record<string, number> = {
     XOF: 1,
     USD: 600,
@@ -35,20 +36,22 @@ export default function Component({ params }: { params: { id: string } }) {
   const convertPrice = (priceXOF: number, targetCurrency: string) => {
     return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
   };
+  
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const { id } = params; // Déstructuration directe (params est déjà résolu)
-        console.log("Order ID:", id);
-
-        const res = await getAOrder(id);
-
-        if (!res.success) {
+        const response = await params;
+        const result = await getAOrder(response.id);
+        
+        if (!result.success) {
           throw new Error("Failed to fetch order");
         }
 
-        setOrder(res.data);
-        setCartItems(res.data.orderItems || []);
+        setId(response.id);
+        setRes(result);
+        setOrder(result.data);
+        setCartItems(result.data.orderItems || []);
+
       } catch (error) {
         console.error("Error fetching order:", error);
         toast.error("An error occurred while fetching the order.");
