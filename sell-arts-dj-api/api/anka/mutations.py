@@ -171,7 +171,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                             "city": kwargs["city"],
                             "state": kwargs["state"],
                             "zip": kwargs["postal_code"],
-                            "country": 'CI',
+                            "country": order.country_code,
                         },
                     },
                 },
