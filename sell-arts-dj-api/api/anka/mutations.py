@@ -110,7 +110,7 @@ class FeatureInitiatePayment(graphene.Mutation):
         postal_code = graphene.String(required=True)
         phone_number = graphene.String(required=True)
         is_the_same_addres = graphene.Boolean(default_value=False)
-        curency = graphene.String(default_value="XOF")
+        currency = graphene.String(default_value="XOF")
         order = graphene.ID(required=True)
 
     class Meta:
