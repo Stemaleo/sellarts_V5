@@ -2,6 +2,8 @@ import logging
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from django.core.mail import send_mail
 from anka import models as anka_models
 import requests
 
@@ -107,12 +109,42 @@ def instant_payment_notification(request):
 
             if data["type"] == "payment_links_orders":
                 if data["attributes"]["status"] == "captured":
-                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
-                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
                     reference: str = data["attributes"]["internal_reference"]
                     order = anka_models.Orders.objects.get(
                         id=int(reference.split("SELLARTS")[-1])
                     )
+                    # Send confirmation email to user
+                    try:
+                        subject = "Payment Confirmation - Your Order Has Been Received"
+                        message = f"""
+Dear {order.owner.name},
+
+Thank you for your purchase! We're pleased to confirm that your payment has been successfully processed.
+
+Your order reference number is:  {order.id}
+
+We will notify you once your order has been shipped.
+
+Best regards,
+The SellArts Team
+"""
+                        from_email = settings.DEFAULT_FROM_EMAIL
+                        recipient_list = [order.owner.email]
+                        
+                        send_mail(
+                            subject,
+                            message,
+                            from_email,
+                            recipient_list,
+                            fail_silently=False,
+                        )
+                    except Exception as e:
+                        logger.error(f"Failed to send confirmation email: {str(e)}")
+                        
+                        
+                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
+                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
+
                     order.status = "PENDING"
                     order.payment_status = "SUCCESS"
                     order.save()
