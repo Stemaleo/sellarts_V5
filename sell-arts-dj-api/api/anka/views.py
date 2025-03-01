@@ -216,6 +216,9 @@ The SellArts Team
                     response_shipping = requests.post(
                         "https://api.anka.fyi/v1/shipment/labels", headers=headers, json=shipment_data
                     )
+                    
+                    logger.warning(f"Response status code: {response_shipping.status_code}")
+                    logger.warning(f"Response content: {response_shipping.content}")
                     logger.warning("Received Instant Payment Notification: ici2")
                     # print(response_shipping)
 
