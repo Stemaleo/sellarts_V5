@@ -154,10 +154,10 @@ class FeatureInitiatePayment(graphene.Mutation):
                     "title": "Paiement d'Oeuvres d'art",
                     "description": "Paiements d'oeuvres d'art",
                     "amount_cents": int(round(float(order.total_amount) + float((order.shipping_fees or 0)))),
-                    "amount_currency": "XOF",
+                    "amount_currency": kwargs['currency'],
                     "shippable": True,
                     "reusable": False,
-                    "callback_url": "https://dev.sellarts.net/",
+                    "callback_url": "https://dev.sellarts.net/orders/"+str(order.id),
                     "order_reference": internal_reference,
                     "buyer": {
                         "contact": {
@@ -171,7 +171,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                             "city": kwargs["city"],
                             "state": kwargs["state"],
                             "zip": kwargs["postal_code"],
-                            "country": "CI",
+                            "country": 'CI',
                         },
                     },
                 },
