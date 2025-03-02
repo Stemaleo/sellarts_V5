@@ -58,7 +58,6 @@ class FeatureGenerateShippingFees(graphene.Mutation):
                 message=str(e),
             )
 
-
 class FeatureVerifyShippingLabel(graphene.Mutation):
     success = graphene.Boolean()
     message = graphene.String()
@@ -87,62 +86,71 @@ class FeatureVerifyShippingLabel(graphene.Mutation):
                 "Content-Type": "application/json",
             }
 
-            if (
-                not order.shipping_label_pdf
-                or not order.shipping_invoice_pdf
-                or not order.shipping_label
-            ):
-                logger.info(f"Fetching new shipping info for order {order.id}")
-                response = requests.get(
-                    f"https://api.anka.fyi/v1/shipment/labels/{order.internal_reference}",
-                    headers=headers,
-                )
-
-                if response.status_code != 200:
-                    logger.error(f"API request failed with status code {response.status_code}")
-                    return FeatureVerifyShippingLabel(
-                        success=False,
-                        message=f"Failed to get shipping info: {response.status_code}",
+            # Get all shipping records for this order
+            shipping_records = order_models.Shipping.objects.filter(order=order)
+            
+            shipping_data_list = []
+            
+            for shipping in shipping_records:
+                if not shipping.label_pdf or not shipping.invoice_pdf or not shipping.label:
+                    logger.info(f"Fetching new shipping info for shipping record {shipping.id}")
+                    
+                    # Get the internal reference specific to this shipping/owner
+                    shipping_reference = f"{order.internal_reference}_{shipping.user.id}"
+                    
+                    response = requests.get(
+                        f"https://api.anka.fyi/v1/shipment/labels/{shipping_reference}",
+                        headers=headers,
                     )
 
-                shipping_data = response.json()
+                    if response.status_code != 200:
+                        logger.error(f"API request failed with status code {response.status_code}")
+                        continue
 
-                if "data" in shipping_data and "attributes" in shipping_data["data"]:
-                    attributes = shipping_data["data"]["attributes"]
-                    if "package" in attributes:
-                        if "pdf" in attributes["package"]:
-                            order.shipping_label_pdf = attributes["package"]["pdf"].get(
-                                "label"
-                            )
-                            order.shipping_invoice_pdf = attributes["package"][
-                                "pdf"
-                            ].get("invoice")
-                        order.shipping_label = attributes.get("provider_reference")
-                        order.save()
-                        logger.info(f"Updated order {order.id} with new shipping information")
-            else:
-                logger.info(f"Using existing shipping data for order {order.id}")
-                shipping_data = {
+                    shipping_data = response.json()
+
+                    if "data" in shipping_data and "attributes" in shipping_data["data"]:
+                        attributes = shipping_data["data"]["attributes"]
+                        if "package" in attributes and "pdf" in attributes["package"]:
+                            shipping.label_pdf = attributes["package"]["pdf"].get("label")
+                            shipping.invoice_pdf = attributes["package"]["pdf"].get("invoice")
+                            shipping.label = attributes.get("provider_reference")
+                            shipping.save()
+                            logger.info(f"Updated shipping record {shipping.id} with new information")
+                
+                # Add shipping data to list
+                shipping_data_list.append({
                     "data": {
                         "type": "shipment_labels",
                         "attributes": {
                             "status": "queued",
-                            "internal_reference": order.internal_reference,
-                            "provider_reference": order.shipping_label,
+                            "internal_reference": f"{order.internal_reference}_{shipping.user.id}",
+                            "provider_reference": shipping.label,
+                            "owner": {
+                                "id": shipping.user.id,
+                                "name": shipping.user.name,
+                                "email": shipping.user.email
+                            },
                             "package": {
                                 "pdf": {
-                                    "label": order.shipping_label_pdf,
-                                    "invoice": order.shipping_invoice_pdf,
+                                    "label": shipping.label_pdf,
+                                    "invoice": shipping.invoice_pdf,
                                 }
                             },
                         },
                     }
-                }
+                })
+
+            if not shipping_data_list:
+                return FeatureVerifyShippingLabel(
+                    success=False,
+                    message="No shipping records found for this order",
+                )
 
             return FeatureVerifyShippingLabel(
                 success=True,
                 message="Successfully retrieved shipping information",
-                shipping_data=shipping_data,
+                shipping_data=shipping_data_list,
                 order=order,
             )
 
