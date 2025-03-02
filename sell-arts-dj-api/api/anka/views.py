@@ -225,7 +225,7 @@ def instant_payment_notification(request):
                         try:
                             logger.error(f"Sending confirmation email to {order.owner.email}")
                             subject = "Thank You for Your Order!"
-                            
+                            order = anka_models.Orders.objects.get(id=order.id)
                             # Get order items for email template
                             order_items = anka_models.OrderItem.objects.filter(
                                 order=order.id
