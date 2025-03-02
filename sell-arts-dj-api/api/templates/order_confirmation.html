@@ -111,22 +111,24 @@
             <p>Thank you for your order! We're excited to confirm that your order has been received and is being processed.</p>
 
             <div class="order-details">
-                <h3>Order Information:</h3>
-                <p><strong>Order ID:</strong> {{ order.id }}</p>
-                <p><strong>Order Date:</strong> {{ order.created_at }}</p>
-                <p><strong>Reference:</strong> {{ order.internal_reference }}</p>
+                <h2>Order Details</h2>
+                <p>Order ID: {{ order.id }}</p>
 
-                <h3>Purchased Artworks:</h3>
-                {% for artwork in order.artworks.all %}
-                <div class="artwork-item">
-                    {% if artwork.image_url %}
-                    <img src="{{ artwork.image_url }}" alt="{{ artwork.title }}" class="artwork-image">
-                    {% endif %}
-                    <div class="artwork-info">
-                        <h4>{{ artwork.title }}</h4>
-                        <p>Artist: {{ artwork.artist.name }}</p>
-                        <p class="price">{{ artwork.price }} XOF</p>
-                    </div>
+                <h3>Purchased Artworks</h3>
+                {% for item in order_items %}
+                <div>
+                    <p>{{ item.art_work.title }} by {{ item.art_work.owner.name }}</p>
+                    <p>Quantity: {{ item.quantity }}</p>
+                    <p>Price: {{ item.price }}</p>
+                </div>
+                {% endfor %}
+
+                <h3>Shipping Labels</h3>
+                {% for label in shipping_labels %}
+                <div>
+                    <p>Shipping Label: {{ label.label }}</p>
+                    <p>Label PDF: <a href="{{ label.label_pdf }}">Download</a></p>
+                    <p>Invoice PDF: <a href="{{ label.invoice_pdf }}">Download</a></p>
                 </div>
                 {% endfor %}
 
