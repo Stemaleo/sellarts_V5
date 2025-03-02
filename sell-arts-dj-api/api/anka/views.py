@@ -1,5 +1,6 @@
 import logging
 import json
+import time
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
@@ -151,6 +152,7 @@ def instant_payment_notification(request):
                         max_width += 5  # 5cm padding
                         
                         logger.debug(f"Final package dimensions: {total_height}x{max_length}x{max_width}cm")
+                        logger.info(f"buyer: {data['attributes']['buyer']}")
 
                         shipment_data = {
                             "data": {
@@ -191,18 +193,21 @@ def instant_payment_notification(request):
                             json=shipment_data
                         )
 
-                        if response_shipping.status_code == 200:
-                            logger.debug("Successfully created shipping label, fetching details")
-                            # Get shipping label details
+                        shipping_response = response_shipping.json()
+                        if shipping_response.get("status") == "queued":
+                            logger.debug("Successfully queued shipping label, waiting 5 seconds before verifying...")
+                            time.sleep(5)  # Wait 5 seconds
+                            
+                            # Verify shipping label status
                             response_shipping_label = requests.get(
-                                f"https://api.anka.fyi/v1/shipment/labels/{shipment_data['data']['attributes']['internal_reference']}", 
+                                f"https://api.anka.fyi/v1/shipment/labels/{shipping_response.get('reference')}", 
                                 headers=headers
                             )
 
-                            if response_shipping_label.status_code == 200:
-                                shipping_label_data = response_shipping_label.json()
-                                logger.debug("Successfully retrieved shipping label details")
-                                
+                            shipping_label_data = response_shipping_label.json()
+                            logger.debug("Successfully retrieved shipping label details")
+                            
+                            if shipping_label_data['data']['attributes']['status'] == 'processed':
                                 # Create shipping record
                                 shipping = order_models.Shipping.objects.create(
                                     order=order,
@@ -238,9 +243,10 @@ def instant_payment_notification(request):
                                     logger.info(f"Successfully sent shipping notification email to {owner.email}")
                                 except Exception as e:
                                     logger.error(f"Failed to send shipping notification email to owner {owner.id}: {str(e)}")
-
+                            else:
+                                logger.error(f"Shipping label not processed yet for owner {owner.id}")
                         else:
-                            logger.error(f"Failed to create shipping label for owner {owner.id}: {response_shipping.content}")
+                            logger.error(f"Failed to queue shipping label for owner {owner.id}: {response_shipping.content}")
 
             return JsonResponse(
                 {"success": True, "message": "Notification received"}, status=200

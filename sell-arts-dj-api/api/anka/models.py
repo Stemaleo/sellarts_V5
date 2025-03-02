@@ -38,6 +38,7 @@ class ArtistProfiles(models.Model):
     portfolio_url = models.CharField(max_length=255, blank=True, null=True)
     user = models.OneToOneField('Users', models.DO_NOTHING, blank=True, null=True)
     is_deleted = models.BooleanField(null=True, default=False)
+    phone_number = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(null=True, default=True)
 
     class Meta:

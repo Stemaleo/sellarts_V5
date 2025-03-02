@@ -81,6 +81,16 @@ class FeatureInitiatePayment(graphene.Mutation):
                 }
             }
 
+
+
+
+            respons3 = requests.get(
+                f"https://api.anka.fyi/v1/shipment/labels/n9nSNSELLARTS36960282_706",
+                headers=headers,
+            )
+            
+            print(respons3.content, respons3.status_code, respons3.headers)
+            
             # Save order before making API call
             order.save()
 
@@ -122,6 +132,8 @@ class FeatureInitiatePayment(graphene.Mutation):
                 payment_link=content.get("redirect_url")
             )
 # "n9nSNSELLARTS36960282_715"
+
+                    
 
         except models.Orders.DoesNotExist:
             logging.error(traceback.format_exc())
