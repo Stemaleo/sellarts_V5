@@ -103,8 +103,8 @@ def instant_payment_notification(request):
                         owner_items[artwork_owner.id]['items'].append({
                             "quantity": order_item.quantity,
                             "price_currency": "XOF",
-                            "hscode": artwork.id,
-                            "description": artwork.description[:90] if artwork.description else "Artwork", 
+                            "hscode": "970110", # Fixed HS code for original paintings/drawings
+                            "description": f"Original {artwork.title} artwork by {artwork_owner.name}", 
                             "weight_grams": int(artwork.size * 1000),
                             "price_cents": int(float(artwork.price) * 100),
                         })
@@ -164,8 +164,8 @@ def instant_payment_notification(request):
                                             "weight_grams": owner_data['total_weight'],
                                             "width_cm": int(max_width),
                                         },
-                                        "description": "Art Works Package - Fine Art Shipping Contents",
-                                        "package_content": "Paintings Drawings Artwork",
+                                        "description": "Original Artwork Package Professional Fine Art Shipping",
+                                        "package_content": "Original Paintings Professional Artwork Secure Packaging",
                                     },
                                     "internal_reference": f"{data['attributes']['internal_reference']}_{owner_id}",
                                     "duty_code": "ddps",
