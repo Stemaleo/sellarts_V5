@@ -103,7 +103,7 @@ def instant_payment_notification(request):
                         owner_items[artwork_owner.id]['items'].append({
                             "quantity": order_item.quantity,
                             "price_currency": "XOF",
-                            "hscode": "970110", # Fixed HS code for original paintings/drawings
+                            "hscode": "6404.20.9000",
                             "description": f"Original {artwork.title} artwork by {artwork_owner.name}", 
                             "weight_grams": int(artwork.size * 1000),
                             "price_cents": int(float(artwork.price) * 100),
