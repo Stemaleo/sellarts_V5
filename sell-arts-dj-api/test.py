@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def verify_shipping_label(reference="7QOWlSELLARTS44314888_706"):
+def verify_shipping_label(reference="gkX5GSELLARTS48759480_715"):
     try:
         headers = {
             "Authorization": "Token FqvbsxHBxTKmbZyNcPvvNbFm",

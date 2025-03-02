@@ -40,38 +40,6 @@ def instant_payment_notification(request):
                     )
                     logger.error(f"Found order: {order.id}")
 
-                    # Send confirmation email to user
-                    try:
-                        logger.error(f"Sending confirmation email to {order.owner.email}")
-                        subject = "Thank You for Your Order!"
-                        
-                        # Get order items for email template
-                        order_items = anka_models.OrderItem.objects.filter(
-                            order=order.id
-                        ).select_related('art_work')
-                        logger.error(f"Found {order_items.count()} order items")
-
-                        context = {
-                            'user': order.owner,
-                            'order': order,
-                            'order_items': order_items
-                        }
-
-                        html_message = render_to_string('order_confirmation.html', context)
-                        plain_message = strip_tags(html_message)
-
-                        send_mail(
-                            subject,
-                            plain_message,
-                            settings.DEFAULT_FROM_EMAIL,
-                            [order.owner.email],
-                            html_message=html_message,
-                            fail_silently=False,
-                        )
-                        logger.error("Confirmation email sent successfully")
-                    except Exception as e:
-                        logger.error(f"Failed to send confirmation email: {str(e)}")
-
                     order.status = "PENDING"
                     order.payment_status = "SUCCESS"
                     order.save()
@@ -114,6 +82,8 @@ def instant_payment_notification(request):
 
                     # Generate shipping label for each owner's items
                     logger.error(f"Generating shipping labels for {len(owner_items)} owners")
+                    all_shipping_successful = True
+                    
                     for owner_id, owner_data in owner_items.items():
                         logger.error(f"Processing shipping for owner {owner_id}")
                         owner = owner_data['owner']
@@ -132,26 +102,22 @@ def instant_payment_notification(request):
                         max_length = 0
                         max_width = 0
                         
-                        for item in owner_data['items']:  # Changed from _ to item
-                            # Get artwork for this item from the artworks list
+                        for item in owner_data['items']:
                             artwork = next((a for a in owner_data['artworks'] if a.title in item['description']), None)
                             if artwork:
                                 logger.error(f"Calculating dimensions for artwork {artwork.id}")
                                 
-                                # Use actual artwork dimensions (already in cm)
-                                item_height = artwork.height  # Height of artwork
-                                item_length = artwork.width   # Width becomes length since artworks are typically wider than deep
-                                item_width = artwork.width * 0.1  # Estimate thickness as 10% of width
+                                item_height = artwork.height
+                                item_length = artwork.width
+                                item_width = artwork.width * 0.1
                                 
-                                # Stack items vertically
-                                total_height += item_height * item['quantity']  # Multiply by quantity
+                                total_height += item_height * item['quantity']
                                 max_length = max(max_length, item_length)
                                 max_width = max(max_width, item_width)
 
-                        # Add padding for packaging material
-                        total_height += 5  # 5cm padding
-                        max_length += 5  # 5cm padding
-                        max_width += 5  # 5cm padding
+                        total_height += 5
+                        max_length += 5
+                        max_width += 5
                         
                         logger.error(f"Final package dimensions: {total_height}x{max_length}x{max_width}cm")
                         logger.error(f"buyer: {data['attributes']['buyer']}")
@@ -246,10 +212,46 @@ def instant_payment_notification(request):
                                     logger.error(f"Successfully sent shipping notification email to {owner.email}")
                                 except Exception as e:
                                     logger.error(f"Failed to send shipping notification email to owner {owner.id}: {str(e)}")
+                                    all_shipping_successful = False
                             else:
                                 logger.error(f"Shipping label not processed yet for owner {owner.id}")
+                                all_shipping_successful = False
                         else:
                             logger.error(f"Failed to queue shipping label for owner {owner.id}: {response_shipping.content}")
+                            all_shipping_successful = False
+
+                    # Send confirmation email to customer only after all shipping labels are created
+                    if all_shipping_successful:
+                        try:
+                            logger.error(f"Sending confirmation email to {order.owner.email}")
+                            subject = "Thank You for Your Order!"
+                            
+                            # Get order items for email template
+                            order_items = anka_models.OrderItem.objects.filter(
+                                order=order.id
+                            ).select_related('art_work')
+                            logger.error(f"Found {order_items.count()} order items")
+
+                            context = {
+                                'user': order.owner,
+                                'order': order,
+                                'order_items': order_items
+                            }
+
+                            html_message = render_to_string('order_confirmation.html', context)
+                            plain_message = strip_tags(html_message)
+
+                            send_mail(
+                                subject,
+                                plain_message,
+                                settings.DEFAULT_FROM_EMAIL,
+                                [order.owner.email],
+                                html_message=html_message,
+                                fail_silently=False,
+                            )
+                            logger.error("Confirmation email sent successfully")
+                        except Exception as e:
+                            logger.error(f"Failed to send confirmation email: {str(e)}")
 
             return JsonResponse(
                 {"success": True, "message": "Notification received"}, status=200
