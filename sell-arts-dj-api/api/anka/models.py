@@ -293,7 +293,7 @@ class Orders(models.Model):
     phone = models.CharField(max_length=255, blank=True, null=True)
     postal_code = models.CharField(max_length=255, blank=True, null=True)
     country_code = models.CharField(max_length=255, blank=True, null=True)
-    internal_reference = models.CharField(max_length=255, blank=True, null=True)
+    internal_reference = models.TextField(max_length=255, blank=True, null=True)
     size = models.FloatField(default=0, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
