@@ -57,7 +57,7 @@ def instant_payment_notification(request):
                             'order_items': order_items
                         }
 
-                        html_message = render_to_string('email_templates/order_confirmation.html', context)
+                        html_message = render_to_string('api/email_templates/order_confirmation.html', context)
                         plain_message = strip_tags(html_message)
 
                         send_mail(
@@ -230,7 +230,7 @@ def instant_payment_notification(request):
                                     'shipping_invoice': shipping_label_data['data']['attributes']['package']['pdf'].get('invoice')
                                 }
 
-                                html_message = render_to_string('email_templates/shipping_notification.html', context)
+                                html_message = render_to_string('api/email_templates/shipping_notification.html', context)
                                 plain_message = strip_tags(html_message)
 
                                 try:
