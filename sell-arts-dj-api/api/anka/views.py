@@ -227,23 +227,25 @@ def instant_payment_notification(request):
                             subject = "Thank You for Your Order!"
                             
                             # Fetch fresh order data with all related items
-                            order = anka_models.Orders.objects.select_related('owner').get(id=order.id)
                             order_items = anka_models.OrderItem.objects.filter(
-                                order=order.id
+                                order=order
                             ).select_related(
                                 'art_work',
                                 'art_work__owner',
                                 'art_work__owner__artist_profile'
-                            )
+                            ).all()
                             
                             # Get shipping labels for this order
-                            shipping_labels = order_models.Shipping.objects.filter(order=order)
+                            shipping_labels = order_models.Shipping.objects.filter(
+                                order=order
+                            ).select_related('user').all()
                             
                             context = {
                                 'user': order.owner,
                                 'order': order,
                                 'order_items': order_items,
-                                'shipping_labels': shipping_labels
+                                'shipping_labels': shipping_labels,
+                                'total_amount': sum(item.quantity * item.art_work.price for item in order_items)
                             }
 
                             html_message = render_to_string('order_confirmation.html', context)

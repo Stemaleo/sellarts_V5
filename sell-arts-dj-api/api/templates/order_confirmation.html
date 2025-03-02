@@ -112,31 +112,39 @@
 
             <div class="order-details">
                 <h2>Order Details</h2>
-                <p>Order ID: {{ order.id }}</p>
+                <p>Order Reference: {{ order.id }}</p>
+                <p>Total Amount: {{ total_amount }} XOF</p>
 
                 <h3>Purchased Artworks</h3>
+                <ul>
                 {% for item in order_items %}
-                <div>
-                    <p>{{ item.art_work.title }} by {{ item.art_work.owner.name }}</p>
-                    <p>Quantity: {{ item.quantity }}</p>
-                    <p>Price: {{ item.price }}</p>
-                </div>
+                    <li>
+                        {{ item.art_work.title }} by {{ item.art_work.owner.name }}
+                        <br>
+                        Quantity: {{ item.quantity }}
+                        <br>
+                        Price: {{ item.art_work.price }} XOF
+                    </li>
                 {% endfor %}
+                </ul>
 
                 <h3>Shipping Labels</h3>
+                <ul>
                 {% for label in shipping_labels %}
-                <div>
-                    <p>Shipping Label: {{ label.label }}</p>
-                    <p>Label PDF: <a href="{{ label.label_pdf }}">Download</a></p>
-                    <p>Invoice PDF: <a href="{{ label.invoice_pdf }}">Download</a></p>
-                </div>
+                    <li>
+                        Shipping Label for items from: {{ label.user.name }}
+                        <br>
+                        Label Reference: {{ label.label }}
+                        <br>
+                        {% if label.label_pdf %}
+                            <a href="{{ label.label_pdf }}">Download Shipping Label</a>
+                        {% endif %}
+                        {% if label.invoice_pdf %}
+                            <a href="{{ label.invoice_pdf }}">Download Invoice</a>
+                        {% endif %}
+                    </li>
                 {% endfor %}
-
-                <p><strong>Subtotal:</strong> {{ order.total_amount }} XOF</p>
-                {% if order.shipping_fees %}
-                <p><strong>Shipping:</strong> {{ order.shipping_fees }} XOF</p>
-                {% endif %}
-                <p><strong>Total:</strong> {{ order.total_amount|add:order.shipping_fees }} XOF</p>
+                </ul>
             </div>
 
             <div class="shipping-labels">
