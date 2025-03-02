@@ -132,19 +132,21 @@ def instant_payment_notification(request):
                         max_length = 0
                         max_width = 0
                         
-                        for _ in owner_data['items']:
-                            # Get artwork for this item
-                            artwork = anka_models.ArtWorks.objects.get(id=order_item.art_work.id)
-                            logger.debug(f"Calculating dimensions for artwork {artwork.id}")
-                            
-                            # Use actual artwork dimensions (already in cm)
-                            item_height = artwork.height  # Height of artwork
-                            item_length = artwork.width   # Width becomes length since artworks are typically wider than deep
-                            item_width = artwork.width * 0.1  # Estimate thickness as 10% of width, more realistic than fixed 5cm
-                            # Stack items vertically
-                            total_height += item_height
-                            max_length = max(max_length, item_length)
-                            max_width = max(max_width, item_width)
+                        for item in owner_data['items']:  # Changed from _ to item
+                            # Get artwork for this item from the artworks list
+                            artwork = next((a for a in owner_data['artworks'] if a.title in item['description']), None)
+                            if artwork:
+                                logger.debug(f"Calculating dimensions for artwork {artwork.id}")
+                                
+                                # Use actual artwork dimensions (already in cm)
+                                item_height = artwork.height  # Height of artwork
+                                item_length = artwork.width   # Width becomes length since artworks are typically wider than deep
+                                item_width = artwork.width * 0.1  # Estimate thickness as 10% of width
+                                
+                                # Stack items vertically
+                                total_height += item_height * item['quantity']  # Multiply by quantity
+                                max_length = max(max_length, item_length)
+                                max_width = max(max_width, item_width)
 
                         # Add padding for packaging material
                         total_height += 5  # 5cm padding
