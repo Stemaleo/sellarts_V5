@@ -10,3 +10,4 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     feature_generate_fees = mutations.FeatureGenerateShippingFees.Field()
+    feature_verify_shipping_label = mutations.FeatureVerifyShippingLabel.Field()
