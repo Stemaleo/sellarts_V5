@@ -26,30 +26,30 @@ def instant_payment_notification(request):
 
     if request.method == "POST":
         try:
-            logger.info("Received IPN notification")
+            logger.error("Received IPN notification")
             data = json.loads(request.body.decode("utf-8"))["data"]
-            logger.debug(f"IPN data received: {data}")
+            logger.error(f"IPN data received: {data}")
 
             if data["type"] == "payment_links_orders":
                 if data["attributes"]["status"] == "captured":
                     reference: str = data["attributes"]["internal_reference"]
-                    logger.info(f"Processing captured payment for reference: {reference}")
+                    logger.error(f"Processing captured payment for reference: {reference}")
                     
                     order = anka_models.Orders.objects.get(
                         id=int(reference.split("SELLARTS")[-1])
                     )
-                    logger.debug(f"Found order: {order.id}")
+                    logger.error(f"Found order: {order.id}")
 
                     # Send confirmation email to user
                     try:
-                        logger.info(f"Sending confirmation email to {order.owner.email}")
+                        logger.error(f"Sending confirmation email to {order.owner.email}")
                         subject = "Thank You for Your Order!"
                         
                         # Get order items for email template
                         order_items = anka_models.OrderItem.objects.filter(
                             order=order.id
                         ).select_related('art_work')
-                        logger.debug(f"Found {order_items.count()} order items")
+                        logger.error(f"Found {order_items.count()} order items")
 
                         context = {
                             'user': order.owner,
@@ -68,28 +68,28 @@ def instant_payment_notification(request):
                             html_message=html_message,
                             fail_silently=False,
                         )
-                        logger.info("Confirmation email sent successfully")
+                        logger.error("Confirmation email sent successfully")
                     except Exception as e:
                         logger.error(f"Failed to send confirmation email: {str(e)}")
 
                     order.status = "PENDING"
                     order.payment_status = "SUCCESS"
                     order.save()
-                    logger.info(f"Updated order {order.id} status to PENDING and payment_status to SUCCESS")
+                    logger.error(f"Updated order {order.id} status to PENDING and payment_status to SUCCESS")
 
                     # Group order items by artwork owner
                     owner_items = {}
                     order_items = anka_models.OrderItem.objects.filter(
                         order=order.id
                     ).select_related('art_work', 'art_work__owner', 'art_work__owner__artist_profile')
-                    logger.debug(f"Processing {order_items.count()} items for shipping")
+                    logger.error(f"Processing {order_items.count()} items for shipping")
 
                     for order_item in order_items:
                         artwork = order_item.art_work
                         artwork_owner = artwork.owner
                         
                         # Update stock
-                        logger.debug(f"Updating stock for artwork {artwork.id} from {artwork.stock} to {artwork.stock - order_item.quantity}")
+                        logger.error(f"Updating stock for artwork {artwork.id} from {artwork.stock} to {artwork.stock - order_item.quantity}")
                         artwork.stock -= order_item.quantity
                         artwork.save()
 
@@ -113,9 +113,9 @@ def instant_payment_notification(request):
                         owner_items[artwork_owner.id]['total_weight'] += int(artwork.size * 1000)
 
                     # Generate shipping label for each owner's items
-                    logger.info(f"Generating shipping labels for {len(owner_items)} owners")
+                    logger.error(f"Generating shipping labels for {len(owner_items)} owners")
                     for owner_id, owner_data in owner_items.items():
-                        logger.debug(f"Processing shipping for owner {owner_id}")
+                        logger.error(f"Processing shipping for owner {owner_id}")
                         owner = owner_data['owner']
                         owner_profile = owner.artist_profile
 
@@ -136,7 +136,7 @@ def instant_payment_notification(request):
                             # Get artwork for this item from the artworks list
                             artwork = next((a for a in owner_data['artworks'] if a.title in item['description']), None)
                             if artwork:
-                                logger.debug(f"Calculating dimensions for artwork {artwork.id}")
+                                logger.error(f"Calculating dimensions for artwork {artwork.id}")
                                 
                                 # Use actual artwork dimensions (already in cm)
                                 item_height = artwork.height  # Height of artwork
@@ -153,8 +153,8 @@ def instant_payment_notification(request):
                         max_length += 5  # 5cm padding
                         max_width += 5  # 5cm padding
                         
-                        logger.debug(f"Final package dimensions: {total_height}x{max_length}x{max_width}cm")
-                        logger.info(f"buyer: {data['attributes']['buyer']}")
+                        logger.error(f"Final package dimensions: {total_height}x{max_length}x{max_width}cm")
+                        logger.error(f"buyer: {data['attributes']['buyer']}")
 
                         shipment_data = {
                             "data": {
@@ -188,7 +188,7 @@ def instant_payment_notification(request):
                         }
 
                         # Create shipping label
-                        logger.info(f"Creating shipping label for owner {owner_id}")
+                        logger.error(f"Creating shipping label for owner {owner_id}")
                         response_shipping = requests.post(
                             "https://api.anka.fyi/v1/shipment/labels", 
                             headers=headers, 
@@ -197,7 +197,7 @@ def instant_payment_notification(request):
 
                         shipping_response = response_shipping.json()
                         if shipping_response.get("status") == "queued":
-                            logger.debug("Successfully queued shipping label, waiting 5 seconds before verifying...")
+                            logger.error("Successfully queued shipping label, waiting 5 seconds before verifying...")
                             time.sleep(5)  # Wait 5 seconds
                             
                             # Verify shipping label status
@@ -207,7 +207,7 @@ def instant_payment_notification(request):
                             )
 
                             shipping_label_data = response_shipping_label.json()
-                            logger.debug("Successfully retrieved shipping label details")
+                            logger.error("Successfully retrieved shipping label details")
                             
                             if shipping_label_data['data']['attributes']['status'] == 'processed':
                                 # Create shipping record
@@ -218,10 +218,10 @@ def instant_payment_notification(request):
                                     label_pdf=shipping_label_data['data']['attributes']['package']['pdf'].get('label'),
                                     invoice_pdf=shipping_label_data['data']['attributes']['package']['pdf'].get('invoice')
                                 )
-                                logger.info(f"Created shipping record {shipping.id}")
+                                logger.error(f"Created shipping record {shipping.id}")
 
                                 # Send email to artwork owner
-                                logger.info(f"Sending shipping notification email to owner {owner.email}")
+                                logger.error(f"Sending shipping notification email to owner {owner.email}")
                                 context = {
                                     'user': owner,
                                     'order': order,
@@ -242,7 +242,7 @@ def instant_payment_notification(request):
                                         html_message=html_message,
                                         fail_silently=False,
                                     )
-                                    logger.info(f"Successfully sent shipping notification email to {owner.email}")
+                                    logger.error(f"Successfully sent shipping notification email to {owner.email}")
                                 except Exception as e:
                                     logger.error(f"Failed to send shipping notification email to owner {owner.id}: {str(e)}")
                             else:
@@ -261,12 +261,12 @@ def instant_payment_notification(request):
             )
 
         except Exception as e:
-            logger.exception("Error processing IPN")
+            logger.error("Error processing IPN")
             return JsonResponse(
                 {"success": False, "message": "Internal Server Error"}, status=500
             )
     else:
-        logger.warning(f"Invalid request method: {request.method}")
+        logger.error(f"Invalid request method: {request.method}")
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=405
         )
