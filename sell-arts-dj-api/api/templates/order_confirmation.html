@@ -128,7 +128,7 @@
                 {% endfor %}
                 </ul>
 
-                <h3>Shipping Labels</h3>
+                <h3>Shipping Labels & Tracking:</h3>
                 <ul>
                 {% for label in shipping_labels %}
                     <li>
@@ -137,28 +137,17 @@
                         Label Reference: {{ label.label }}
                         <br>
                         {% if label.label_pdf %}
-                            <a href="{{ label.label_pdf }}">Download Shipping Label</a>
+                            <a href="data:application/pdf;base64,{{ label.label_pdf }}" download="shipping_label.pdf">Download Shipping Label</a>
                         {% endif %}
                         {% if label.invoice_pdf %}
-                            <a href="{{ label.invoice_pdf }}">Download Invoice</a>
+                            <a href="data:application/pdf;base64,{{ label.invoice_pdf }}" download="invoice.pdf">Download Invoice</a>
                         {% endif %}
+                        <a href="https://parcelsapp.com/en/tracking/{{ label.label }}" class="tracking-button" target="_blank">Track Package</a>
                     </li>
                 {% endfor %}
                 </ul>
             </div>
 
-            <div class="shipping-labels">
-                <h3>Shipping Labels & Tracking:</h3>
-                {% for shipping in order.shipping_set.all %}
-                    {% if shipping.label %}
-                    <div style="margin: 10px 0;">
-                        <p><strong>Shipping Label:</strong> {{ shipping.label }}</p>
-                        <a href="{{ shipping.label_pdf }}" class="button" target="_blank">Download Label</a>
-                        <a href="https://parcelsapp.com/en/tracking/{{ shipping.label }}" class="tracking-button" target="_blank">Track Package</a>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
 
             <p>Shipping Address:</p>
             <p>
