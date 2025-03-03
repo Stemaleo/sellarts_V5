@@ -98,34 +98,6 @@
             font-size: 14px;
         }
     </style>
-    <script>
-        function downloadPdf(base64Data, filename) {
-            // Décoder la base64 en données binaires
-            const byteCharacters = atob(base64Data);
-            const byteArrays = [];
-
-            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-                const slice = byteCharacters.slice(offset, offset + 512);
-                const byteNumbers = new Array(slice.length);
-                for (let i = 0; i < slice.length; i++) {
-                    byteNumbers[i] = slice.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
-                byteArrays.push(byteArray);
-            }
-
-            // Créer un Blob à partir des données binaires
-            const blob = new Blob(byteArrays, { type: "application/pdf" });
-
-            // Générer un lien de téléchargement
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
 </head>
 <body>
     <div class="container">
@@ -164,16 +136,6 @@
                         <br>
                         Label Reference: {{ label.label }}
                         <br>
-                        {% if label.label_pdf %}
-                            <button onclick="downloadPdf('{{ label.label_pdf }}', 'shipping_label_{{ label.label }}.pdf')" class="tracking-button">
-                                Download Shipping Label
-                            </button>
-                        {% endif %}
-                        {% if label.invoice_pdf %}
-                            <button onclick="downloadPdf('{{ label.invoice_pdf }}', 'invoice_{{ label.label }}.pdf')" class="tracking-button">
-                                Download Invoice
-                            </button>
-                        {% endif %}
                         <a href="https://parcelsapp.com/en/tracking/{{ label.label }}" class="tracking-button" target="_blank">Track Package</a>
                     </li>
                 {% endfor %}
