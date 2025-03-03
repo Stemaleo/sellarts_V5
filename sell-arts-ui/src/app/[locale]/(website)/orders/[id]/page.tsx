@@ -11,6 +11,13 @@ import { getAOrder } from "@/actions/cart";
 import moment from "moment";
 import { getTranslations } from "next-intl/server";
 import { SHIPPING_QUERY } from "@/actions/queries/orders/ordersQueries";
+import ShippingActions from "./ShippingActions";
+
+interface ShippingInfo {
+  id: string;
+  label: string;
+  // Add other properties as needed
+}
 
 async function getShippingInfo(orderId: string) {
   try {
@@ -27,12 +34,12 @@ async function getShippingInfo(orderId: string) {
     const result = await response.json();
     console.log(result)
     if (!result.data?.shipping?.edges?.length) {
-      return null;
+      return [];
     }
-    return result.data.shipping.edges[0]?.node;
+    return result.data.shipping.edges.map((edge: any) => edge.node);
   } catch (error) {
     console.error("Error fetching shipping info:", error);
-    return null;
+    return [];
   }
 }
 
@@ -40,7 +47,7 @@ export default async function OrderDetails({ params }: any) {
   const meta = await params;
   const res = await getAOrder(meta.id);
   const t = await getTranslations();
-  const shippingInfo = await getShippingInfo(meta.id);
+  const shippingInfos = await getShippingInfo(meta.id);
 
   if (!res.success) {
     return <div>Unable to load data</div>;
@@ -53,14 +60,6 @@ export default async function OrderDetails({ params }: any) {
     status: orderData.status,
     total: orderData.totalAmount,
     items: orderData.orderItems,
-  };
-
-  const handleDownload = (base64Data: string, fileName: string) => {
-    const linkSource = `data:application/pdf;base64,${base64Data}`;
-    const downloadLink = document.createElement("a");
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
-    downloadLink.click();
   };
 
   return (
@@ -159,41 +158,26 @@ export default async function OrderDetails({ params }: any) {
             <CardTitle>Shipping Informations</CardTitle>
           </CardHeader>
           <CardContent>
-            {!shippingInfo ? (
+            {!shippingInfos.length ? (
               <div className="text-center text-muted-foreground">
                 No Shipping infos
               </div>
             ) : (
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">Ref:</span>
-                  <span className="text-sm font-medium">{shippingInfo.label}</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleDownload(shippingInfo.labelPdf, `shipping-label-${order.id}.pdf`)}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Label
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleDownload(shippingInfo.invoicePdf, `invoice-${order.id}.pdf`)}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Invoice
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => window.open(`https://parcelsapp.com/en/tracking/${shippingInfo.label}`, '_blank')}
-                  >
-                    <Truck className="h-4 w-4 mr-2" />
-                    Track Shipment
-                  </Button>
-                </div>
+              <div className="space-y-6">
+                {shippingInfos.map((shippingInfo: ShippingInfo, index: number) => (
+                  <div key={shippingInfo.id || index} className="border-b pb-4 last:border-b-0 last:pb-0">
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <div className="flex items-center gap-2">
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <ShippingActions 
+                          orderId={order.id}
+                          shippingInfo={shippingInfo}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
