@@ -164,8 +164,8 @@ def instant_payment_notification(request):
                         shipping_response = response_shipping.json()
                         logger.error(response_shipping.content)
                         if shipping_response.get("status") == "queued":
-                            logger.error("Successfully queued shipping label, waiting 5 seconds before verifying...")
-                            time.sleep(5)  # Wait 5 seconds
+                            logger.error("Successfully queued shipping label, waiting 10 seconds before verifying...")
+                            time.sleep(10)  # Wait 5 seconds
                             
                             # Verify shipping label status
                             response_shipping_label = requests.get(
