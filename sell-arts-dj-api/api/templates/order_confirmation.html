@@ -67,7 +67,7 @@
         .button {
             display: inline-block;
             background-color: #FF7F02;
-            color: white;
+            color: white !important;
             padding: 12px 25px;
             text-decoration: none;
             border-radius: 5px;
@@ -89,8 +89,8 @@
         }
         .tracking-button {
             display: inline-block;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #FF7F02;
+            color: white !important;
             padding: 8px 15px;
             text-decoration: none;
             border-radius: 4px;
@@ -131,11 +131,23 @@
                 <h3>Shipping Labels & Tracking:</h3>
                 <ul>
                 {% for label in shipping_labels %}
-                    <li>
+                    <!-- <li>
                         Shipping Label for items from: {{ label.user.name }}
                         <br>
                         Label Reference: {{ label.label }}
                         <br>
+                        {% if label.label_pdf %}
+                            <a href="data:application/pdf;base64,{{ label.label_pdf }}" download="shipping_label.pdf">Download Shipping Label</a>
+                        {% endif %}
+                        {% if label.invoice_pdf %}
+                            <a href="data:application/pdf;base64,{{ label.invoice_pdf }}" download="invoice.pdf">Download Invoice</a>
+                        {% endif %}
+                        <a href="https://parcelsapp.com/en/tracking/{{ label.label }}" class="tracking-button" target="_blank">Track Package</a>
+                    </li> -->
+
+                    <li>
+                        Shipping Label for items from: {{ label.user.name }}<br>
+                        Label Reference: {{ label.label }}<br>
                         {% if label.label_pdf %}
                             <a href="data:application/pdf;base64,{{ label.label_pdf }}" download="shipping_label.pdf">Download Shipping Label</a>
                         {% endif %}
