@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import NotificationButton from "@/components/notification-button";
 import { LocaleSwitcher } from "@/components/LocalSwitch";
+import CurrencySelector from "@/components/CurrencySelector";
 
 interface NavItem {
   title: string;
@@ -96,7 +97,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex-1">
             <form></form>
           </div>
-          <LocaleSwitcher />
+          <CurrencySelector />
           <LocaleSwitcher />
           <NotificationButton />
           <DropdownMenu>
