@@ -81,7 +81,7 @@ class CountryFilter(filter.FilterSet):
             field.name + "__id" if field.is_relation else field.name: ["exact", "in"]
             for field in order_models.Country._meta.fields
         }
-
+        exclude = ['shipping_rates']
 
 class CountryType(DjangoObjectType):
     id = graphene.ID(source="pk", required=True)
@@ -89,4 +89,32 @@ class CountryType(DjangoObjectType):
     class Meta:
         model = order_models.Country
         filterset_class = CountryFilter
+        interfaces = (graphene.relay.Node,)
+
+
+# Shipping
+class ShippingFilter(filter.FilterSet):
+    order_by = django_filters.OrderingFilter(
+        fields=(
+            [
+                field.name + "__id" if field.is_relation else field.name
+                for field in order_models.Shipping._meta.fields
+            ]
+        )
+    )
+
+    class Meta:
+        model = order_models.Shipping
+        fields = {
+            field.name + "__id" if field.is_relation else field.name: ["exact", "in"]
+            for field in order_models.Shipping._meta.fields
+        }
+
+
+class ShippingType(DjangoObjectType):
+    id = graphene.ID(source="pk", required=True)
+
+    class Meta:
+        model = order_models.Shipping
+        filterset_class = ShippingFilter
         interfaces = (graphene.relay.Node,)

@@ -10,6 +10,7 @@ mutation InitiatePayment(
   $phone:String!
   $isTheSameAddres:Boolean
   $order: ID!,
+  $currency: String!
 ) { 
   featureInitiatePayment(
       email: $email
@@ -21,6 +22,7 @@ mutation InitiatePayment(
       phoneNumber: $phone
       isTheSameAddres: $isTheSameAddres
       order: $order
+      currency: $currency
   ) {
       success
       message

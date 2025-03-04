@@ -19,10 +19,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { GET_ALL_COUNTRY } from "@/actions/queries/register/registerQuerie";
 import { FEATEUR_GENERATE_FEES } from "@/actions/mutation/artist/shipping/mutationShipping";
 
-interface Val{
-  id: string
+interface AddressFormProps {
+  order: Order;
+  setFee: any;
+  currency?: string;  // Make it optional here
 }
-const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
+
+const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
   const { execute, loading } = useActions();
   const router = useRouter();
   const [allCountry, setAllCountry] = useState<CountryType[]>([]);
@@ -30,7 +33,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
   const [paymentLink, setPaymentLink] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [loadingPaymentLink, setLoadingPaymentLink] = useState(false);
-
+  const [pushPayment, setPushPayment] = useState(false);
 
   const fetchAllCountry = async () => {
     try {
@@ -63,7 +66,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
          },
       }).then((response) => {
         console.log("######################LA REPONSE##############################");
-        console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
+        console.log(response.data.data)
          setFee(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
          setLoadingPaymentLink(false)
       });
@@ -79,6 +82,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
       name: order.owner?.name ?? "",
       phone: order.phone ?? "",
       allCountry:  "",
+      currency: 'XOF', 
       address: order.address ?? "",
       city: order.city ?? "",
       state: order.state ?? "",
@@ -105,12 +109,19 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
           query: INITIATE_PAYMENT_MUTATION,
           variables: values,
         });
+        console.log("##################", values);
         console.log("Response :", response);
         if (response.data.data.featureInitiatePayment.success) {
           const paymentUrl = response.data.data.featureInitiatePayment.paymentLink;
-          setPaymentLink(paymentUrl);
-          setShowPopup(true);
-          toast.success("Lien de paiement généré avec succès !");
+          if (pushPayment) {
+            router.push(paymentUrl);
+            toast.success("Redirecting to payment page...");
+          } else {
+            setPaymentLink(paymentUrl);
+            setShowPopup(true);
+            toast.success("Payment link generated successfully!");
+          }
+          
         }
       } catch (error) {
         console.error("Erreur lors de la génération du lien :", error);
@@ -209,7 +220,7 @@ const AddressForm = ({ order, setFee}: { order: Order, setFee: any, }) => {
             loading={loadingPaymentLink}
             className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90"
             size="lg"
-            onClick={() => router.push(paymentLink)}
+            onClick={() => setPushPayment(true)}
           >
             Pay
           </Button>

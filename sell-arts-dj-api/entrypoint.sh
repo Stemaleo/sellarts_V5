@@ -3,13 +3,14 @@
 set -e
 
 # Fonction pour exécuter les migrations
+# Fonction pour exécuter les migrations
 run_migrations() {
     echo "Running migrations..."
     poetry run python /app/api/manage.py collectstatic --noinput
-    poetry run python /app/api/manage.py makemigrations
-    poetry run python /app/api/manage.py migrate
-
+    poetry run python /app/api/manage.py makemigrations --noinput
+    poetry run python /app/api/manage.py migrate --noinput
 }
+
 
 # Fonction pour démarrer Gunicorn
 start_gunicorn() {

@@ -38,6 +38,7 @@ class ArtistProfiles(models.Model):
     portfolio_url = models.CharField(max_length=255, blank=True, null=True)
     user = models.OneToOneField('Users', models.DO_NOTHING, blank=True, null=True)
     is_deleted = models.BooleanField(null=True, default=False)
+    phone_number = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(null=True, default=True)
 
     class Meta:
@@ -293,7 +294,7 @@ class Orders(models.Model):
     phone = models.CharField(max_length=255, blank=True, null=True)
     postal_code = models.CharField(max_length=255, blank=True, null=True)
     country_code = models.CharField(max_length=255, blank=True, null=True)
-    shipping_label = models.CharField(max_length=255, blank=True, null=True)
+    internal_reference = models.TextField(max_length=255, blank=True, null=True)
     size = models.FloatField(default=0, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
