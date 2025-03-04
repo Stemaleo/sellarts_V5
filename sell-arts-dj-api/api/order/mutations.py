@@ -5,6 +5,7 @@ from anka import models as anka_models
 from order import models as order_models
 import requests
 from . import types as types
+import math
 
 logger = logging.getLogger(__name__)
 
@@ -82,14 +83,14 @@ class FeatureGenerateShippingFees(graphene.Mutation):
                 else:
                     shipping_fee: float = 100000
 
-                # Add shipping fee plus 30% to total
-                total_shipping_fees += shipping_fee + (shipping_fee * 0.3)
+                # Add shipping fee plus 10% to total
+                total_shipping_fees += shipping_fee + (shipping_fee * 0.10)
 
             order.size = float(sum(data['total_size'] for data in owner_items.values()))
             order.country = country
             order.country_code = country.code
-            order.shipping_fees = total_shipping_fees
-            order.total_amount = float(order.total_amount) + float(total_shipping_fees)
+            order.shipping_fees = math.ceil(total_shipping_fees)
+            order.total_amount = math.ceil(math.ceil(order.total_amount) + float(total_shipping_fees))
             order.save()
 
             logger.info(f"Successfully updated order {order.id} with shipping fees")
