@@ -1,32 +1,30 @@
 import graphene
 import logging
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any, Optional
 from anka import models as anka_models
 from order import models as order_models
-
 import requests
-from anka.fees import get_value
 from . import types as types
 
 logger = logging.getLogger(__name__)
+
 def find_closest_higher_value(from_country: dict, to_country: str, weight: float) -> float:
-    """Retourne le tarif pour un pays et un poids donnés."""
+    """Returns the rate for a given country and weight."""
     
     if to_country not in from_country:
         raise KeyError(f"Destination country '{to_country}' not found in shipping rates")
     
-    weight_list = list(from_country.get(to_country).keys())
-    weight_list = sorted(weight_list)  # Trier la liste
+    weight_list = sorted([float(x) for x in from_country.get(to_country).keys()])  # Sort the list of weights
     
     if weight in weight_list:
-        return weight
+        return from_country[to_country][str(float(weight))]
     
     higher_values = [x for x in weight_list if x > weight]
+    
     if not higher_values:
         raise ValueError(f"No shipping rate found for weight {weight} to {to_country}")
     
-    return min(higher_values)
-
+    return from_country[to_country][str(float(min(higher_values)))]
 
 
 class FeatureGenerateShippingFees(graphene.Mutation):
@@ -43,14 +41,12 @@ class FeatureGenerateShippingFees(graphene.Mutation):
         try:
             logger.info(f"Generating shipping fees for order {kwargs['order']}")
             
-            order: anka_models.Orders = anka_models.Orders.objects.get(id=kwargs["order"])
-            country: order_models.Country = order_models.Country.objects.get(id=kwargs["country"])
+            order = anka_models.Orders.objects.get(id=kwargs["order"])
+            country = order_models.Country.objects.get(id=kwargs["country"])
 
             # Group order items by artwork owner
             owner_items: Dict[int, Dict[str, Any]] = {}
-            order_items = anka_models.OrderItem.objects.filter(
-                order=order.id
-            ).select_related('art_work', 'art_work__owner')
+            order_items = anka_models.OrderItem.objects.filter(order=order.id).select_related('art_work', 'art_work__owner')
 
             for order_item in order_items:
                 artwork = order_item.art_work
@@ -75,279 +71,16 @@ class FeatureGenerateShippingFees(graphene.Mutation):
                 
                 # Get origin country code from the owner
                 origin_country_code: str = owner.country.code
-                COUNTRY_CODES = {
-    "Cape Verde": "CV",
-    "Gambia": "GM",
-    "Guinea Republic": "GN",
-    "Guinea-Bissau": "GW",
-    "Mali": "ML",
-    "Mauritania": "MR",
-    "Cote D Ivoire": "CI",
-    "France": "FR",
-    "Monaco": "MC",
-    "Angola": "AO",
-    "Benin": "BJ",
-    "Botswana": "BW",
-    "Burkina Faso": "BF",
-    "Burundi": "BI",
-    "Cameroon": "CM",
-    "Central African Republic": "CF",
-    "Chad": "TD",
-    "Comoros": "KM",
-    "Congo": "CG",
-    "Djibouti": "DJ",
-    "Eritrea": "ER",
-    "Ethiopia": "ET",
-    "Gabon": "GA",
-    "Ghana": "GH",
-    "Guinea-Equatorial": "GQ",
-    "Kenya": "KE",
-    "Lesotho": "LS",
-    "Liberia": "LR",
-    "Madagascar": "MG",
-    "Malawi": "MW",
-    "Mauritius": "MU",
-    "Mayotte": "YT",
-    "Morocco": "MA",
-    "Mozambique": "MZ",
-    "Namibia": "NA",
-    "Niger": "NE",
-    "Nigeria": "NG",
-    "Reunion": "RE",
-    "Island Of": "XX",  # No standard code for generic "Island Of"
-    "Rwanda": "RW",
-    "Sao Tome And Principe": "ST",
-    "Seychelles": "SC",
-    "Sierra Leone": "SL",
-    "Somalia": "SO",
-    "Somaliland": "SO",  # Somaliland uses Somalia's code as it's not internationally recognized
-    "South Africa": "ZA",
-    "South Sudan": "SS",
-    "Sudan": "SD",
-    "Swaziland": "SZ",
-    "Tanzania": "TZ",
-    "Togo": "TG",
-    "Uganda": "UG",
-    "Zambia": "ZM",
-    "Zimbabwe": "ZW",
-    "Albania": "AL",
-    "Andorra": "AD",
-    "Austria": "AT",
-    "Belarus": "BY",
-    "Belgium": "BE",
-    "Bosnia And Herzegovina": "BA",
-    "Bulgaria": "BG",
-    "Croatia": "HR",
-    "Cyprus": "CY",
-    "Denmark": "DK",
-    "Estonia": "EE",
-    "Faroe Islands": "FO",
-    "Finland": "FI",
-    "Germany": "DE",
-    "Gibraltar": "GI",
-    "Greece": "GR",
-    "Greenland": "GL",
-    "Guernsey": "GG",
-    "Hungary": "HU",
-    "Iceland": "IS",
-    "Ireland, Republic Of": "IE",
-    "Italy": "IT",
-    "Jersey": "JE",
-    "Kosovo": "XK",
-    "Latvia": "LV",
-    "Lichtenstein": "LI",
-    "Lithuania": "LT",
-    "Luxembourg": "LU",
-    "Macedonia, Republic Of": "MK",
-    "Malta": "MT",
-    "Moldova, Republic Of": "MD",
-    "Montenegro, Republic Of": "ME",
-    "Norway": "NO",
-    "Poland": "PL",
-    "Portugal": "PT",
-    "Romania": "RO",
-    "San Marino": "SM",
-    "Serbia, Republic Of": "RS",
-    "Slovakia": "SK",
-    "Slovenia": "SI",
-    "Spain": "ES",
-    "Sweden": "SE",
-    "Switzerland": "CH",
-    "The Czech Republic": "CZ",
-    "The Netherlands": "NL",
-    "The Russian Federation": "RU",
-    "Turkey": "TR",
-    "Ukraine": "UA",
-    "United Kingdom": "GB",
-    "Vatican City": "VA",
-    "Canada": "CA",
-    "Congo, The Democratic Republic Of": "CD",
-    "East Timor": "TL",
-    "Mexico": "MX",
-    "Saint Helena": "SH",
-    "United States Of America": "US",
-    "Algeria": "DZ",
-    "Bahrain": "BH",
-    "China, Peoples Republic": "CN",
-    "Egypt": "EG",
-    "Iraq": "IQ",
-    "Israel": "IL",
-    "Jordan": "JO",
-    "Kuwait": "KW",
-    "Lebanon": "LB",
-    "Libya": "LY",
-    "Oman": "OM",
-    "Qatar": "QA",
-    "Saudi Arabia": "SA",
-    "Syria": "SY",
-    "The Canary Islands": "ES",  # Part of Spain
-    "Tunisia": "TN",
-    "United Arab Emirates": "AE",
-    "Yemen, Republic Of": "YE",
-    "Afghanistan": "AF",
-    "Armenia": "AM",
-    "Azerbaijan": "AZ",
-    "Bangladesh": "BD",
-    "Bhutan": "BT",
-    "Brunei": "BN",
-    "Cambodia": "KH",
-    "Commonwealth No. Mariana Islands": "MP",
-    "Georgia": "GE",
-    "Hong Kong": "HK",
-    "India": "IN",
-    "Indonesia": "ID",
-    "Iran (Islamic Republic Of)": "IR",
-    "Japan": "JP",
-    "Kazakhstan": "KZ",
-    "Korea, Republic Of (South)": "KR",
-    "Korea, The D.P.R Of (North)": "KP",
-    "Kyrgyzstan": "KG",
-    "Lao Peoples Democratic Republic": "LA",
-    "Macau": "MO",
-    "Malaysia": "MY",
-    "Maldives": "MV",
-    "Mongolia": "MN",
-    "Myanmar": "MM",
-    "Nepal": "NP",
-    "Pakistan": "PK",
-    "Papua New Guinea": "PG",
-    "Singapore": "SG",
-    "Sri Lanka": "LK",
-    "Taiwan": "TW",
-    "Tajikistan": "TJ",
-    "Thailand": "TH",
-    "The Philippines": "PH",
-    "Turkmenistan": "TM",
-    "Uzbekistan": "UZ",
-    "Vietnam": "VN",
-    "American Samoa": "AS",
-    "Anguilla": "AI",
-    "Antigua": "AG",
-    "Argentina": "AR",
-    "Aruba": "AW",
-    "Australia": "AU",
-    "Bahamas": "BS",
-    "Barbados": "BB",
-    "Belize": "BZ",
-    "Bermuda": "BM",
-    "Bolivia": "BO",
-    "Bonaire": "BQ",
-    "Brazil": "BR",
-    "Cayman Islands": "KY",
-    "Chile": "CL",
-    "Colombia": "CO",
-    "Cook Islands": "CK",
-    "Costa Rica": "CR",
-    "Cuba": "CU",
-    "Curacao": "CW",
-    "Dominica": "DM",
-    "Dominican Republic": "DO",
-    "Ecuador": "EC",
-    "El Salvador": "SV",
-    "Falkland Islands": "FK",
-    "Fiji": "FJ",
-    "French Guyana": "GF",
-    "Grenada": "GD",
-    "Guadeloupe": "GP",
-    "Guam": "GU",
-    "Guatemala": "GT",
-    "Guyana (British)": "GY",
-    "Haiti": "HT",
-    "Honduras": "HN",
-    "Jamaica": "JM",
-    "Kiribati": "KI",
-    "Marshall Islands": "MH",
-    "Martinique": "MQ",
-    "Micronesia, Federated States Of": "FM",
-    "Montserrat": "MS",
-    "Nauru, Republic Of": "NR",
-    "Nevis": "KN",  # Part of Saint Kitts and Nevis
-    "New Caledonia": "NC",
-    "New Zealand": "NZ",
-    "Nicaragua": "NI",
-    "Niue": "NU",
-    "Palau": "PW",
-    "Panama": "PA",
-    "Paraguay": "PY",
-    "Peru": "PE",
-    "Puerto Rico": "PR",
-    "Samoa": "WS",
-    "Solomon Islands": "SB",
-    "St. Barthelemy": "BL",
-    "St. Eustatius": "BQ",  # Part of Bonaire, Sint Eustatius and Saba
-    "St. Kitts": "KN",
-    "St. Lucia": "LC",
-    "St.Maarten": "SX",
-    "St. Vincent": "VC",
-    "Suriname": "SR",
-    "Tahiti": "PF",  # French Polynesia
-    "Tonga": "TO",
-    "Trinidad And Tobago": "TT",
-    "Turks And Caicos Islands": "TC",
-    "Tuvalu": "TV",
-    "Uruguay": "UY",
-    "Vanuatu": "VU",
-    "Venezuela": "VE",
-    "Virgin Islands (British)": "VG",
-    "Virgin Islands (Us)": "VI",
-}
-                # si = order_models.Country.objects.get(code='SN')
-                # si_SI = si.shipping_rates
-                # # Update shipping rates dictionary keys with country codes
-                # updated_shipping_rates = {}
-                # for country_name, rates in si_SI.items():
-                #     if country_name in COUNTRY_CODES:
-                #         # Replace country name with its code in the shipping rates dictionary
-                #         country_code = COUNTRY_CODES[country_name]
-                #         updated_shipping_rates[country_code] = rates
-                #     else:
-                #         # Keep original key if no matching code is found
-                #         updated_shipping_rates[country_name] = rates
-                
-                # Replace the original shipping rates with the updated one
-                # print(updated_shipping_rates, "updated_shipping_rates")
-                    
-                # si.shipping_rates = updated_shipping_rates
-                # si.save()
                 
                 # Get destination country code from the country parameter
                 destination_country_code: str = country.code
-                print(origin_country_code, destination_country_code, "origin_country_code, destination_country_code")
                 
                 # Calculate shipping fee based on origin country
                 if origin_country_code in ["BJ", "NG", "SN", "ZA", "CI"]:
-                    # country_choice = {"BJ": BENIN}
-                    
-                    # country_choice = {"BJ": BENIN, "NG": NIGERIA, "SN": SENEGAL, "CI": SENEGAL}
-                    print(total_size)
-                    shipping_fee: float = float(get_value(origin_country_code, total_size))
-                    print(shipping_fee, "shipping_fee")
-                    # shipping_fee: float = 0
-                    # shipping_fee: float = float(find_closest_higher_value(country_choice[origin_country_code], destination_country_code, total_size))
-                    
-                    
+                    country_choice = order_models.Country.objects.get(code=origin_country_code).shipping_rates
+                    shipping_fee: float = float(find_closest_higher_value(country_choice, destination_country_code, total_size))
                 else:
-                    shipping_fee: float = 50000
+                    shipping_fee: float = 100000
 
                 # Add shipping fee plus 30% to total
                 total_shipping_fees += shipping_fee + (shipping_fee * 0.3)
@@ -356,6 +89,7 @@ class FeatureGenerateShippingFees(graphene.Mutation):
             order.country = country
             order.country_code = country.code
             order.shipping_fees = total_shipping_fees
+            order.total_amount = float(order.total_amount) + float(total_shipping_fees)
             order.save()
 
             logger.info(f"Successfully updated order {order.id} with shipping fees")
@@ -385,7 +119,7 @@ class FeatureVerifyShippingLabel(graphene.Mutation):
         try:
             logger.info(f"Verifying shipping label for order {order}")
             
-            order: anka_models.Orders = anka_models.Orders.objects.get(id=order)
+            order = anka_models.Orders.objects.get(id=order)
 
             if not order.internal_reference:
                 logger.warning(f"Order {order.id} has no internal reference")
