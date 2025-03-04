@@ -3,6 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def verify_shipping_label(reference="0MPUySELLARTS11377652_715"):
     try:
         headers = {
@@ -28,6 +29,7 @@ def verify_shipping_label(reference="0MPUySELLARTS11377652_715"):
         logger.error(f"Error verifying shipping label: {str(e)}")
         return None
 
+
 if __name__ == "__main__":
     result = verify_shipping_label()
     if result:
@@ -35,5 +37,4 @@ if __name__ == "__main__":
     else:
         print("Failed to verify shipping label status")
 
-
-
+# Dictionary mapping country names to country codes

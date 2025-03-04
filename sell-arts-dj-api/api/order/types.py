@@ -81,7 +81,7 @@ class CountryFilter(filter.FilterSet):
             field.name + "__id" if field.is_relation else field.name: ["exact", "in"]
             for field in order_models.Country._meta.fields
         }
-
+        exclude = ['shipping_rates']
 
 class CountryType(DjangoObjectType):
     id = graphene.ID(source="pk", required=True)
