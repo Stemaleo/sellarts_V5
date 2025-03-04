@@ -6,7 +6,7 @@ from order import models as order_models
 import requests
 from . import types as types
 import math
-
+from decimal import Decimal
 logger = logging.getLogger(__name__)
 
 def find_closest_higher_value(from_country: dict, to_country: str, weight: float) -> float:
@@ -90,7 +90,7 @@ class FeatureGenerateShippingFees(graphene.Mutation):
             order.country = country
             order.country_code = country.code
             order.shipping_fees = math.ceil(total_shipping_fees)
-            order.total_amount = math.ceil(math.ceil(order.total_amount) + float(total_shipping_fees))
+            order.total_amount = Decimal(math.ceil(math.ceil(order.total_amount) + float(total_shipping_fees)))
             order.save()
 
             logger.info(f"Successfully updated order {order.id} with shipping fees")
