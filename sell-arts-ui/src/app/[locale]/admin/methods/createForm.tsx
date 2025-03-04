@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import ErrorMessage from "@/app/[locale]/ErrorMessage";
+import ErrorMessage from "@/components/ErrorMessage";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { CREATE_METHOD } from "@/actions/mutation/admin/methodsType/createMutation";
