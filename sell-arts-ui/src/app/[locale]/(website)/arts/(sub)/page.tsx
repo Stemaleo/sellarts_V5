@@ -5,6 +5,7 @@ import CustomPagination from "@/components/ui/custom-pagination";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
+import { convertPrice } from "@/actions/currencyConverter";
 
 const ArtsPage = async ({ searchParams }: any) => {
   const search = await searchParams;

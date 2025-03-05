@@ -139,15 +139,15 @@ public class ArtWorkService {
 
     public ResponseEntity<ResponseDTO> getAllArtWorks(String title, Pageable pageable, String paintingType, String materialType, int price) {
 
-
-        Specification<ArtWork> spec = Specification.where(null);
+        Specification<ArtWork> spec = Specification.where((root, query, criteriaBuilder) ->
+            criteriaBuilder.equal(root.get("is_deleted"), false)
+        );
 
         if(title!=null && !title.isEmpty()){
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%"+title.toLowerCase()+"%")
             );
         }
-
 
         if (paintingType != null && !paintingType.isEmpty()) {
             String[] categories = paintingType.split(",");
@@ -217,8 +217,9 @@ public class ArtWorkService {
 
 
     public ArtWork findOrFailById(String artworkId) {
-
-        return artWorkRepo.findById(artworkId).orElseThrow(()-> new EntityNotFoundException("Artwork not found"));
+        return artWorkRepo.findById(artworkId)
+                .filter(artwork -> !artwork.getIs_deleted())
+                .orElseThrow(() -> new EntityNotFoundException("Artwork not found"));
     }
 
     public ResponseEntity<ResponseDTO> getAllFeaturedArtOfArtist(Long artistId) {

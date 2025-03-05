@@ -13,13 +13,14 @@ import java.util.Optional;
 public interface UsersRepo extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
+    @Query("SELECT u FROM users u WHERE u.artistProfile IS NOT NULL AND u.is_deleted = false")
     List<User> findAllByArtistProfileNotNull();
 
-    Page<User> findAllByRolesContaining(String role,Pageable pageable);
+    @Query("SELECT u FROM users u WHERE u.roles LIKE %:role% AND u.is_deleted = false")
+    Page<User> findAllByRolesContaining(String role, Pageable pageable);
 
+    @Query("SELECT COUNT(u) FROM users u WHERE u.is_deleted = false AND u.registeredAt BETWEEN :start AND :end")
     Long countAllByRegisteredAtBetween(LocalDateTime start, LocalDateTime end);
-
-//    Long countAllByRegisteredAtBetween(LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT COUNT (u) FROM users u WHERE u.artistProfile IS NOT NULL AND u.is_deleted = false")
     Long countAllArtists();
