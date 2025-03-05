@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AddressForm from "../AddressForm";
 import { useCurrency } from "@/context/CurrencyContext";
+import { convertPrice } from "@/actions/currencyConverter";
 
 interface ClientProps {
   params: {
@@ -31,15 +32,7 @@ export default function ClientComponent({ params }: ClientProps) {
   const [loading, setLoading] = useState(true);
   const { currency } = useCurrency();
 
-  const exchangeRates: Record<string, number> = {
-    XOF: 1,
-    USD: 700,
-    EUR: 655,
-  };
 
-  const convertPrice = (priceXOF: number, targetCurrency: string) => {
-    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
-  };
 
   useEffect(() => {
     const fetchOrder = async () => {

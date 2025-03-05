@@ -18,7 +18,7 @@ import { GET_ARTWORK_BY_ID } from "@/actions/queries/artwork/querieArtwork";
 import { useState, useEffect } from "react";
 import { MethodType, StyleType } from "@/lib/type";
 import { useCurrency } from "@/context/CurrencyContext";
-
+import { convertPrice } from '@/actions/currencyConverter';
 interface Artwork {
   id: number;
   imageUrl: string;
@@ -50,15 +50,7 @@ export default function ArtworkDetail({ params, translations }: {
   const [respo, setRespo] = useState<any>(null);
   const { currency } = useCurrency();
 
-  const exchangeRates: Record<string, number> = {
-    XOF: 1,
-    USD: 600,
-    EUR: 655,
-  };
 
-  const convertPrice = (priceXOF: number, targetCurrency: string) => {
-    return (priceXOF / exchangeRates[targetCurrency]).toFixed(2);
-  };
 
   useEffect(() => {
       

@@ -13,9 +13,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { useActions } from "@/lib/hooks";
 import { deleteArtWork } from "@/actions/artwork";
 import { useCurrency } from "@/context/CurrencyContext";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { convertPrice } from "@/actions/currencyConverter";
 
+interface ArtCardProps {
+  artwork: ArtWorkDTO;
+}
 
-const ArtCard = ({ artwork }: { artwork: ArtWorkDTO }) => {
+const ArtCard = ({ artwork }: ArtCardProps) => {
   const router = useRouter();
   const { currency } = useCurrency();
 
@@ -25,44 +30,32 @@ const ArtCard = ({ artwork }: { artwork: ArtWorkDTO }) => {
     EUR: 655,
   };
 
-
-  // (pour les prix de base en USD ou EURO, on va multiplier)
-  const convertPrice = (priceXOF: number, targetCurrency: string) => {
-    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
-  };
-
   return (
-    <>
-      <div key={artwork.id} className="bg-white rounded-lg shadow-md overflow-hidden relative">
-        {artwork.inStock ? (
-          <Badge className="absolute z-10 top-2 right-2 bg-green-500">In stock</Badge>
-        ) : (
-          <Badge className="absolute z-10 top-2 right-2 bg-red-500">Sold</Badge>
-        )}
-        <div className="relative h-48">
-          <Image src={artwork.mediaUrls[0]} alt={artwork.title} layout="fill" objectFit="cover" />
+    <Card className="overflow-hidden group cursor-pointer">
+      <CardContent className="p-0 relative">
+        <div className="aspect-square overflow-hidden">
+          <Image
+            src={artwork.mediaUrls[0]}
+            alt={artwork.title}
+            width={400}
+            height={400}
+            className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+          />
         </div>
-        <div className="p-4">
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-500 bg-primary/20 py-1 px-2 rounded-full inline h-auto">
-              By, {artwork.ownerName}
-            </span>
-            <NativeSharePopup url={'arts/' + artwork.id} title={artwork.title} useWindow={false} />
-          </div>
-          <h2 className="text-lg font-semibold mb-0 mt-1 line-clamp-1">{artwork.title}</h2>
-          <p className="text-gray-500 mb-1 text-sm line-clamp-1">{artwork.description}</p>
-          <div className="flex justify-between items-center mb-4">
-            <span className="font-bold">                        {convertPrice(artwork.price, currency)} {currency}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">{artwork.materialType.name}</Badge>
-            <Badge variant="secondary">{artwork.paintingType.name}</Badge>
-          </div>
-
+      </CardContent>
+      <CardFooter className="p-4 flex flex-col items-start gap-2">
+        <div className="flex items-center gap-2">
+          <h3 className="font-semibold">{artwork.title}</h3>
+          {artwork.inStock ? (
+            <Badge className="bg-green-500">In stock</Badge>
+          ) : (
+            <Badge className="bg-red-500">Sold</Badge>
+          )}
         </div>
-      </div>
-    </>
+        <p className="text-sm text-muted-foreground">By {artwork.ownerName}</p>
+        <p className="font-bold">{convertPrice(artwork.price, currency)} {currency}</p>
+      </CardFooter>
+    </Card>
   );
 };
 

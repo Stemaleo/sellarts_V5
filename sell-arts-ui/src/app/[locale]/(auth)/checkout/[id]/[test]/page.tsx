@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import AddressForm from "../AddressForm";
 import { useCurrency } from "@/context/CurrencyContext";
+import { convertPrice } from "@/actions/currencyConverter";
 
 
 export default function Component({ params }: { params: Promise<{ id: string , test: string }> }) {
@@ -26,17 +27,7 @@ export default function Component({ params }: { params: Promise<{ id: string , t
   const { currency } = useCurrency();
   const [id, setId] = useState<string>("");
   const [res, setRes] = useState<any>(null);
-  const exchangeRates: Record<string, number> = {
-    XOF: 1,
-    USD: 600,
-    EUR: 655,
-  };
 
-  // (pour les prix de base en USD ou EURO, on va multiplier)
-  const convertPrice = (priceXOF: number, targetCurrency: string) => {
-    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
-  };
-  
   useEffect(() => {
     const fetchOrder = async () => {
       try {
