@@ -10,3 +10,25 @@ export const GET_USERS_BY_ID = `
 }
 `;
 
+
+export const GET_ALL_USERS = `
+query getAllUsers{
+  users (isDeleted: false orderBy:"-id"){
+    edges{
+      node{
+        id
+        name
+        email
+        isDeleted
+        isActive
+        registeredAt
+        artistProfile{
+          artistType
+          isDeleted
+          isActive
+        }
+      }
+    }
+  }
+}
+`;

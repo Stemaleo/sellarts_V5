@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronLeftIcon, ChevronRightIcon, Trash } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, Trash, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -16,7 +16,7 @@ import axios from "axios";
 import { DELETE_BTN_USER_BY_ADMIN } from "@/actions/mutation/admin/deleteBtn/mutationDleteBtn";
 import { GET_USERS_BY_ID } from "@/actions/queries/admin/querieUser";
 import { SUSPENDRE_BTN_USER_BY_ADMIN } from "@/actions/mutation/admin/suspendreBtn/mutationSwitch";
-
+import { GET_ALL_USERS } from "@/actions/queries/admin/querieUser";
 export default function Component() {
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "0", 10);
@@ -29,36 +29,42 @@ export default function Component() {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
       try {
-        // Get basic user data
-        const res = await getAllUsers(currentPage, userType);
-        
-        if (res.success && res.data?.content) {
-          // Get active status for each user
-          const usersWithStatus = await Promise.all(
-            res.data.content.map(async (user: any) => {
-              const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-                query: GET_USERS_BY_ID,
-                variables: { id: user.id },
-              });
+        const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+          query: GET_ALL_USERS
+        });
 
-              const isActive = response.data?.data?.users?.edges?.[0]?.node?.isActive || false;
-              
-              return {
-                ...user,
-                isActive
-              };
-            })
-          );
+        if (response.data?.data?.users?.edges) {
+          const formattedUsers = response.data.data.users.edges.map((edge: any) => ({
+            id: edge.node.id,
+            name: edge.node.name,
+            email: edge.node.email,
+            isActive: edge.node.isActive,
+            registeredAt: edge.node.registeredAt,
+            type: edge.node.artistProfile ? "ARTIST" : "USER",
+            artistProfile: edge.node.artistProfile
+          }));
+
+          // Pagination logic
+          const itemsPerPage = 7;
+          const startIndex = currentPage * itemsPerPage;
+          const paginatedUsers = formattedUsers.slice(startIndex, startIndex + itemsPerPage);
 
           setUsers({
-            ...res.data,
-            content: usersWithStatus
+            content: paginatedUsers,
+            page: {
+              number: currentPage,
+              totalPages: Math.ceil(formattedUsers.length / itemsPerPage),
+              totalElements: formattedUsers.length
+            }
           });
         }
       } catch (error) {
         toast.error("Erreur lors de la récupération des utilisateurs");
         console.error("Erreur:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -67,6 +73,7 @@ export default function Component() {
 
 
   const deleteUser = async (userId: number) => {
+    setLoading(true);
     try {
       const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
         query: DELETE_BTN_USER_BY_ADMIN,
@@ -86,6 +93,8 @@ export default function Component() {
     } catch (error) {
       toast.error("Erreur lors de la suppression de l'utilisateur");
       console.error("Erreur lors de la suppression :", error);
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -96,6 +105,7 @@ export default function Component() {
 
 
   const susBtnUserByAdmin = async (userId: number, status: boolean) => {
+    setLoading(true);
     try {
       const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
         query: SUSPENDRE_BTN_USER_BY_ADMIN,
@@ -108,8 +118,18 @@ export default function Component() {
     } catch (error) {
       toast.error("Erreur lors de la suppression de l'utilisateur");
       console.error("Erreur lors de la suppression :", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="animate-spin h-10 w-10 text-gray-500" />
+      </div>
+    );
+  }
 
   if (!users || users.length === 0) {
     return <div>Impossible de charger les utilisateurs</div>;
