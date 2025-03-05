@@ -10,11 +10,12 @@ from order import models as order_models
 import requests
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from api.secret import ANKA_API_BASE_URL, ANKA_API_TOKEN
 
 logger = logging.getLogger(__name__)
 
 headers = {
-    "Authorization": "Token FqvbsxHBxTKmbZyNcPvvNbFm",
+    "Authorization": f"Token {ANKA_API_TOKEN}",
     "Accept": "application/vnd.api+json",
     "charset": "utf-8",
     "Content-Type": "application/json",
@@ -156,7 +157,7 @@ def instant_payment_notification(request):
                         # Create shipping label
                         logger.error(f"Creating shipping label for owner {owner_id}")
                         response_shipping = requests.post(
-                            "https://api.anka.fyi/v1/shipment/labels", 
+                            f"{ANKA_API_BASE_URL}/shipment/labels", 
                             headers=headers, 
                             json=shipment_data
                         )
@@ -169,7 +170,7 @@ def instant_payment_notification(request):
                             
                             # Verify shipping label status
                             response_shipping_label = requests.get(
-                                f"https://api.anka.fyi/v1/shipment/labels/{shipping_response.get('reference')}", 
+                                f"{ANKA_API_BASE_URL}/shipment/labels/{shipping_response.get('reference')}", 
                                 headers=headers
                             )
 

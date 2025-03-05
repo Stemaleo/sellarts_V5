@@ -37,8 +37,8 @@ const AddToCartBtn = ({ art }: { art: ArtWorkDTO }) => {
           }
         });
       }}
-      className="flex-1"
-      disabled={ loading}
+      className="w-full sm:w-auto flex-1 text-sm sm:text-base"
+      disabled={loading}
     >
       <ShoppingCart className="mr-2 h-4 w-4" /> {t("cart.add-to-cart")}
     </Button>

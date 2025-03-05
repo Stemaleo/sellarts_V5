@@ -38,24 +38,24 @@ const MakeProposalBtn = ({ artWork }: { artWork: ArtWorkDTO }) => {
     <div>
       <Dialog open={isOpen} onOpenChange={(c) => setIsOpen(c)}>
         <DialogTrigger asChild>
-          <Button disabled={!artWork.inStock || loading} variant={"secondary"}>
+          <Button disabled={!artWork.inStock || loading} variant={"secondary"} className="w-full sm:w-auto text-sm sm:text-base">
             {t("p.make-a-proposal")}
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:w-[450px] max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t("p.make-a-proposal")}</DialogTitle>
-            <DialogDescription>{t("p.how-much-would-you-like-to-offer-for-this-artwork")}</DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">{t("p.make-a-proposal")}</DialogTitle>
+            <DialogDescription className="text-sm sm:text-base">{t("p.how-much-would-you-like-to-offer-for-this-artwork")}</DialogDescription>
           </DialogHeader>
           <div>
             <form onSubmit={formik.handleSubmit}>
               <div>
-                <Label>{t("common.amount")}</Label>
-                <Input type="number" onBlur={formik.handleBlur} onChange={formik.handleChange} name="amount" />
+                <Label className="text-sm sm:text-base">{t("common.amount")}</Label>
+                <Input type="number" onBlur={formik.handleBlur} onChange={formik.handleChange} name="amount" className="mt-1" />
                 <ErrorMessage touched={formik.touched.amount} error={formik.errors.amount} />
               </div>
               <div className="mt-6">
-                <Button disabled={loading} loading={loading}>
+                <Button disabled={loading} loading={loading} className="w-full sm:w-auto">
                   {t("common.submit")}
                 </Button>
               </div>

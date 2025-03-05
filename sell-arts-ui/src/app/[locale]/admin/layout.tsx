@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useSession } from "next-auth/react";
 import NotificationButton from "@/components/notification-button";
 import { LocaleSwitcher } from "@/components/LocalSwitch";
+import CurrencySelector from "@/components/CurrencySelector";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -20,8 +21,8 @@ const navItems = [
   { name: "Blogs", href: "/admin/blogs", icon: RssIcon },
   { name: "Painting Types", href: "/admin/paintingTypes", icon: PaintRoller },
   { name: "Materials", href: "/admin/materials", icon: SlashIcon },
-  { name: "Style", href: "/admin/styles", icon: Palette },  // Changer l'icône ici
-  { name: "Method", href: "/admin/methods", icon: Cog  },   // Changer l'icône ici
+  { name: "Style", href: "/admin/styles", icon: Palette },
+  { name: "Method", href: "/admin/methods", icon: Cog },
   { name: "Arts", href: "/admin/arts", icon: Paintbrush },
   { name: "Messages", href: "/admin/messages", icon: MessageCircle },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
@@ -52,14 +53,14 @@ export default function SuperAdminDashboard({ children }: { children: React.Reac
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen flex-col lg:flex-row">
       {/* Sidebar for larger screens */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-gray-200 text-gray-800">
+      <aside className="hidden lg:flex lg:flex-col w-full lg:w-64 bg-gray-200 text-gray-800">
         <div className="flex items-center justify-center h-16 px-4 bg-gray-800 text-white text-xl font-bold">SuperAdmin</div>
         <ScrollArea className="flex-1">
           <nav className="flex-1 px-4 py-4 space-y-2">
             {navItems.map((item) => (
-              <Link key={item.href} href={item.href} className={cn("flex text-gray-800 items-center px-4 py-2 text-sm  rounded-md", pathname.endsWith(item.href) ? "bg-gray-600 text-white" : "text-gray-800 hover:bg-gray-700 hover:text-white")}>
+              <Link key={item.href} href={item.href} className={cn("flex text-gray-800 items-center px-4 py-2 text-sm rounded-md", pathname.endsWith(item.href) ? "bg-gray-600 text-white" : "text-gray-800 hover:bg-gray-700 hover:text-white")}>
                 <item.icon className="mr-3 h-4 w-4" />
                 {item.name}
               </Link>
@@ -69,10 +70,10 @@ export default function SuperAdminDashboard({ children }: { children: React.Reac
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col lg:pl-64">
+      <div className="flex-1 flex flex-col w-full">
         {/* Top header */}
-        <header className="bg-white shadow-sm z-10">
-          <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+        <header className="bg-white shadow-sm z-10 sticky top-0">
+          <div className="flex items-center justify-between h-16 px-4">
             {/* Mobile menu button */}
             <Sheet>
               <SheetTrigger asChild>
@@ -96,24 +97,26 @@ export default function SuperAdminDashboard({ children }: { children: React.Reac
               </SheetContent>
             </Sheet>
 
-            {/* Search bar placeholder */}
-            <div className="flex-1 px-4 sm:px-6 lg:px-8">
-              <div className="max-w-md">
-                <form className="relative">
-                  <input type="text" placeholder="Search..." className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent" />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                </form>
-              </div>
+            {/* Search bar */}
+            <div className="flex-1 px-4 max-w-md mx-auto">
+              <form className="relative">
+                <input type="text" placeholder="Search..." className="w-full pl-10 pr-4 py-2 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </form>
             </div>
 
             {/* Right side actions */}
-            <div className="flex items-center space-x-4">
-              <LocaleSwitcher />
-
+            <div className="flex items-center space-x-2 md:space-x-4">
+              <div className="hidden sm:block">
+                <LocaleSwitcher />
+              </div>
+              <div className="hidden sm:block">
+                <CurrencySelector />
+              </div>
               <NotificationButton />
 
               <DropdownMenu>
@@ -126,6 +129,13 @@ export default function SuperAdminDashboard({ children }: { children: React.Reac
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>Logout</DropdownMenuItem>
+                  <DropdownMenuSeparator className="sm:hidden" />
+                  <DropdownMenuItem className="sm:hidden">
+                    <LocaleSwitcher />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="sm:hidden">
+                    <CurrencySelector />
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -133,7 +143,7 @@ export default function SuperAdminDashboard({ children }: { children: React.Reac
         </header>
 
         {/* Main content area */}
-        <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-4">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-gray-100 p-4">{children}</main>
       </div>
     </div>
   );

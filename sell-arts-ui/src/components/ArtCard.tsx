@@ -23,23 +23,24 @@ interface ArtCardProps {
 const ArtCard = ({ artwork }: ArtCardProps) => {
   const router = useRouter();
   const { currency } = useCurrency();
-
-  const exchangeRates: Record<string, number> = {
-    XOF: 1,
-    USD: 600,
-    EUR: 655,
-  };
+  const [loading, setLoading] = useState(true);
 
   return (
     <Card className="overflow-hidden group cursor-pointer">
       <CardContent className="p-0 relative">
-        <div className="aspect-square overflow-hidden">
+        <div className="aspect-square overflow-hidden relative">
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50">
+              <Loader2 className="animate-spin" />
+            </div>
+          )}
           <Image
             src={artwork.mediaUrls[0]}
             alt={artwork.title}
             width={400}
             height={400}
             className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+            onLoadingComplete={() => setLoading(false)}
           />
         </div>
       </CardContent>

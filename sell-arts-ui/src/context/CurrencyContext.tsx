@@ -25,9 +25,15 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("currency", currency);
   }, [currency]);
 
+  const handleCurrencyChange = (newCurrency: Currency) => {
+    setCurrency(newCurrency);
+  };
+
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency }}>
-      {children}
+    <CurrencyContext.Provider value={{ currency, setCurrency: handleCurrencyChange }}>
+      <div className="currency-container">
+        {children}
+      </div>
     </CurrencyContext.Provider>
   );
 };
@@ -39,4 +45,3 @@ export const useCurrency = () => {
   }
   return context;
 };
-
