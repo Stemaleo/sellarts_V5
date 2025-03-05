@@ -39,14 +39,15 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-white shadow  top-0 z-30">
-      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+    <nav className="bg-white shadow top-0 z-30 w-full">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center sm:hidden">
+          {/* Mobile Menu & Search */}
+          <div className="flex items-center lg:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-gray-500 hover:text-gray-900">
-                  <Menu className="h-6 w-6" />
+                  <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
                   <span className="sr-only">Open main menu</span>
                 </Button>
               </SheetTrigger>
@@ -65,52 +66,64 @@ export default function Navbar() {
                   </div>
                 </div>
                 <SheetFooter>
-                  {(status == "unauthenticated" || status == "loading") && (
-                    <Link href={"/login"} className="block w-full mt-8 text-sm font-medium text-gray-500 hover:text-gray-900">
-                      <Button className="w-full">{t("Login")}</Button>
-                    </Link>
-                  )}
-                  {status == "authenticated" && <UserProfileMenu data={data} />}
+                  <div className="flex flex-col gap-4 w-full">
+                    <CurrencySelector />
+                    <LocaleSwitcher />
+                    {(status == "unauthenticated" || status == "loading") && (
+                      <Link href={"/login"} className="block w-full text-sm font-medium text-gray-500 hover:text-gray-900">
+                        <Button className="w-full">{t("Login")}</Button>
+                      </Link>
+                    )}
+                    {status == "authenticated" && <UserProfileMenu data={data} />}
+                  </div>
                 </SheetFooter>
               </SheetContent>
             </Sheet>
-            <div className="block">
+            <div className="block ml-2">
               <SearchSheet />
             </div>
           </div>
-          <div className="hidden md:block">
+
+          {/* Desktop Search */}
+          <div className="hidden lg:block flex-1 max-w-xs">
             <SearchSheet />
           </div>
-          <Link href="/" className="text-2xl font-bold text-gray-800 w-[250px]">
-            <Image width={300} src={logo} id="logo" alt="Logo" />
+
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0 text-2xl font-bold text-gray-800">
+            <Image width={300} height={100} src={logo} id="logo" alt="Logo" className="w-[100px] sm:w-[150px] md:w-[200px] h-auto" priority />
           </Link>
-          <div className="flex gap-0 md:gap-5 items-center">
-            <div>
-            <CurrencySelector />
+
+          {/* Right Side Navigation */}
+          <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
+            <div className="hidden lg:block">
+              <CurrencySelector />
             </div>
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <LocaleSwitcher />
             </div>
-            <div>
-              <CartPopupComponent />
-            </div>
-            <div>
-              <NotificationButton />
-            </div>
+            <CartPopupComponent />
+            <NotificationButton />
             {(status == "unauthenticated" || status == "loading") && (
-              <Link href={"/login"} className="">
+              <Link href={"/login"}>
                 <Button size={"icon"} variant={"ghost"}>
-                  <User2Icon className="h-5 w-5" />
+                  <User2Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
             )}
             {status == "authenticated" && <UserProfileMenu data={data} />}
           </div>
         </div>
-        <div className="flex justify-center items-center mt-6">
-          <div className="hidden sm:ml-6 sm:flex sm:space-x-8 mt-6 mb-6">
+
+        {/* Desktop Navigation Menu */}
+        <div className="hidden sm:flex justify-center mt-4">
+          <div className="flex space-x-2 md:space-x-4 lg:space-x-8 overflow-x-auto pb-2">
             {navItems.map((item) => (
-              <Link key={item.name} href={item.href} className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900">
+              <Link 
+                key={item.name} 
+                href={item.href} 
+                className="whitespace-nowrap text-xs sm:text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              >
                 {item.name}
               </Link>
             ))}
