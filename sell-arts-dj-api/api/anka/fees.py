@@ -1,5 +1,5 @@
 import pdfplumber
-
+import json
 
 # Chemin du fichier PDF
 pdf_path = "Cote d'Ivoire rates.pdf"
@@ -73,8 +73,11 @@ def parse_zones_and_tarifs(text, zones_text):
             continue
         if reading_tarifs:
             parts = line.split()
-            if len(parts) == 9:  # Poids + 8 zones
-                poids = float(parts[0].replace(",", ""))
+            if len(parts) == 9:  # Poids + 8 
+                print( float(parts[0].replace(",", ""))/1000 , "parts[0]")
+                poids = float(parts[0].replace(",", ""))/1000
+                
+                
                 tarifs[poids] = {zone: float(price.replace(",", "")) for zone, price in enumerate(parts[1:], start=1)}
 
     return zones, tarifs
@@ -86,7 +89,7 @@ def generate_tarif_structure(zones, tarifs):
     
     for zone, countries in zones.items():
         for country in countries:
-            tarif_dict[country.split('(')[-1].removesuffix(")").strip()] = {int(poids): int(tarifs[poids][zone]) for poids in tarifs if zone in tarifs[poids]}
+            tarif_dict[country.split('(')[-1].removesuffix(")").strip()] = {float(poids): float(tarifs[poids][zone]) for poids in tarifs if zone in tarifs[poids]}
             # my_countries[country] = country.split('(')[-1].removesuffix(")").strip()
     # print(my_countries)
     return tarif_dict
@@ -101,8 +104,8 @@ def find_closest_higher_value(lst, target):
 def get_tarif(tarif_dict: dict, country: str, poids: int):
     """Retourne le tarif pour un pays et un poids donnés."""
     print(poids, "poids")
-    poids_lists = tarif_dict.get('FR').keys()
-    
+    poids_lists = tarif_dict.get(country).keys()
+    print(poids_lists, "poids_lists")
 
     poids = find_closest_higher_value(poids_lists, poids)
     return tarif_dict.get(country, {}).get(poids, 0)
@@ -116,6 +119,23 @@ def get_value(country, poids):
     zones_texts = extract_zone(pdf_path)
     zones, tarifs = parse_zones_and_tarifs(text, zones_texts)
     tarif_dict = generate_tarif_structure(zones, tarifs)
+    print(tarif_dict, "tarif_dict")
+    import json
+
+    # Define the file path where the dictionary will be saved
+    output_file_path = "tarif_dict_output.py"
+
+    # Create a dictionary to be saved
+    data_to_save = {"tarif_dict": tarif_dict}
+
+    # Convert the dictionary to a JSON string
+    json_data = json.dumps(data_to_save, indent=4)
+
+    # Write the JSON string to the file
+    with open(output_file_path, "w") as output_file:
+        output_file.write(f"tarif_dict = {json_data}")
+
+    print(f"tarif_dict has been saved to {output_file_path}")
     return get_tarif(tarif_dict, country, poids)
 
 

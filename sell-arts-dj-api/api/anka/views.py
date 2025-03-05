@@ -1,195 +1,268 @@
 import logging
 import json
+import time
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from django.core.mail import send_mail
 from anka import models as anka_models
+from order import models as order_models
 import requests
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
-
-
-# shipment_data = {
-#     "data": {
-#       "type": "shipment_labels",
-#       "attributes": {
-#         "package": {
-
-
-#           "items": [
-#             {
-#               "quantity": 2,
-#               "price_currency": "EUR",
-#               "hscode": "6204.43.4040",
-#               "description": "Women Clothing - Short dresses - Multicolour -  Ankara",
-#               "weight_grams": 500,
-#               "price_cents": 1720
-#             },
-#             {
-#               "quantity": 1,
-#               "price_currency": "EUR",
-#               "hscode": "6404.20.9000",
-#               "description": "African beaded leather sandals",
-#               "weight_grams": 1500,
-#               "price_cents": 800
-#             }
-#           ],
-#           "dimensions": {
-#             "height_cm": 20,
-#             "length_cm": 20,
-#             "weight_grams": 2000,
-#             "width_cm": 25
-#           },
-#           "description": "Fish/Vegetables/Crayfish/Mixed Spices"
-#         },
-#         "internal_reference": random_string(8),
-#         "duty_code": "ddps",
-#         "currency": "EUR",
-#         "shipper": {
-#           "contact": {
-#             "email": "jane@doe.com",
-#             "fullname": "Jane R. Doe",
-#             "phone_number": "+2349038755333"
-#           },
-#           "address": {
-#             "country": "CI",
-#             "state": "Abidjan",
-#             "street_line_1": "2 Abunama Close",
-#             "city": "Abidjan",
-#             "zip": "00225",
-#             "street_line_2": "Apt. 101"
-#           }
-#         },
-#         "recipient": {
-#           "contact": {
-#             "email": "john@doe.com",
-#             "fullname": "John Z. Doe",
-#             "phone_number": "+447865015511"
-#           },
-#           "address": {
-#             "country": "FR",
-#             "state": "",
-#             "street_line_1": "81 Hardshaw Street",
-#             "city": "Paris",
-#             "zip": "00233",
-#             "street_line_2": ""
-#           }
-#         }
-#       }
-#     }
-#   }
 
 headers = {
     "Authorization": "Token FqvbsxHBxTKmbZyNcPvvNbFm",
     "Accept": "application/vnd.api+json",
     "charset": "utf-8",
-    "Content-Type": "application/json",  # Ajout pour spécifier que les données sont en JSON
+    "Content-Type": "application/json",
 }
-@csrf_exempt  # Désactive la protection CSRF si nécessaire (ex: webhook)
+
+@csrf_exempt
 def instant_payment_notification(request):
     """Endpoint for handling instant payment notifications (IPN)."""
 
-    # logger.warning(request)
-    # logger.warning(request.__dict__)
-
-    # request.post
-    # data = request.__dict__['data']
-
-    # if data['attributes']['status'] == 'captured':
-    #     anka_models.Orders
-
     if request.method == "POST":
-
         try:
-            data = json.loads(request.body.decode("utf-8"))[
-                "data"
-            ]  # Convertit le corps en JSON
-            logger.warning("Received Instant Payment Notification: %s", data)
+            logger.error("Received IPN notification")
+            data = json.loads(request.body.decode("utf-8"))["data"]
+            logger.error(f"IPN data received: {data}")
 
             if data["type"] == "payment_links_orders":
                 if data["attributes"]["status"] == "captured":
-                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
-                    # logger.warning("Ref: %s", reference.split('SELLARTS'))
                     reference: str = data["attributes"]["internal_reference"]
+                    logger.error(f"Processing captured payment for reference: {reference}")
+                    
                     order = anka_models.Orders.objects.get(
                         id=int(reference.split("SELLARTS")[-1])
                     )
+                    logger.error(f"Found order: {order.id}")
+
                     order.status = "PENDING"
                     order.payment_status = "SUCCESS"
                     order.save()
-                    items = []
+                    logger.error(f"Updated order {order.id} status to PENDING and payment_status to SUCCESS")
+
+                    # Group order items by artwork owner
+                    owner_items = {}
                     order_items = anka_models.OrderItem.objects.filter(
                         order=order.id
-                    ).values("id", "quantity", "art_work")
+                    ).select_related('art_work', 'art_work__owner', 'art_work__owner__artist_profile')
+                    logger.error(f"Processing {order_items.count()} items for shipping")
+
                     for order_item in order_items:
-                        artwork = anka_models.ArtWorks.objects.get(
-                            id=order_item["art_work"]
-                        )
-                        artwork.stock -= order_item["quantity"]
+                        artwork = order_item.art_work
+                        artwork_owner = artwork.owner
+                        
+                        # Update stock
+                        logger.error(f"Updating stock for artwork {artwork.id} from {artwork.stock} to {artwork.stock - order_item.quantity}")
+                        artwork.stock -= order_item.quantity
                         artwork.save()
 
-                        items.append(
-                            {
-                                "quantity": order_item["quantity"],
-                                "price_currency": "XOF",
-                                "hscode": "6204.43.4040",
-                                "description": artwork.description,
-                                "weight_grams": artwork.size * 1000,
-                                "price_cents": artwork.price,
+                        if artwork_owner.id not in owner_items:
+                            owner_items[artwork_owner.id] = {
+                                'owner': artwork_owner,
+                                'items': [],
+                                'total_weight': 0,
+                                'artworks': []
                             }
-                        ),
-                    owner: anka_models.Users =  order.owner
-                    owner_profile: anka_models.ArtistProfiles =  owner.artist_profile
-                    shipment_data = {
-                        "data": {
-                            "type": "shipment_labels",
-                            "attributes": {
-                                "package": {
-                                    "items": items,
-                                    "dimensions": {
-                                        "height_cm": 10,
-                                        "length_cm": 20,
-                                        "weight_grams": order.size,
-                                        "width_cm": 25,
-                                    },
-                                    "description": "Arts Works",
-                                },
-                                "internal_reference": data["attributes"][
-                                    "internal_reference"
-                                ],
-                                "duty_code": "ddps",
-                                "currency": "XOF",
-                                "shipper": {
-                                    "contact": {
-                                        "fullname": owner.name,
-                                        "phone_number": "+225 0505050505",
-                                        "email": owner.email,
-                                    },
-                                    "address": {
-                                        "street_line_1": owner_profile.location,
-                                        "street_line_2": owner_profile.location,
-                                        "city": owner_profile.location,
-                                        "state": owner_profile.location,
-                                        "zip": "00225",
-                                        "country": "CI",
-                                    },
-                                },
-                                "recipient": data["attributes"]["buyer"],
-                            },
+
+                        owner_items[artwork_owner.id]['items'].append({
+                            "quantity": order_item.quantity,
+                            "price_currency": "XOF",
+                            "hscode": "6404.20.9000",
+                            "description": f"Original {artwork.title} artwork by {artwork_owner.name}", 
+                            "weight_grams": int(artwork.size * 1000),
+                            "price_cents": int(float(artwork.price) * 100),
+                        })
+                        owner_items[artwork_owner.id]['artworks'].append(artwork)
+                        owner_items[artwork_owner.id]['total_weight'] += int(artwork.size * 1000)
+
+                    # Generate shipping label for each owner's items
+                    logger.error(f"Generating shipping labels for {len(owner_items)} owners")
+                    all_shipping_successful = True
+                    
+                    for owner_id, owner_data in owner_items.items():
+                        logger.error(f"Processing shipping for owner {owner_id}")
+                        owner = owner_data['owner']
+                        owner_profile = owner.artist_profile
+
+                        shipper_address = {
+                            "street_line_1": owner_profile.location or "Not Specified",
+                            "street_line_2": owner_profile.location or "Not Specified", 
+                            "city": owner_profile.location or "Abidjan",
+                            "state": owner_profile.location or "Abidjan",
+                            "zip": "00225",
+                            "country": "CI",
                         }
-                    }
-                    response_shipping = requests.post(
-                        "https://api.anka.fyi/v1/shipment/labels", headers=headers, json=shipment_data
-                    )
-                    
-                    response_shipping_label =  requests.get(
-                        "https://api.anka.fyi/v1/shipment/labels/"+data["attributes"][
-                                    "internal_reference"
-                                ], headers=headers
-                    )
-                    
-                    print(response_shipping_label)
-                    shipment_label_content = response_shipping_label.json()
-                    print(shipment_label_content)
+                        # Calculate package dimensions based on artwork sizes
+                        total_height = 0
+                        max_length = 0
+                        max_width = 0
+                        
+                        for item in owner_data['items']:
+                            artwork = next((a for a in owner_data['artworks'] if a.title in item['description']), None)
+                            if artwork:
+                                logger.error(f"Calculating dimensions for artwork {artwork.id}")
+                                
+                                item_height = artwork.height
+                                item_length = artwork.width
+                                item_width = artwork.width * 0.1
+                                
+                                total_height += item_height * item['quantity']
+                                max_length = max(max_length, item_length)
+                                max_width = max(max_width, item_width)
+
+                        total_height += 5
+                        max_length += 5
+                        max_width += 5
+                        
+                        logger.error(f"Final package dimensions: {total_height}x{max_length}x{max_width}cm")
+                        logger.error(f"buyer: {data['attributes']['buyer']}")
+
+                        shipment_data = {
+                            "data": {
+                                "type": "shipment_labels",
+                                "attributes": {
+                                    "package": {
+                                        "items": owner_data['items'],
+                                        "dimensions": {
+                                            "height_cm": int(total_height),
+                                            "length_cm": int(max_length),
+                                            "weight_grams": owner_data['total_weight'],
+                                            "width_cm": int(max_width),
+                                        },
+                                        "description": "Original Artwork Package Professional Fine Art Shipping",
+                                        "package_content": "Original Paintings Professional Artwork Secure Packaging",
+                                    },
+                                    "internal_reference": f"{data['attributes']['internal_reference']}_{owner_id}",
+                                    "duty_code": "ddps",
+                                    "currency": "XOF",
+                                    "shipper": {
+                                        "contact": {
+                                            "fullname": owner.name,
+                                            "phone_number": "+225 0505050505",
+                                            "email": owner.email,
+                                        },
+                                        "address": shipper_address,
+                                    },
+                                    "recipient": data["attributes"]["buyer"],
+                                },
+                            }
+                        }
+
+                        # Create shipping label
+                        logger.error(f"Creating shipping label for owner {owner_id}")
+                        response_shipping = requests.post(
+                            "https://api.anka.fyi/v1/shipment/labels", 
+                            headers=headers, 
+                            json=shipment_data
+                        )
+
+                        shipping_response = response_shipping.json()
+                        logger.error(response_shipping.content)
+                        if shipping_response.get("status") == "queued":
+                            logger.error("Successfully queued shipping label, waiting 10 seconds before verifying...")
+                            time.sleep(10)  # Wait 5 seconds
+                            
+                            # Verify shipping label status
+                            response_shipping_label = requests.get(
+                                f"https://api.anka.fyi/v1/shipment/labels/{shipping_response.get('reference')}", 
+                                headers=headers
+                            )
+
+                            shipping_label_data = response_shipping_label.json()
+                            logger.error("Successfully retrieved shipping label details")
+                            
+                            if shipping_label_data['data']['attributes']['status'] == 'processed':
+                                # Create shipping record
+                                shipping = order_models.Shipping.objects.create(
+                                    order=order,
+                                    user=owner,
+                                    label=shipping_label_data['data']['attributes'].get('provider_reference'),
+                                    label_pdf=shipping_label_data['data']['attributes']['package']['pdf'].get('label'),
+                                    invoice_pdf=shipping_label_data['data']['attributes']['package']['pdf'].get('invoice')
+                                )
+                                logger.error(f"Created shipping record {shipping.id}")
+
+                                # Send email to artwork owner
+                                logger.error(f"Sending shipping notification email to owner {owner.email}")
+                                context = {
+                                    'user': owner,
+                                    'order': order,
+                                    'artworks': owner_data['artworks'],
+                                    'shipping_label': shipping_label_data['data']['attributes']['package']['pdf'].get('label'),
+                                    'shipping_invoice': shipping_label_data['data']['attributes']['package']['pdf'].get('invoice')
+                                }
+
+                                html_message = render_to_string('shipping_notification.html', context)
+                                plain_message = strip_tags(html_message)
+
+                                try:
+                                    send_mail(
+                                        subject="New Order Shipping Request",
+                                        message=plain_message,
+                                        from_email=settings.DEFAULT_FROM_EMAIL,
+                                        recipient_list=[owner.email],
+                                        html_message=html_message,
+                                        fail_silently=False,
+                                    )
+                                    logger.error(f"Successfully sent shipping notification email to {owner.email}")
+                                except Exception as e:
+                                    logger.error(f"Failed to send shipping notification email to owner {owner.id}: {str(e)}")
+                                    all_shipping_successful = False
+                            else:
+                                logger.error(f"Shipping label not processed yet for owner {owner.id}")
+                                all_shipping_successful = False
+                        else:
+                            logger.error(f"Failed to queue shipping label for owner {owner.id}: {response_shipping.content}")
+                            all_shipping_successful = False
+
+                    # Send confirmation email to customer only after all shipping labels are created
+                    if all_shipping_successful:
+                        try:
+                            logger.error(f"Sending confirmation email to {order.owner.email}")
+                            subject = "Thank You for Your Order!"
+                            
+                            # Fetch fresh order data with all related items
+                            order_items = anka_models.OrderItem.objects.filter(
+                                order=order
+                            ).select_related(
+                                'art_work',
+                                'art_work__owner',
+                                'art_work__owner__artist_profile'
+                            ).all()
+                            
+                            # Get shipping labels for this order
+                            shipping_labels = order_models.Shipping.objects.filter(
+                                order=order
+                            ).select_related('user').all()
+                            
+                            context = {
+                                'user': order.owner,
+                                'order': order,
+                                'order_items': order_items,
+                                'shipping_labels': shipping_labels,
+                                'total_amount': sum(item.quantity * item.art_work.price for item in order_items)
+                            }
+
+                            html_message = render_to_string('order_confirmation.html', context)
+                            plain_message = strip_tags(html_message)
+
+                            send_mail(
+                                subject,
+                                plain_message,
+                                settings.DEFAULT_FROM_EMAIL,
+                                [order.owner.email],
+                                html_message=html_message,
+                                fail_silently=False,
+                            )
+                            logger.error("Confirmation email sent successfully")
+                        except Exception as e:
+                            logger.error(f"Failed to send confirmation email: {str(e)}")
+
             return JsonResponse(
                 {"success": True, "message": "Notification received"}, status=200
             )
@@ -201,11 +274,12 @@ def instant_payment_notification(request):
             )
 
         except Exception as e:
-            logger.exception("Error processing IPN")
+            logger.error("Error processing IPN")
             return JsonResponse(
                 {"success": False, "message": "Internal Server Error"}, status=500
             )
     else:
+        logger.error(f"Invalid request method: {request.method}")
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=405
         )

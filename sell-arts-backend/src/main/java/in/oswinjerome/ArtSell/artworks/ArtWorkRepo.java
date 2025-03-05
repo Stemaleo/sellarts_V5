@@ -27,7 +27,7 @@ public interface ArtWorkRepo extends JpaRepository<ArtWork, String> {
 //    @EntityGraph(attributePaths = {"medias"})
     List<ArtWork> findAllByOwner(User owner);
 
-    @Query("SELECT a FROM art_works a WHERE a.owner = :owner AND a.isFeatured = :featured")
+    @Query("SELECT a FROM art_works a WHERE a.owner = :owner AND a.isFeatured = :featured AND a.is_deleted=false")
     List<ArtWork> findAllByOwnerAndFeatured(User owner, boolean featured);
 
     @Query("SELECT art FROM art_works as art WHERE art.owner = :owner AND art.is_deleted = false AND art.title LIKE %:title% AND CONCAT('',art.paintingType.id) LIKE LOWER(CONCAT('%', :paintingType, '%'))")
@@ -63,11 +63,14 @@ public interface ArtWorkRepo extends JpaRepository<ArtWork, String> {
 
 
     @Query("SELECT new in.oswinjerome.ArtSell.analytics.TopSellingArtworkDTO(a,COUNT(oi)) FROM art_works a " +
-            "JOIN OrderItem oi ON oi.artWork = a GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
+           "JOIN OrderItem oi ON oi.artWork = a " +
+           "WHERE a.is_deleted = false " + 
+           "GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
     List<TopSellingArtworkDTO> findTopSelling();
-
+    
     @Query("SELECT new in.oswinjerome.ArtSell.analytics.TopSellingArtworkDTO(a,COUNT(oi)) FROM art_works a " +
-            "JOIN OrderItem oi ON oi.artWork = a WHERE a.owner = :user GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
+            "JOIN OrderItem oi ON oi.artWork = a " +
+            "WHERE a.is_deleted = false AND a.owner = :user GROUP BY a ORDER BY COUNT(oi) DESC LIMIT 5")
     List<TopSellingArtworkDTO> findTopSelling(User user);
 
 }

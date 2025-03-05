@@ -25,16 +25,46 @@ export default function Component() {
   const [users, setUsers] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<{ status: boolean; id: number | null }>({ status: false, id: null });
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await getAllUsers(currentPage, userType);
-      if (res.success) {
-        setUsers(res.data);
+      try {
+        // Get basic user data
+        const res = await getAllUsers(currentPage, userType);
+        
+        if (res.success && res.data?.content) {
+          // Get active status for each user
+          const usersWithStatus = await Promise.all(
+            res.data.content.map(async (user: any) => {
+              const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+                query: GET_USERS_BY_ID,
+                variables: { id: user.id },
+              });
+
+              const isActive = response.data?.data?.users?.edges?.[0]?.node?.isActive || false;
+              
+              return {
+                ...user,
+                isActive
+              };
+            })
+          );
+
+          setUsers({
+            ...res.data,
+            content: usersWithStatus
+          });
+        }
+      } catch (error) {
+        toast.error("Erreur lors de la récupération des utilisateurs");
+        console.error("Erreur:", error);
       }
     };
+
     fetchUsers();
   }, [currentPage, userType]);
+
 
   const deleteUser = async (userId: number) => {
     try {
@@ -43,7 +73,7 @@ export default function Component() {
         variables: { users: [userId], delete: true },
       });
   
-      if (response.data) {
+      if (response.data.data.featureUpdateUsersDeletion.success) {
         toast.success("Utilisateur supprimé avec succès");
   
         // Mise à jour sécurisée en s'assurant que `users.content` est bien un tableau
@@ -59,23 +89,10 @@ export default function Component() {
     }
   };
   
-  const getUserById = async (userId: number) => {
-    try {
-      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-        query: GET_USERS_BY_ID,
-        variables: { id: userId },
-      });
-  
-      if (response.data) {
-        console.log(response.data);   
-        return response.data.data.users.edges[0].node.isActive; 
-      }
-    } catch (error) {
-      toast.error("Erreur lors de la suppression de l'utilisateur");
-      console.error("Erreur lors de la suppression :", error);
-      return true; 
-    }
-  };
+
+
+
+
 
 
   const susBtnUserByAdmin = async (userId: number, status: boolean) => {
@@ -97,6 +114,7 @@ export default function Component() {
   if (!users || users.length === 0) {
     return <div>Impossible de charger les utilisateurs</div>;
   }
+  
 
   return (
     <div className="container mx-auto p-4">
@@ -126,9 +144,10 @@ export default function Component() {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
                     <Switch
-                        defaultChecked={Boolean(!getUserById(user.id)) }
+                        // defaultChecked={Boolean(getUserById(user.id))}
+                        defaultChecked={!user.isActive}
                         onCheckedChange={() => {
-                          susBtnUserByAdmin(user.id, Boolean(getUserById(user.id)));
+                          susBtnUserByAdmin(user.id, user.isActive);
                         }}
                         className=""
                       />

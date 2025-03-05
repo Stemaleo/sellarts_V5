@@ -294,6 +294,58 @@ class FeatureUpdateArtworkMethodAndStyle(graphene.Mutation):
 
 
 
+class FeatureUpdateArtworkDeletions(graphene.Mutation):
+    """
+    Mutation to delete or restore multiple artworks by setting their `is_deleted` field accordingly.
+    """
+
+    success: bool = graphene.Boolean(description="Indicates whether the operation was successful.")
+    message: str = graphene.String(description="Response message indicating success or failure.")
+    artworks: list[anka_models.ArtWorks] = graphene.List(types.ArtworksType, description="List of updated artwork objects.")
+
+    class Arguments:
+        artworks = graphene.List(
+            graphene.ID,
+            required=True,
+            description="List of artwork IDs to delete or restore."
+        )
+        delete = graphene.Boolean(
+            required=True, 
+            description="Set to `true` to delete artworks, or `false` to restore them."
+        )
+
+    class Meta:
+        # description = meta.feature_update_users_deletions
+        pass
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs):
+        try:
+            with transaction.atomic():
+                artworks_to_update = anka_models.ArtWorks.objects.filter(id__in=kwargs['artworks'])
+
+                if not artworks_to_update.exists():
+                    return FeatureUpdateArtworkDeletions(
+                        success=False, message="No matching artworks found."
+                    )
+
+                artworks_to_update.update(is_deleted=kwargs['delete'])
+
+                action = "deleted" if kwargs['delete'] else "restored"
+                return FeatureUpdateArtworkDeletions(
+                    success=True, 
+                    message=f"Artworks successfully {action}.", 
+                    artworks=list(artworks_to_update)
+                )
+        except Exception as error:
+            error = traceback.format_exc()
+            return FeatureUpdateArtworkDeletions(
+                success=False, message=f"Error while updating artworks: {error}"
+            )
+
+
+
+
 
 
 

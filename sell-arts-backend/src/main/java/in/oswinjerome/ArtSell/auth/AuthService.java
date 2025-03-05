@@ -246,11 +246,9 @@ public class AuthService {
 
         }else{
             users=   usersRepo.findAll(pageable).map(UserInfoDTO::of);
-
         }
 
         return ResponseEntity.ok(ResponseDTO.builder().success(true).data(users).build());
-
     }
 
     public User findOrFailById(@NotNull Long artistId) {

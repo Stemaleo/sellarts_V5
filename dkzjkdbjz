@@ -1,0 +1,535 @@
+[33mcommit 658c445f69037581653f92796dc4ac3ca3e75de5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m, [m[1;31morigin/dev[m[33m)[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Fri Feb 21 04:54:37 2025 +0400
+
+    mise a jour du projet
+
+[33mcommit 4d0235fa56c8b7b741a706c4e1dabf82fe3a4618[m
+Merge: 321f519 c1c35a9
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Fri Feb 21 02:48:24 2025 +0400
+
+    Merge branch 'dev' of https://github.com/Stemaleo/sellarts_V5 into dev
+
+[33mcommit 321f519ca4dbedc4d10555c3300d9174877fa49c[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Fri Feb 21 02:47:58 2025 +0400
+
+    mise a jour du projet
+
+[33mcommit c1c35a975fd5a6eee8775a8daa571251a3cc4f9d[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 18:05:16 2025 +0000
+
+    add fees
+
+[33mcommit c32ad3a2cc687508a86fa887ff6ddd8baa94a0da[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 16:43:52 2025 +0000
+
+    artwork
+
+[33mcommit 7e48010450f2ee4badec9d31ee20b64d9fcd17aa[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 16:23:50 2025 +0000
+
+    artwork
+
+[33mcommit ffbe5d1144882be075f10f53ef77f85d73476add[m
+Merge: f600f25 1ec5003
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Thu Feb 20 17:30:16 2025 +0400
+
+    Merge branch 'dev' of https://github.com/Stemaleo/sellarts_V5 into dev
+
+[33mcommit f600f25ae6f2e9ec04f6b753c3d0112b7488ca9d[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Thu Feb 20 17:30:04 2025 +0400
+
+    mise a jour du projet
+
+[33mcommit 1ec5003e7395c8e90b7c226855ed72abc63690c8[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 11:43:11 2025 +0000
+
+    artwork
+
+[33mcommit 2659ccd022b97e2daa7384e397b31e894977ed54[m
+Merge: f19a8d4 bfbe8b1
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Thu Feb 20 15:32:21 2025 +0400
+
+    Merge branch 'dev' of https://github.com/Stemaleo/sellarts_V5 into dev
+
+[33mcommit f19a8d43a8a2455ef258ba55d5cd5ed89f3b2a8b[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Thu Feb 20 15:32:08 2025 +0400
+
+    mise a jour du projet
+
+[33mcommit bfbe8b1aed40f7a546703ae178e3d05d58659163[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 11:28:22 2025 +0000
+
+    add order to the amount
+
+[33mcommit e339e11998ecea9ceb1e4d1fb6334177b28539df[m
+Merge: 7e7df7a bfa2281
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Thu Feb 20 12:23:00 2025 +0400
+
+    Merge branch 'dev' of https://github.com/Stemaleo/sellarts_V5 into dev
+
+[33mcommit 7e7df7a80afc15d48ee73d53c1b94bfb3a42f03e[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Thu Feb 20 12:22:44 2025 +0400
+
+    mise a jour du projet
+
+[33mcommit bfa228140a5f62df6c4799a77be60945a0e06fcc[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 01:25:13 2025 +0000
+
+    add order to the amount
+
+[33mcommit bffb8daf3b249c0640df6a27875401d58912bf7d[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 01:20:37 2025 +0000
+
+    add order to the amount
+
+[33mcommit 73a491d219f96cfab9afb1989694a5db01d841c8[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 00:27:43 2025 +0000
+
+    add order to the amount
+
+[33mcommit e7ed8d73af71d93035935ba82df7625baa7e4719[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Thu Feb 20 00:16:54 2025 +0000
+
+    add order to the amount
+
+[33mcommit 910e8848eff2984967f2edbffe7f016f4d62a7d9[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 21:08:49 2025 +0000
+
+    add order to the amount
+
+[33mcommit 14f56f714b9b0029ae79c199d1d1e3adfcb00c1b[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 21:06:00 2025 +0000
+
+    add order to the amount
+
+[33mcommit 0a5a0fe92b41cf58c834e1f87808cfb01177f572[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 03:07:38 2025 +0000
+
+    add order to the amount
+
+[33mcommit e027629ec294109eee17ccb591b4e0f45ec989a3[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 03:04:35 2025 +0000
+
+    add order to the amount
+
+[33mcommit 8a79018e7a256ce7200a25fef20cd39e0628b6c8[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 02:51:16 2025 +0000
+
+    add order to the amount
+
+[33mcommit 37b1f50de483a4502b6b6dffc6399bfe4ecd5f49[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 19 06:29:59 2025 +0400
+
+    editer et supprimer une method et un style
+
+[33mcommit a5c56da7b6fdd1da69788a485d5d75997c8cc8d3[m
+Merge: 0be0025 7d06df6
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 19 06:26:00 2025 +0400
+
+    Merge branch 'dev' of https://github.com/Stemaleo/sellarts_V5 into dev
+
+[33mcommit 0be002585141c0b46bcfdc146f6b726d73e7d215[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 19 06:25:35 2025 +0400
+
+    editer et supprimer une method et un style
+
+[33mcommit 7d06df6d049bbfeaf44e26fb98885342f2e65423[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 02:02:15 2025 +0000
+
+    add order to the amount
+
+[33mcommit d2cb98ec3fc15aa310b9eebaf98673532729fa51[m
+Merge: 083346b 840107b
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 19 05:35:00 2025 +0400
+
+    Merge branch 'dev' of https://github.com/Stemaleo/sellarts_V5 into dev
+
+[33mcommit 083346be0213599cc7a2ebcf7b2901bc6b363dc2[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 19 05:34:35 2025 +0400
+
+    editer et supprimer une method et un style
+
+[33mcommit 840107b6782e42895d7a12fccf4b60bed5df9ef7[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 01:29:33 2025 +0000
+
+    add order to the amount
+
+[33mcommit 8df286469be9946c37ac6667bbe42999ced586ee[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 01:16:53 2025 +0000
+
+    add order to the amount
+
+[33mcommit 4c8e47aea936209d9715180bad6bebd095822d1c[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Wed Feb 19 00:34:50 2025 +0000
+
+    add order to the amount
+
+[33mcommit e5319f3287e8fcc2049d95b06d99edb69cb3f619[m
+Merge: ad73d2c 08290d0
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 19 03:55:29 2025 +0400
+
+    Merge branch 'dev' of https://github.com/Stemaleo/sellarts_V5 into dev
+
+[33mcommit ad73d2c7771c4308c0e158250f9121bb4df2352c[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 19 03:55:09 2025 +0400
+
+    recuperation du projet
+
+[33mcommit 08290d08aa698ba4ea557fe1eafdbeee471e5106[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 23:23:54 2025 +0000
+
+    add order to the amount
+
+[33mcommit 5770d07ea19633341ed4cca5c3efa28c949384f8[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 23:15:20 2025 +0000
+
+    add order to the amount
+
+[33mcommit 4f071ad8ac6c981dd6a3481783449668b7eb7863[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 23:12:07 2025 +0000
+
+    add order to the amount
+
+[33mcommit 5e213a50b7cc0b852190a6a076c035277247e54c[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 23:03:49 2025 +0000
+
+    add order to the amount
+
+[33mcommit e367c6441051440d623bef318d244006df97be07[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 22:36:33 2025 +0000
+
+    add order to the amount
+
+[33mcommit 37d4fef9d414d24b1673a093d6c4c6998bea5fe0[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 22:25:36 2025 +0000
+
+    add order to the amount
+
+[33mcommit 92d42006d0eebee4061b01aad88ca2d779ef12e6[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 22:20:36 2025 +0000
+
+    add order to the amount
+
+[33mcommit 3718ad2c7fbf500e494248dca4b987931985ce03[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 22:15:32 2025 +0000
+
+    update order price
+
+[33mcommit f1c0b99c4956582da17408a8ca66b2f8c73f9ab7[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 21:33:26 2025 +0000
+
+    add order to the amount
+
+[33mcommit f1d487dac19c9c25dda934db52b0c7d19e6c585a[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 21:17:02 2025 +0000
+
+    add order to the amount
+
+[33mcommit 616ca9397980db9b084aeb07b527194b8cf0c61d[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 19:15:55 2025 +0000
+
+    add styles query to the schema
+
+[33mcommit 0d6cdaa8362d9c0b2957f94d0bb12a0cbf02fe76[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 19:02:25 2025 +0000
+
+    add styles query to the schema
+
+[33mcommit 47a27ea35a1e519f526b8408b186060a791f75f6[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 18:21:33 2025 +0000
+
+    update delete user with is profile
+
+[33mcommit 7ec8038a664a9a2bf4ce72b34bf73bdc8969a659[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 14:16:16 2025 +0000
+
+    add is_deleted in some request
+
+[33mcommit e1ea8c8591fd62e40399237b3331d93161c902a4[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 14:13:18 2025 +0000
+
+    add is_deleted in some request
+
+[33mcommit 540f92a5ac2f5dedae34b4db8dd5e279025e1ca4[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 14:10:04 2025 +0000
+
+    add is_deleted in some request
+
+[33mcommit f0195601d42fecacdcd8dbdf1272714568c1db5e[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 14:01:41 2025 +0000
+
+    add is_deleted in some request
+
+[33mcommit 2b953955d16aa08ef5eeb24d8db857f492f2aca1[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 13:26:20 2025 +0000
+
+    add is_deleted in some request
+
+[33mcommit 015f2b32c82bec34ea5947cc03fd58b9832f3196[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 12:46:26 2025 +0000
+
+    add feature: UpdateArtworkMethodAndStyle
+
+[33mcommit 503e22444a5938acc16d85948e4a0e4fd51d596b[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 11:37:52 2025 +0000
+
+    add feature: UpdateArtworkMethodAndStyle
+
+[33mcommit 5978c7afcc16a67480319a027b93ad9a1484e264[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 02:52:22 2025 +0000
+
+    update dockerfile
+
+[33mcommit 98f0120ad9ac512dd0c8d9d483457198f5d3a77b[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 00:11:52 2025 +0000
+
+    update dockerfile
+
+[33mcommit 4bc0593c7a4b0f01c97987545763babd10d10c03[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Tue Feb 18 00:02:01 2025 +0000
+
+    update dockerfile
+
+[33mcommit 3c17897202317cfdc45648aa370d2d0bd076e51b[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 17 23:48:56 2025 +0000
+
+    update dockerfile
+
+[33mcommit 6dae852e70ac0802fceeafd4a065bd62f51fb0c7[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 17 23:44:27 2025 +0000
+
+    update dockerfile
+
+[33mcommit 5abe42fee572cd4cddc83196042cb6d38714f4b0[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 17 23:40:25 2025 +0000
+
+    update dj
+
+[33mcommit 0f409ffc64af01405204c8b364bdc128219449a1[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 17 21:24:51 2025 +0000
+
+    update ui
+
+[33mcommit 9ebe29af0b1a8f244486f7301d6c42036284be0b[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 17 20:59:07 2025 +0000
+
+    update entrypoint.sh
+
+[33mcommit 28e4a3977d7c38da8ddeaaaf311359a4d52ca2c2[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 17 20:42:08 2025 +0000
+
+    add styles crud
+
+[33mcommit c1690583c300cf083f8910326e302c373cfba2bf[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 17 14:15:57 2025 +0000
+
+    add styles crud
+
+[33mcommit 7373d4dff394a791059dcf8cd23d980efb5b3cd8[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 16 17:51:56 2025 +0000
+
+    add user deletion status and user update status
+
+[33mcommit 1837c8a7a310353eb6aeeab05360b2635dd37295[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 16 14:49:07 2025 +0000
+
+    fix users deleted
+
+[33mcommit eb01f2030067478f38019ff363aed1b326e1e7c7[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 16 03:35:58 2025 +0000
+
+    add type in users type
+
+[33mcommit df9454875085d2522ef8fecc08c36c4aad3b8c77[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Fri Feb 14 06:38:15 2025 +0400
+
+    correction des erreur partage lien  du catalogue
+
+[33mcommit 0cd482c8037cac37164a501687e39db4327b494d[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Fri Feb 14 06:12:30 2025 +0400
+
+    correction des erreur partage lien  du catalogue
+
+[33mcommit dc45d2f3b3be8e6f9fa0636d74e176dae9687abf[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Fri Feb 14 05:12:22 2025 +0400
+
+    correction des erreur partage lien  du catalogue
+
+[33mcommit 6c3971aca846f8b84ad9c22386d6b676067938b6[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Thu Feb 13 01:08:21 2025 +0400
+
+    correction des erreur partage lien  du catalogue
+
+[33mcommit 1f26a174d8db43274dc5377349d72b3d46a10835[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 12 06:08:52 2025 +0400
+
+    correction des erreurs sur les params du catalogue
+
+[33mcommit c9701a93db16223ce7c07c2518fdfff1bd1ab7df[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 12 05:47:37 2025 +0400
+
+    correction du seache automatique a la saisir pour evité les requets unitils, vu que je charge tous les données de la db
+
+[33mcommit 98f9ec52bc966306107a60733e2347b1735c0976[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 12 05:30:25 2025 +0400
+
+    correction du chargement au scrolle de la liste des artistes
+
+[33mcommit 0a832caaf3a3f119b4d275f4384c0eeb6364bcab[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 12 05:08:36 2025 +0400
+
+    creation de page catalogue et affichage du catalogue lorsque on clique sur le lien du catlogue
+
+[33mcommit c5c0d3a6cf6afe4d4f6bf26b5652d236524b3e67[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Wed Feb 12 04:32:01 2025 +0400
+
+    mettre a jour le projet
+
+[33mcommit d5bc272e10cdcf9780c6d5b4e05670f098105444[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Tue Feb 11 02:16:49 2025 +0400
+
+    mettre a jour le projet
+
+[33mcommit 65b265cffaf53ec76c11ad56c934306d2fb1b44f[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Tue Feb 11 02:15:11 2025 +0400
+
+    mettre a jour le projet
+
+[33mcommit b0b7fa34bef7837a3bc2869dbda6b25530cbcf37[m
+Merge: 9e41b48 524c531
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Tue Feb 11 01:54:58 2025 +0400
+
+    mettre a jour le projet
+
+[33mcommit 9e41b48a055b71e3136e214e30422954f1c34d15[m
+Author: Wilfried DINDJI <ndjaswdindji@engeem.com>
+Date:   Tue Feb 11 01:46:09 2025 +0400
+
+    mettre a jour le projet
+
+[33mcommit 524c5315eda11cba4e538bcd027a033353bcc2f8[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Mon Feb 10 15:47:09 2025 +0000
+
+    update ts
+
+[33mcommit df2e4dbf8b86ba3f3b08a7a573187fcaf01e8821[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 9 23:25:42 2025 +0000
+
+    update ts
+
+[33mcommit f620962f446615f52c43835ff88e9d0cdbb72694[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 9 23:07:43 2025 +0000
+
+    update ts
+
+[33mcommit 2767af2978e7660e5666b13d5e68871fcb0cc98d[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 9 23:05:14 2025 +0000
+
+    update ts
+
+[33mcommit 9a23a636e135235f53d68f5431515f3c19fc0ee3[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 9 22:58:26 2025 +0000
+
+    update ts
+
+[33mcommit b0607d691b69daa270778655b7aab787a07c2601[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 9 22:52:34 2025 +0000
+
+    update ts
+
+[33mcommit 44befc5168517416aaae833ed3b3b70786b48392[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 9 22:40:14 2025 +0000
+
+    update ts
+
+[33mcommit e5cdd862cf1cc44726ecb51e90c1b4e8a4f7a603[m
+Author: Emon Nathan (Satoshi) <nathanuchia@gmail.com>
+Date:   Sun Feb 9 22:36:12 2025 +0000
+
+    update ts

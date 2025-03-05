@@ -1,15 +1,27 @@
-
 DATABASE_NAME = "sellarts"
 DATABASE_USER = "postgres"
-DATABASE_PASSWORD = "@satoshi"
-DATABASE_HOST = "localhost"
+DATABASE_PASSWORD = "FoD,Q]m6Get>;H7a"
+DATABASE_HOST = "64.227.21.130"
 DATABASE_PORT = "5432"
 DEBUG_MODE = True
-ALLOWED_HOSTS = ["localhost"]
-GRAPHIQL_MODE = True    
+ALLOWED_HOSTS = ["localhost", "dev.sellarts.net", "dj-dev.sellarts.net"]
+GRAPHIQL_MODE = True
 SELLARTS_KEY = "SELLARTS_KEY"
 ANKA_TOKEN = "FqvbsxHBxTKmbZyNcPvvNbFm"
 REQUIRED_AUTHENTICATION = False
+
+
+# DATABASE_NAME = "sellarts"
+# DATABASE_USER = "postgres"
+# DATABASE_PASSWORD = "@satoshi"
+# DATABASE_HOST = "localhost"
+# DATABASE_PORT = "5432"
+# DEBUG_MODE = True
+# ALLOWED_HOSTS = ["localhost"]
+# GRAPHIQL_MODE = True    
+# SELLARTS_KEY = "SELLARTS_KEY"
+# ANKA_TOKEN = "FqvbsxHBxTKmbZyNcPvvNbFm"
+# REQUIRED_AUTHENTICATION = False
 
 
 
@@ -21,11 +33,12 @@ data = {
     "Benin (BJ)": "BJ",
     "Burkina Faso (BF)": "BF",
     "Cameroon (CM)": "CM",
+    "Ivory Coast (CI)": "CI",
     "Cape Verde (CV)": "CV",
     "Central African Rep(CF)": "CF",
     "Gabon (GA)": "GA",
     "Gambia (GM)": "GM",
-    "1 Ghana (GH)": "GH",
+    "Ghana (GH)": "GH",
     "Guinea Rep. (GN)": "GN",
     "Guinea-Bissau (GW)": "GW",
     "Guinea-Equatorial (GQ)": "GQ",
@@ -37,7 +50,7 @@ data = {
     "Senegal (SN)": "SN",
     "Sierra Leone (SL)": "SL",
     "Togo (TG)": "TG",
-    "2 France (FR)": "FR",
+    "France (FR)": "FR",
     "Monaco (MC)": "MC",
     "Algeria (DZ)": "DZ",
     "Angola (AO)": "AO",
@@ -57,7 +70,7 @@ data = {
     "Lesotho (LS)": "LS",
     "Libya (LY)": "LY",
     "Madagascar (MG)": "MG",
-    "3 Malawi (MW)": "MW",
+    "Malawi (MW)": "MW",
     "Mauritius (MU)": "MU",
     "Morocco (MA)": "MA",
     "Mozambique (MZ)": "MZ",
@@ -109,7 +122,7 @@ data = {
     "Kyrgyzstan (KG)": "KG",
     "Latvia (LV)": "LV",
     "Liechtenstein (LI)": "LI",
-    "4Lithuania (LT)": "LT",
+    "Lithuania (LT)": "LT",
     "Luxembourg (LU)": "LU",
     "Malta (MT)": "MT",
     "Moldova": "Moldova",
@@ -138,10 +151,10 @@ data = {
     "United Kingdom (GB)": "GB",
     "Uzbekistan (UZ)": "UZ",
     "Vatican City (VA)": "VA",
-    "5 Canada (CA)": "CA",
+    "Canada (CA)": "CA",
     "Mexico (MX)": "MX",
     "USA (US)": "US",
-    "6 China (CN)": "CN",
+    "China (CN)": "CN",
     "Hong Kong SAR China (HK)": "HK",
     "Japan (JP)": "JP",
     "Afghanistan (AF)": "AF",
@@ -279,7 +292,7 @@ try:
         port=DATABASE_PORT
     )
     cursor = conn.cursor()
-
+    print("Connexion réussie à la base de données")
     # Requête SQL d'insertion
     insert_query = """
     INSERT INTO country (name, code, is_deleted, is_active, created_at) 

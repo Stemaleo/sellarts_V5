@@ -10,6 +10,7 @@ import { useActions } from "@/lib/hooks";
 import { Button } from "@/components/ui/button";
 import { Trash, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useCurrency } from "@/context/CurrencyContext";
 
 import Link from "next/link";
 
@@ -17,9 +18,9 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Importer les styles pour Toast
 
-import { updateFeaturedStatusOfArtWork, deleteArtWork } from "@/actions/artwork";
+import { updateFeaturedStatusOfArtWork, deleteArtWork, dJdeleteArtWork } from "@/actions/artwork";
 
-const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
+const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = true }: { artwork: ArtWorkDTO; redirectUrl?: string; useWindow?: boolean }) => {
   const path = usePathname();
   const router = useRouter();
   const { execute } = useActions();
@@ -29,19 +30,36 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
   const t = useTranslations();
   const handleDelete = async () => {
     setLoading(true);
-    const res = await execute(deleteArtWork, artwork.id);
-    setLoading(false);
+    const res = await execute(dJdeleteArtWork, [artwork.id]);
+
+    console.log(res);
+    // setLoading(false);
 
     if (res?.success) {
       // Notification réussie (succès)
       toast.success("L'œuvre a été supprimée avec succès.");
-      router.push("/artist_app/arts"); // Redirection après la suppression
+      router.push(redirectUrl); // Redirection après la suppression
     } else {
       // Notification échouée
       toast.error("Échec de la suppression de l'œuvre.");
     }
     setShowDeleteConfirmation(false);
   };
+
+  const { currency } = useCurrency();
+
+  const exchangeRates: Record<string, number> = {
+    XOF: 1,
+    USD: 600,
+    EUR: 655,
+  };
+
+
+  // (pour les prix de base en USD ou EURO, on va multiplier)
+  const convertPrice = (priceXOF: number, targetCurrency: string) => {
+    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
+  };
+
 
   const handleCancelDelete = () => {
     setShowDeleteConfirmation(false);
@@ -60,21 +78,22 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
           <Badge className="absolute z-10 top-2 right-2 bg-red-500">Sold</Badge>
         )}
         <div className="relative h-48">
-        <Link href={`/arts/${artwork.id}`}>
-          <Image src={artwork.mediaUrls[0]} alt={artwork.title} layout="fill" objectFit="cover" />
-        </Link>
+          <Link href={`/arts/${artwork.id}`}>
+            <Image src={artwork.mediaUrls[0]} alt={artwork.title} layout="fill" objectFit="cover" />
+          </Link>
         </div>
         <div className="p-4">
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-500 bg-primary/20 py-1 px-2 rounded-full inline h-auto">
               By, {artwork.ownerName}
             </span>
-            <div className="">{<NativeSharePopup url={artwork.id} title={artwork.title} />}</div>
+            <div className="">{<NativeSharePopup url={artwork.id} title={artwork.title} useWindow={useWindow} />}</div>
           </div>
           <h2 className="text-lg font-semibold mb-0 mt-1 line-clamp-1">{artwork.title}</h2>
           <p className="text-gray-500 mb-1 text-sm line-clamp-1">{artwork.description}</p>
           <div className="flex justify-between items-center mb-4">
-            <span className="font-bold">FCFA {artwork.price}</span>
+            <span className="font-bold">{convertPrice(artwork.price, currency)} {currency}
+            </span>
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">{artwork.materialType.name}</Badge>
@@ -98,12 +117,12 @@ const ArtCardManage = ({ artwork }: { artwork: ArtWorkDTO }) => {
             </Link>
             <Button
               onClick={(event) => {
-                event.stopPropagation(); 
+                event.stopPropagation();
                 setShowDeleteConfirmation(true);
               }}
               className="w-full md:w-auto"
             >
-              <Trash className="mr-2 h-4 w-4" /> Supprimer 
+              <Trash className="mr-2 h-4 w-4" /> Supprimer
             </Button>
 
           </div>

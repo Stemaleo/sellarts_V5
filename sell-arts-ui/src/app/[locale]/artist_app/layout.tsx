@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import NotificationButton from "@/components/notification-button";
 import { LocaleSwitcher } from "@/components/LocalSwitch";
+import CurrencySelector from "@/components/CurrencySelector";
 
 interface NavItem {
   title: string;
@@ -127,6 +128,7 @@ export default function ArtistLayout({ children }: { children: React.ReactNode }
               </div>
             </form>
           </div>
+          <CurrencySelector />
           <LocaleSwitcher />
           <NotificationButton />
           <DropdownMenu>

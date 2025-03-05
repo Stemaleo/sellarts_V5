@@ -65,10 +65,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "api.urls"
 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],  # Vérifie ce chemin
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -156,3 +157,21 @@ CORS_ALLOW_ALL_ORIGINS = True
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.sellarts.net'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'sellarts@sellarts.net'
+EMAIL_HOST_PASSWORD = 'ES89Ggw78NjuN9h'
+DEFAULT_FROM_EMAIL = 'sellarts@sellarts.net'
+
+# SMTP Timeout settings
+EMAIL_TIMEOUT = 5000
+EMAIL_CONNECTION_TIMEOUT = 5000
+EMAIL_WRITE_TIMEOUT = 5000
+
+# SSL Trust settings
+EMAIL_SSL_TRUST = 'mail.sellarts.net'

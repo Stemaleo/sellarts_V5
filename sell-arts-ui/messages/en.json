@@ -68,6 +68,7 @@
     "test": "Test Translation"
   },
   "register": {
+    "select-country": "Select Country",
     "createAccount": "Create an Account",
     "join-our-creative-community-today": "Join our creative community today",
     "customer": "Customer",

@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { FEATEUR_GENERATE_FEES } from "@/actions/mutation/artist/shipping/mutationShipping";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export function CartPopupComponent() {
   const { execute, loading, data } = useActions<Order>();
@@ -25,25 +26,37 @@ export function CartPopupComponent() {
   const dispatch = useDispatch<AppDispatch>();
   const { status } = useSession();
 
+ const { currency } = useCurrency();
 
+  const exchangeRates: Record<string, number> = {
+    XOF: 1,
+    USD: 600,  
+    EUR: 655,  
+  };
+
+  // (pour les prix de base en USD ou EURO, on va multiplier)
+  const convertPrice = (priceXOF: number, targetCurrency: string) => {
+    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
+  };
   
   const handleShipping = async (orderId: string) => {
     console.log('1');
-    try {
-      console.log('2');
-      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-        query: FEATEUR_GENERATE_FEES,
-        variables: { order: orderId, },
-      }).then((response) => {
-        console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
-         
-        router.push(`/checkout/${orderId}/${response.data.data.featureGenerateFees.order.shippingFees}`);
-      });
+    router.push(`/checkout/${orderId}/${2}`);
 
-      console.log('4');
-    } catch (err) {
-      setError("Failed to update method");
-    }
+    // try {
+    //   console.log('2');
+    //   const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+    //     query: FEATEUR_GENERATE_FEES,
+    //     variables: { order: orderId, },
+    //   }).then((response) => {
+    //     console.log(response.data.data!?.featureGenerateFees!?.order!?.shippingFees)
+         
+    //   });
+
+    //   console.log('4');
+    // } catch (err) {
+    //   setError("Failed to update method");
+    // }
   };
   useEffect(() => {
     if (status === "authenticated") {
@@ -79,9 +92,9 @@ export function CartPopupComponent() {
                     <div>
                       <div className="flex justify-between text-base font-medium">
                         <h3>{item.artwork.title}</h3>
-                        <p className="ml-4">FCFA {(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="ml-4"> {currency} {convertPrice(item.price * item.quantity, currency)}</p>
                       </div>
-                      <p className="mt-1 text-sm text-muted-foreground">FCFA {item.price?.toFixed(2)} each</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{currency} {convertPrice(item.price, currency)} each</p>
                     </div>
                     <div className="flex flex-1 items-end justify-between text-sm">
                       <Button
@@ -108,7 +121,7 @@ export function CartPopupComponent() {
           <Separator />
           <div className="flex justify-between text-base font-medium">
             <p>Subtotal</p>
-            <p>FCFA {cartItems.reduce((p, e) => p + e.price * e.quantity, 0)}</p>
+            <p>{currency} {convertPrice(cartItems.reduce((p, e) => p + e.price * e.quantity, 0), currency)}</p>
           </div>
           <p className="text-sm text-muted-foreground">Shipping and taxes calculated at checkout.</p>
           <div className="mt-6">
