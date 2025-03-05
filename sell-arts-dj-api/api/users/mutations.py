@@ -42,9 +42,11 @@ class FeatureUpdateUsersDeletions(graphene.Mutation):
                         success=False, message="No matching users found."
                     )
 
-                users_to_update.update(is_deleted=delete)
-                anka_models.ArtistProfiles.objects.filter(user__in=users_to_update).update(is_deleted=delete)
-                anka_models.ArtWorks.objects.filter(owner__in=users_to_update).update(is_deleted=delete)
+                for user in users_to_update:
+                    user.is_deleted = delete
+                    user.save()
+                    anka_models.ArtistProfiles.objects.filter(user=user).update(is_deleted=delete)
+                    anka_models.ArtWorks.objects.filter(owner=user).update(is_deleted=delete)
   
                 action = "deleted" if delete else "restored"
                 return FeatureUpdateUsersDeletions(
