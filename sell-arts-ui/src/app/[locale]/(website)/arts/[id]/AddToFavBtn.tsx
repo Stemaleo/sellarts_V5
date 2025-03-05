@@ -38,7 +38,6 @@ const AddToFav = ({ art }: { art: ArtWorkDTO }) => {
             }
           });
         }}
-        className="flex-1"
         disabled={loading}
         variant="outline"
         className="w-full sm:w-auto flex-1 text-sm sm:text-base"
