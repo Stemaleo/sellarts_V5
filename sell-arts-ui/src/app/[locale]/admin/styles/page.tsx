@@ -33,7 +33,7 @@ export default function StyleTypeManagement() {
       });
       setStyles(response.data.data.styles.edges);
     } catch (err) {
-      setError("Error loading methods");
+      setError("Error loading styles");
     } finally {
       setLoading(false);
     }
@@ -50,8 +50,8 @@ export default function StyleTypeManagement() {
       <CreateForm onCreateSuccess={fetchStyles} />
       <Card>
         <CardHeader>
-          <CardTitle>Methods Types Management</CardTitle>
-          <CardDescription>Add, remove, and manage Methods Types for your art selling platform.</CardDescription>
+          <CardTitle>Styles Management</CardTitle>
+          <CardDescription>Add, remove, and manage styles for your art selling platform.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -83,7 +83,7 @@ export default function StyleTypeManagement() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the method type "{style.node.name}".
+                            This action cannot be undone. This will permanently delete the style "{style.node.name}".
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
