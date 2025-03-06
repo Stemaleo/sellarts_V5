@@ -6,7 +6,6 @@ import in.oswinjerome.ArtSell.models.ArtistProfile;
 import in.oswinjerome.ArtSell.models.Media;
 import in.oswinjerome.ArtSell.models.User;
 import in.oswinjerome.ArtSell.paintingTypes.PaintingType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class ArtWorkDTO {
     private String id;
     private String title;
@@ -41,6 +39,7 @@ public class ArtWorkDTO {
     private String artistName;
 
     private boolean isFeatured;
+    private Boolean is_deleted;
 
     public ArtWorkDTO(ArtWork artWork) {
         List<String> mediaUrl = artWork.getMedias()
@@ -69,6 +68,7 @@ public class ArtWorkDTO {
        credits = artistProfile.getArtistProfile();
        artistName = artistProfile.getName();
         isFeatured = artWork.isFeatured();
+        is_deleted = artWork.getIs_deleted();
     }
 
     public static ArtWorkDTO convertToDTO(ArtWork artWork) {
@@ -102,10 +102,38 @@ public class ArtWorkDTO {
                 artWork.getOwner().getArtistProfile(),
                 artist.getArtistProfile(),
                 artist.getName(),
-                artWork.isFeatured()
+                artWork.isFeatured(),
+                artWork.getIs_deleted()
 
         );
     }
 
+    public ArtWorkDTO(String id, String title, String description, PaintingType paintingType,
+                     MaterialType materialType, double width, double height, double price,
+                     Integer size, String ownerName, List<String> mediaUrls, Integer stock,
+                     boolean isInStock, LocalDateTime createdAt, boolean isFav,
+                     ArtistProfile artistProfile, ArtistProfile credits, String artistName,
+                     boolean isFeatured, Boolean is_deleted) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.paintingType = paintingType;
+        this.materialType = materialType;
+        this.width = width;
+        this.height = height;
+        this.price = price;
+        this.size = size;
+        this.ownerName = ownerName;
+        this.mediaUrls = mediaUrls;
+        this.stock = stock;
+        this.isInStock = isInStock;
+        this.createdAt = createdAt;
+        this.isFav = isFav;
+        this.artistProfile = artistProfile;
+        this.credits = credits;
+        this.artistName = artistName;
+        this.isFeatured = isFeatured;
+        this.is_deleted = is_deleted;
+    }
 
 }

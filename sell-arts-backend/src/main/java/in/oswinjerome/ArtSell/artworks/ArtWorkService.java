@@ -139,15 +139,15 @@ public class ArtWorkService {
 
     public ResponseEntity<ResponseDTO> getAllArtWorks(String title, Pageable pageable, String paintingType, String materialType, int price) {
 
-
-        Specification<ArtWork> spec = Specification.where(null);
+        Specification<ArtWork> spec = Specification.where((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("is_deleted"), false)
+        );
 
         if(title!=null && !title.isEmpty()){
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%"+title.toLowerCase()+"%")
             );
         }
-
 
         if (paintingType != null && !paintingType.isEmpty()) {
             String[] categories = paintingType.split(",");
@@ -263,13 +263,10 @@ public class ArtWorkService {
          Optional<ArtWork> artwork = artWorkRepo.findById(artworkId);
  
          if (artwork.isPresent()) {
-             // Supprimer les fichiers associés dans S3
-             for (Media media : artwork.get().getMedias()) {
-                 s3Service.deleteFile(media.getKey());  // Méthode qui supprime le fichier S3 associé
-             }
- 
-             // Supprimer l'œuvre d'art de la base de données
-             artWorkRepo.delete(artwork.get());
+             // Soft delete instead of physical delete
+             ArtWork artWork = artwork.get();
+             artWork.setIs_deleted(true);
+             artWorkRepo.save(artWork);
              return true;
          } else {
              throw new InvalidDataException("Artwork not found");
