@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingCart, Heart } from "lucide-react";
+import { ShoppingCart, Heart, ImageOff, Loader2 } from "lucide-react";
 import { fetchMethodAndStyle, getArtWorkById } from "@/actions/artwork";
 import { PaintingType, paintingTypeToText } from "@/lib/constants";
 import AddToCartBtn from "./AddToCartBtn";
@@ -13,12 +13,12 @@ import Link from "next/link";
 import ArtCard from "@/components/ArtCard";
 import MakeProposalBtn from "./MakeProposalBtn";
 import moment from "moment";
-import { getTranslations } from "next-intl/server";
 import { GET_ARTWORK_BY_ID } from "@/actions/queries/artwork/querieArtwork";
 import { useState, useEffect } from "react";
 import { MethodType, StyleType } from "@/lib/type";
 import { useCurrency } from "@/context/CurrencyContext";
 import { convertPrice } from '@/actions/currencyConverter';
+
 interface Artwork {
   id: number;
   imageUrl: string;
@@ -51,34 +51,35 @@ export default function ArtworkDetail({ params, translations }: {
   const { currency } = useCurrency();
 
 
-
   useEffect(() => {
-      
-    params.then( async(response: any) => {
-      // const t = await getTranslations()
-      Promise.all([
-        getArtWorkById(response.id),
-        fetchMethodAndStyle(response.id),
-       
-      ])
-      .then(([artworkData, methodStyleData]) => {
+    const fetchData = async () => {
+      try {
+        const response = await params;
+        const [artworkData, methodStyleData] = await Promise.all([
+          getArtWorkById(response.id),
+          fetchMethodAndStyle(response.id),
+        ]);
+        
         setRes(artworkData);
         setRespo(methodStyleData);
-        // setT(translations); 
         setArtwork(artworkData);
         setMethodStyle(methodStyleData);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching artwork:", error);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
-    });
+      }
+    };
+
+    fetchData();
   }, [params]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="animate-spin w-10 h-10" />
+      </div>
+    );
   }
 
   if (!res?.success) {
@@ -87,13 +88,13 @@ export default function ArtworkDetail({ params, translations }: {
 
   const art = res.data.artwork;
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-4 sm:py-8">
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <SelectImage art={art} />
-        <div>
+        <div className="space-y-4">
           {art.inStock ? <Badge className="z-10 top-2 right-2 bg-green-500">In stock</Badge> : <Badge className="z-10 top-2 right-2 bg-red-500">Sold</Badge>}
-          <h1 className="text-3xl font-bold mb-2 mt-4">{art.title}</h1>
-          <p className="text-xl mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 mt-4">{art.title}</h1>
+          <p className="text-lg sm:text-xl mb-2">
             by{" "}
             <Link href={`/artists/${art.artistProfile.id}`} className="underline underline-offset-2">
               {art.ownerName}
@@ -107,11 +108,11 @@ export default function ArtworkDetail({ params, translations }: {
               </Link>
             </p>
           )}
-          <p className="text-2xl font-bold mb-6 mt-4">
+          <p className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 mt-2 sm:mt-4">
             {convertPrice(art.price, currency)} {currency}
           </p>
-          <p className="mb-6">{art.description}</p>
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <p className="mb-4 sm:mb-6">{art.description}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div>
               <p className="font-semibold">{translations.style}</p>
               <p>{respo.data.artworks.edges[0].node.style.name}</p>
@@ -133,7 +134,7 @@ export default function ArtworkDetail({ params, translations }: {
               <p>{moment(art.createdAt).format("D MMM Y")}</p>
             </div>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <AddToCartBtn art={art} />
             <MakeProposalBtn artWork={art} />
             <AddToFav art={art} />
@@ -141,8 +142,8 @@ export default function ArtworkDetail({ params, translations }: {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold mb-6">{translations['related-artworks']}</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{translations['related-artworks']}</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
         {res.data.relatedArtworks.map((relatedArtwork: any) => (
           <Link key={relatedArtwork.id} href={`/arts/${relatedArtwork.id}`}>
             <ArtCard artwork={relatedArtwork} />

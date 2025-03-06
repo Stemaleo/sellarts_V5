@@ -38,9 +38,9 @@ const AddToFav = ({ art }: { art: ArtWorkDTO }) => {
             }
           });
         }}
-        className="flex-1"
         disabled={loading}
         variant="outline"
+        className="w-full sm:w-auto flex-1 text-sm sm:text-base"
       >
         {loading ? <ClipLoader size={20} color="black" /> : isFav ? <HeartFilledIcon className="h-4 w-4 text-red-500" /> : <Heart className="h-4 w-4" />}
       </Button>

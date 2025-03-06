@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Trash, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/context/CurrencyContext";
+import { convertPrice } from "@/actions/currencyConverter";
 
 import Link from "next/link";
 
@@ -47,19 +48,6 @@ const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = 
   };
 
   const { currency } = useCurrency();
-
-  const exchangeRates: Record<string, number> = {
-    XOF: 1,
-    USD: 600,
-    EUR: 655,
-  };
-
-
-  // (pour les prix de base en USD ou EURO, on va multiplier)
-  const convertPrice = (priceXOF: number, targetCurrency: string) => {
-    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
-  };
-
 
   const handleCancelDelete = () => {
     setShowDeleteConfirmation(false);
@@ -132,7 +120,7 @@ const ArtCardManage = ({ artwork, redirectUrl = "/artist_app/arts", useWindow = 
         {showDeleteConfirmation && (
           <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-xs w-full">
-              <h3 className="text-lg font-semibold">Êtes-vous sûr de vouloir supprimer cette œuvre ?</h3>
+              <h3 className="text-lg font-semibold">Êtes-vous sûr de vouloir supprimer cette œuvre ?</h3>
               <div className="mt-4 flex justify-between">
                 <button
                   onClick={handleDelete}

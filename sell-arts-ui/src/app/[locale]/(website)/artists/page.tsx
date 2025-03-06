@@ -1,10 +1,12 @@
-import { use, useState, useTransition } from "react";
+'use client';
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Palette, ShoppingCart } from "lucide-react";
+import { Search, Palette, ShoppingCart, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { getAllArtistProfiles } from "@/actions/artists";
@@ -12,15 +14,31 @@ import { StarRatingComponent } from "@/components/star-rating";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/actions/nextAuth";
 import CustomPagination from "@/components/ui/custom-pagination";
-import { getTranslations } from "next-intl/server";
 import ArtistFilter from "./ArtistFilter";
 
-export default async function ArtistGrid({ searchParams }: any) {
-  const search = await searchParams;
+export default function ArtistGrid({ searchParams }: any) {
+  const [loading, setLoading] = useState(true);
+  const [artists, setArtists] = useState<any>(null);
+  const t = useTranslations("artistsPage");
 
-  const artists = await getAllArtistProfiles(search["page"] || 0, search["title"] || "", "ARTIST", 6);
+  useEffect(() => {
+    const fetchData = async () => {
+      const search = await searchParams;
+      const artistsData = await getAllArtistProfiles(search["page"] || 0, search["title"] || "", "ARTIST", 6);
+      setArtists(artistsData);
+      setLoading(false);
+    };
 
-  const t = await getTranslations("artistsPage");
+    fetchData();
+  }, [searchParams]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="animate-spin w-10 h-10" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -28,7 +46,7 @@ export default async function ArtistGrid({ searchParams }: any) {
       <ArtistFilter />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
-        {artists.data.content.map((artist) => (
+        {artists.data.content.map((artist: any) => (
           <Link href={`/artists/${artist?.id}`} key={artist.id}>
             <Card key={artist.id} className="overflow-hidden">
               <CardContent className="p-4">

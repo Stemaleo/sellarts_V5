@@ -110,7 +110,7 @@ public class CheckoutService {
 
         cartRepo.deleteAll(cartItems);
 
-        // notificationService.sendOrderPlacedNotification(order);
+        notificationService.sendOrderPlacedNotification(order);
 
         return ResponseEntity.ok(ResponseDTO.builder().data(order).success(true).build());
     }

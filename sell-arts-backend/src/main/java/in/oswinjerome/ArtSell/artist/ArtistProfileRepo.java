@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
 
-    @Query("SELECT e FROM artist_profiles e WHERE e.is_deleted=false ORDER BY random() LIMIT 5")
+    @Query("SELECT e FROM artist_profiles e  WHERE e.is_deleted=false ORDER BY random() LIMIT 5")
     List<ArtistProfile> findRandomRecords();
 
 
@@ -40,13 +40,11 @@ public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
 
     @Query("SELECT new in.oswinjerome.ArtSell.website.FeaturedArtistDTO(e, a) FROM artist_profiles e " +
             "JOIN art_works a ON a.owner = e.user " +
-            "WHERE e.is_deleted = false AND e.user.is_deleted = false " +
             "GROUP BY e, a ORDER BY random() LIMIT 5")
     List<FeaturedArtistDTO> findRandomArtistWithArtWorks();
 
     @Query("SELECT new in.oswinjerome.ArtSell.website.FeaturedArtistDTO(e, a) FROM artist_profiles e " +
             "JOIN art_works a ON a.owner = e.user AND e.artistType = in.oswinjerome.ArtSell.artist.ArtistType.GALLERY " +
-            "WHERE e.is_deleted = false AND e.user.is_deleted = false " +
             "GROUP BY e, a ORDER BY random() LIMIT 3")
     List<FeaturedArtistDTO> findRandomGalleryWithArtWorks();
 

@@ -275,5 +275,21 @@
     "are-you-sure": "Are you sure?",
     "remove": "Remove",
     "cancel": "Cancel"
- }
+  },
+  "adminDashboard": {
+    "admin-dashboard": "Admin Dashboard",
+    "total-users": "Total Users",
+    "total-artists": "Total Artists",
+    "total-revenue": "Total Revenue",
+    "total-orders": "Total Orders",
+    "this-month": "this month",
+    "from-last-month": "from last month",
+    "average-order-value": "Average Order Value",
+    "artworks-listed": "Artworks Listed",
+    "top-selling-artworks": "Top Selling Artworks",
+    "artwork": "Artwork",
+    "artist": "Artist",
+    "sales": "Sales",
+    "loading": "Loading..."
+  }
 }

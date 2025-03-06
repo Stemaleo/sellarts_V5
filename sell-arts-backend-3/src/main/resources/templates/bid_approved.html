@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .email-header {
+            text-align: center;
+            padding-bottom: 20px;
+            color: #FF7F02;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            margin: 20px 0;
+        }
+        .order-summary {
+            background: #fef8f2;
+            border: 1px solid #FF7F02;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .order-summary h3 {
+            color: #FF7F02;
+        }
+        .email-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+        .button {
+            display: inline-block;
+            background-color: #FF7F02;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #e86f02;
+        }
+    </style>
+    <title>Bid Approved</title>
+</head>
+<body>
+<div class="email-container">
+    <div class="email-header">
+        <h1>Bid Approved!</h1>
+    </div>
+    <div class="email-body">
+        <!--/*@thymesVar id="user" type="in.oswinjerome.ArtSell.models.User"*/-->
+        <!--/*@thymesVar id="art" type="in.oswinjerome.ArtSell.models.ArtWork"*/-->
+        <p>Hi <span th:text="${user.getName()}">[User's Name]</span>,</p>
+        <p>Your bid for the product <b><span th:text="${art.getTitle()}">Art</span></b> has been approved.</p>
+        <p>Place the order at the discounted price. </p>
+        <p><a class="button" href="https://sellarts.net">Place Your Order</a></p>
+    </div>
+    <div class="email-footer">
+        <p>© <span>2024</span> <span >SellArts</span>. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>
