@@ -49,4 +49,3 @@ public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
     List<FeaturedArtistDTO> findRandomGalleryWithArtWorks();
 
 }
-
