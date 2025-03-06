@@ -42,7 +42,7 @@ export default function Component() {
             email: edge.node.email,
             isActive: edge.node.isActive,
             registeredAt: edge.node.registeredAt,
-            type: edge.node.artistProfile ? "ARTIST" : "USER",
+            type: edge.node.artistProfile ? edge.node.artistProfile.artistType : "USER",
             artistProfile: edge.node.artistProfile
           }));
 
