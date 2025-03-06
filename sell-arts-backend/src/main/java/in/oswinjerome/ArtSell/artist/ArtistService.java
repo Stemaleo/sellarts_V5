@@ -75,6 +75,11 @@ public class ArtistService {
 
     public ResponseEntity<ResponseDTO> updateArtistProfile(@Valid RegisterArtistDTO artist) {
         User user = authService.getCurrentUser();
+        
+        if (user.getIs_deleted()) {
+            throw new InvalidDataException("User has been deleted");
+        }
+        
         ArtistProfile artistProfile = user.getArtistProfile();
         if(artistProfile==null) {
             throw new InvalidDataException("Artist profile does not exist");
@@ -88,6 +93,10 @@ public class ArtistService {
 
     public ResponseEntity<ResponseDTO> getCurrentArtist() {
         User user = authService.getCurrentUser();
+        
+        if (user.getIs_deleted()) {
+            throw new InvalidDataException("User has been deleted");
+        }
         ArtistProfile artistProfile = user.getArtistProfile();
         if(artistProfile==null) {
             throw new InvalidDataException("Artist profile does not exist");
@@ -109,13 +118,20 @@ public class ArtistService {
     }
 
     public ResponseEntity<ResponseDTO> getArtist(Long artistId) {
-
         User user = authService.getCurrentUser();
 
         ArtistProfileDTO artistProfile = artistProfileRepo.getArtistWithStats(artistId).orElseThrow();
         ArtistProfile artistProfile1 = artistProfileRepo.findById(artistId).orElseThrow();
-        List<ArtWork> artWorks = artWorkRepo.findAllByOwner(artistProfile1.getUser());
-        List<ArtWorkDTO> artWorksDtp = artWorks.stream().map(ArtWorkDTO::convertToDTO).toList();
+        
+        if (artistProfile1.getUser().getIs_deleted()) {
+            throw new InvalidDataException("Artist not found");
+        }
+        
+        List<ArtWork> artWorks = artWorkRepo.findAllByOwnerAndIsDeletedFalse(artistProfile1.getUser());
+        List<ArtWorkDTO> artWorksDtp = artWorks.stream()
+            .filter(artwork -> !artwork.getIs_deleted())
+            .map(ArtWorkDTO::convertToDTO)
+            .toList();
 
         ArtistDetailsDTO artistDetailsDTO = new ArtistDetailsDTO();
         artistDetailsDTO.setNoOfArtWorks(artistProfile.getNoOfArtWorks());
@@ -142,7 +158,7 @@ public class ArtistService {
         if(artistProfile==null) {
             throw new InvalidDataException("Artist profile does not exist");
         }
-        List<ArtWork> artWorks = artWorkRepo.findAllByOwner(artistProfile.getUser());
+        List<ArtWork> artWorks = artWorkRepo.findAllByOwnerAndIsDeletedFalse(artistProfile.getUser());
         List<ArtWorkDTO> artWorksDtp = artWorks.stream().map(ArtWorkDTO::convertToDTO).toList();
 
         ArtistDetailsDTO artistDetailsDTO = new ArtistDetailsDTO();
@@ -160,11 +176,19 @@ public class ArtistService {
     @SneakyThrows
     public String updateProfileImage(MultipartFile image) {
         User user = authService.getCurrentUser();
-        String url = uploadArtistCoverImage(image, user);
-        return url;
+        
+        if (user.getIs_deleted()) {
+            throw new InvalidDataException("User has been deleted");
+        }
+        
+        return uploadArtistCoverImage(image, user);
     }
 
     public String uploadArtistCoverImage(MultipartFile image, User user) throws IOException {
+        if (user.getIs_deleted()) {
+            throw new InvalidDataException("User has been deleted");
+        }
+        
         ArtistProfile artistProfile = user.getArtistProfile();
 
         String url ="";
@@ -183,6 +207,10 @@ public class ArtistService {
 
     public ResponseEntity<ResponseDTO> getCurrentArtistOverview() {
         User user = authService.getCurrentUser();
+        
+        if (user.getIs_deleted()) {
+            throw new InvalidDataException("User has been deleted");
+        }
         ArtistProfile artistProfile = user.getArtistProfile();
         if(artistProfile==null) {
             throw new InvalidDataException("Artist profile does not exist");

@@ -79,6 +79,10 @@ public class ArtWorkService {
     }
 
     public ArtWork handleArtworkUpload(StoreArtWorkReqDTO storeDTO, List<MultipartFile> files, User user) throws IOException {
+        if (user.getIs_deleted()) {
+            throw new EntityNotFoundException("User has been deleted");
+        }
+        
         PaintingType paintingType = paintingTypeService.getPaintingTypeOrFail(storeDTO.getPaintingTypeId());
         MaterialType materialType = materialTypeService.getMaterialTypeOrFail(storeDTO.getMaterialTypeId());
 
@@ -118,8 +122,12 @@ public class ArtWorkService {
     }
 
     public ResponseEntity<ResponseDTO> getUsersArtWork(String title, String paintingType, Pageable pageable ) {
-
         User user = authService.getCurrentUser();
+        
+        if (user.getIs_deleted()) {
+            throw new EntityNotFoundException("User has been deleted");
+        }
+        
         Page<ArtWork> artWorks;
         if(authService.hasAnyRole(List.of("ROLE_ADMIN"))){
             artWorks =  artWorkRepo.findAll(title,paintingType,pageable);
@@ -140,7 +148,10 @@ public class ArtWorkService {
     public ResponseEntity<ResponseDTO> getAllArtWorks(String title, Pageable pageable, String paintingType, String materialType, int price) {
 
         Specification<ArtWork> spec = Specification.where((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("is_deleted"), false)
+                criteriaBuilder.and(
+                    criteriaBuilder.equal(root.get("is_deleted"), false),
+                    criteriaBuilder.equal(root.get("owner").get("is_deleted"), false)
+                )
         );
 
         if(title!=null && !title.isEmpty()){
@@ -217,14 +228,23 @@ public class ArtWorkService {
 
 
     public ArtWork findOrFailById(String artworkId) {
-
-        return artWorkRepo.findById(artworkId).orElseThrow(()-> new EntityNotFoundException("Artwork not found"));
+        ArtWork artWork = artWorkRepo.findById(artworkId).orElseThrow(() -> new EntityNotFoundException("Artwork not found"));
+        
+        if (artWork.getOwner().getIs_deleted()) {
+            throw new EntityNotFoundException("Artwork not found: the owner has been deleted");
+        }
+        
+        return artWork;
     }
 
     public ResponseEntity<ResponseDTO> getAllFeaturedArtOfArtist(Long artistId) {
         ArtistProfile artistProfile1 = artistProfileRepo.findById(artistId).orElseThrow();
+        
+        if (artistProfile1.getUser().getIs_deleted() || artistProfile1.getIs_deleted()) {
+            throw new EntityNotFoundException("Artist not found");
+        }
 
-        List<ArtWork> artWorks = artWorkRepo.findAllByOwnerAndFeatured(artistProfile1.getUser(),true);
+        List<ArtWork> artWorks = artWorkRepo.findAllByOwnerAndFeatured(artistProfile1.getUser(), true);
         List<ArtWorkDTO> artWorkDTOS = artWorks.stream().map(ArtWorkDTO::convertToDTO).toList();
 
         return ResponseEntity.ok(ResponseDTO.builder()
@@ -235,6 +255,11 @@ public class ArtWorkService {
 
     public ResponseEntity<ResponseDTO> updateFeatured(String artworkId) {
         User user = authService.getCurrentUser();
+        
+        if (user.getIs_deleted()) {
+            throw new EntityNotFoundException("User has been deleted");
+        }
+        
         ArtWork artWork = findOrFailById(artworkId);
 
         if(!Objects.equals(user.getId(), artWork.getOwner().getId())){
@@ -260,16 +285,15 @@ public class ArtWorkService {
      // Ajout de la méthode pour supprimer une œuvre d'art
      @Transactional
      public boolean deleteArtWork(String artworkId) {
-         Optional<ArtWork> artwork = artWorkRepo.findById(artworkId);
- 
-         if (artwork.isPresent()) {
-             // Soft delete instead of physical delete
-             ArtWork artWork = artwork.get();
-             artWork.setIs_deleted(true);
-             artWorkRepo.save(artWork);
-             return true;
-         } else {
-             throw new InvalidDataException("Artwork not found");
+         ArtWork artwork = findOrFailById(artworkId);
+         
+         if (artwork.getOwner().getIs_deleted()) {
+             throw new EntityNotFoundException("Owner has been deleted");
          }
+         
+         // Soft delete instead of physical delete
+         artwork.setIs_deleted(true);
+         artWorkRepo.save(artwork);
+         return true;
      }
 }

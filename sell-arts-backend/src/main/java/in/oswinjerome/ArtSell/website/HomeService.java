@@ -33,33 +33,41 @@ public class HomeService {
     }
 
     public ResponseEntity<ResponseDTO> getRandomArtists() {
-
-        List<FeaturedArtistDTO> artWorks = artistProfileRepo.findRandomArtistWithArtWorks();
+        List<FeaturedArtistDTO> artWorks = artistProfileRepo.findRandomArtistWithArtWorks()
+                .stream()
+                .filter(artist -> artist.getArtwork() != null)
+                .toList();
 
         while (artWorks.size() < 5 && !artWorks.isEmpty()) {
-            List<FeaturedArtistDTO> temp = artistProfileRepo.findRandomArtistWithArtWorks();
+            List<FeaturedArtistDTO> temp = artistProfileRepo.findRandomArtistWithArtWorks()
+                    .stream()
+                    .filter(artist -> artist.getArtwork() != null)
+                    .toList();
             if(temp.isEmpty()){
                 break;
             }
             artWorks.addAll(temp);
         }
-
 
         return ResponseEntity.ok(ResponseDTO.builder().data(artWorks).success(true).build());
     }
 
     public ResponseEntity<ResponseDTO> getRandomGallery() {
-
-        List<FeaturedArtistDTO> artWorks = artistProfileRepo.findRandomGalleryWithArtWorks();
+        List<FeaturedArtistDTO> artWorks = artistProfileRepo.findRandomGalleryWithArtWorks()
+                .stream()
+                .filter(artist -> artist.getArtwork() != null)
+                .toList();
 
         while (artWorks.size() < 3 && !artWorks.isEmpty()) {
-            List<FeaturedArtistDTO> temp = artistProfileRepo.findRandomGalleryWithArtWorks();
+            List<FeaturedArtistDTO> temp = artistProfileRepo.findRandomGalleryWithArtWorks()
+                    .stream()
+                    .filter(artist -> artist.getArtwork() != null)
+                    .toList();
             if(temp.isEmpty()){
                 break;
             }
             artWorks.addAll(temp);
         }
-
 
         return ResponseEntity.ok(ResponseDTO.builder().data(artWorks).success(true).build());
     }

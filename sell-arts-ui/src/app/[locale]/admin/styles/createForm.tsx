@@ -45,7 +45,7 @@ export default function CreateForm({onCreateSuccess}: {onCreateSuccess: () => vo
           toast.error(res.message);
         }
       } catch (error) {
-        toast.error("An error occurred while creating the method.");
+        toast.error("An error occurred while creating the style.");
       }
       
       formikHelpers.setSubmitting(false);
@@ -55,18 +55,18 @@ export default function CreateForm({onCreateSuccess}: {onCreateSuccess: () => vo
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Methods Types Management</CardTitle>
-        <CardDescription>Add, remove, and manage Methods Types for your art selling platform.</CardDescription>
+        <CardTitle>Styles Management</CardTitle>
+        <CardDescription>Add, remove, and manage styles for your art selling platform.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit} className="space-y-4">
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="name">New Methods Types</Label>
+            <Label htmlFor="name">New Style</Label>
             <div className="flex space-x-2">
               <div className="w-full">
                 <Input
                   id="name"
-                  placeholder="Enter method type name"
+                  placeholder="Enter style name"
                   value={form.values.name}
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
@@ -74,7 +74,7 @@ export default function CreateForm({onCreateSuccess}: {onCreateSuccess: () => vo
                 <ErrorMessage error={form.errors.name} touched={form.touched.name} />
               </div>
               <Button disabled={form.isSubmitting} type="submit">
-                <Plus className="mr-2 h-4 w-4" /> Add Type
+                <Plus className="mr-2 h-4 w-4" /> Add Style
               </Button>
             </div>
           </div>

@@ -79,9 +79,15 @@ public class ArtistArtWorkController {
         boolean isDeleted = artWorkService.deleteArtWork(artworkId);
     
         if (isDeleted) {
-            return ResponseEntity.ok(new ResponseDTO("Artwork deleted successfully"));
+            return ResponseEntity.ok(ResponseDTO.builder()
+                .success(true)
+                .message("Artwork deleted successfully")
+                .build());
         } else {
-            return ResponseEntity.status(400).body(new ResponseDTO("Failed to delete artwork"));
+            return ResponseEntity.badRequest().body(ResponseDTO.builder()
+                .success(false)
+                .message("Failed to delete artwork")
+                .build());
         }
     }
     
