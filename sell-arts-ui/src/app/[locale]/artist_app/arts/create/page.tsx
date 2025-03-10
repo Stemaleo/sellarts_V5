@@ -110,10 +110,10 @@ export default function CreateArtwork() {
     const files = event.target.files;
     if (files) {
       const newImages = Array.from(files).map((file) => file);
-      // if (images.length + newImages.length > 3) {
-      //   toast.error("Only 3 images are allowed");
-      //   return;
-      // }
+      if (images.length + newImages.length > 5) {
+        toast.error("Only 5 images are allowed");
+        return;
+      }
       setImages((prev) => [...prev, ...newImages]);
     }
   };     
@@ -169,11 +169,11 @@ export default function CreateArtwork() {
       }
       try {
         const sizeInBytes = calculateTotalFileSize(images);
-        const maxSizeInBytes = 9 * 1024 * 1024; // 2MB limit
+        const maxSizeInBytes = 20 * 1024 * 1024; // 20MB limit
         console.log(maxSizeInBytes, sizeInBytes);
 
         if (sizeInBytes > maxSizeInBytes) {
-          toast.error("File size exceeds 10MB limit.");
+          toast.error("File size exceeds 20MB limit.");
           return;
         }
         const res = await execute(createArtWork, filteredValues, images);
@@ -366,7 +366,7 @@ export default function CreateArtwork() {
                     <p className="mb-2 text-sm text-muted-foreground">
                       <span className="font-semibold">{t("click-to-upload")}</span> or drag and drop
                     </p>
-                    <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 20MB</p>
                   </div>
                   <Input id="dropzone-file" type="file" className="hidden" onChange={handleImageUpload} multiple accept="image/*" />
                 </label>
