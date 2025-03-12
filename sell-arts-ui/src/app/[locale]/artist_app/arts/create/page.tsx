@@ -54,6 +54,28 @@ export default function CreateArtwork() {
     }
   };
 
+    // Récupération des méthodes
+    const fetchMethods = async () => {
+      try {
+        const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+          query: GET_ALL_METHODS,
+        });
+  
+        if (response.data?.data?.methods?.edges) {
+          const methodsList = response.data.data.methods.edges.map((edge: any) => edge.node);
+          setMethods(methodsList);
+        }
+      } catch (err) {
+        setError("Erreur lors du chargement des méthodes.");
+      }
+    };
+    useEffect(() => {
+      fetchPaintingTypes(getAllPaintingTypes);
+      fetchMaterialTypes(getAllMaterialTypes);
+      fetchMethods();
+      fetchStyles();
+    }, []);
+
   const handleMethodStyle = async ({idArtwork, styleId, methodId}: {idArtwork: string, styleId: string, methodId: string}) => {
     try {
       const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
@@ -84,27 +106,7 @@ export default function CreateArtwork() {
   };
 
 
-  // Récupération des méthodes
-  const fetchMethods = async () => {
-    try {
-      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
-        query: GET_ALL_METHODS,
-      });
 
-      if (response.data?.data?.methods?.edges) {
-        const methodsList = response.data.data.methods.edges.map((edge: any) => edge.node);
-        setMethods(methodsList);
-      }
-    } catch (err) {
-      setError("Erreur lors du chargement des méthodes.");
-    }
-  };
-  useEffect(() => {
-    fetchPaintingTypes(getAllPaintingTypes);
-    fetchMaterialTypes(getAllMaterialTypes);
-    fetchMethods();
-    fetchStyles();
-  }, []);
  
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;

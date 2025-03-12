@@ -59,7 +59,7 @@ public class ArtistArtWorkController {
     }
 
     @PutMapping("{artworkId}")
-    @Secured({"ROLE_ARTIST", "ROLE_GALLERY"})
+    @Secured({"ROLE_ARTIST", "ROLE_GALLERY", "ROLE_ADMIN"})
     public ResponseEntity<ResponseDTO> updateArtWork(
             @PathVariable String artworkId,
             @RequestPart("data") String jsonData,
@@ -67,9 +67,9 @@ public class ArtistArtWorkController {
 
         ObjectMapper mapper = new ObjectMapper();
         StoreArtWorkReqDTO storeDTO = mapper.readValue(jsonData, StoreArtWorkReqDTO.class);
-
-        return artWorkService.updateFeatured(artworkId);
-        //return artWorkService.updateFeatured(artworkId, storeDTO, files);
+        storeDTO.setId(artworkId);
+        
+        return artWorkService.update(storeDTO, files);
     }
 
 

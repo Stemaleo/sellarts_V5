@@ -4,7 +4,6 @@ from anka import models as anka_models
 from order import models as order_models
 from . import types as types
 import traceback
-import traceback
 import graphene
 from django.db import transaction
 

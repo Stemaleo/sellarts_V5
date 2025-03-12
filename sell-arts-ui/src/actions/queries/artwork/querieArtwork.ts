@@ -4,9 +4,11 @@ query GetAtworkById($id: ID!){
       edges{
         node{
           method{
+            id
             name
           }
           style{
+            id
             name
           }
         }
