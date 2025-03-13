@@ -90,7 +90,7 @@ class FeatureGenerateShippingFees(graphene.Mutation):
             order.country = country
             order.country_code = country.code
             order.shipping_fees = math.ceil(total_shipping_fees)
-            order.total_amount = Decimal(math.ceil(math.ceil(order.total_amount) + float(total_shipping_fees)))
+            # order.total_amount = Decimal(math.ceil(math.ceil(order.total_amount) + float(total_shipping_fees)))
             order.save()
 
             logger.info(f"Successfully updated order {order.id} with shipping fees")

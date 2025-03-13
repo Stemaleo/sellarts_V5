@@ -252,35 +252,119 @@ public class ArtWorkService {
                 .data(artWorkDTOS)
                 .build());
     }
-
     public ResponseEntity<ResponseDTO> updateFeatured(String artworkId) {
         User user = authService.getCurrentUser();
         
         if (user.getIs_deleted()) {
             throw new EntityNotFoundException("User has been deleted");
         }
+
+        System.out.println("artworkId: " + artworkId);
         
         ArtWork artWork = findOrFailById(artworkId);
+        System.out.println("artWork: " + artWork);
 
-        if(!Objects.equals(user.getId(), artWork.getOwner().getId())){
-            throw new InvalidDataException("You can't update this");
+        // if(!Objects.equals(user.getId(), artWork.getOwner().getId())){
+        //     throw new InvalidDataException("You can't update this artwork");
+        // }
+
+        // Toggle the featured status
+        artWork.setFeatured(!artWork.isFeatured());
+        
+        try {
+            // Ensure changes are persisted by explicitly setting the updated field
+            // artWork.setUpdatedAt(LocalDateTime.now());
+            
+            // Save the artwork and flush to ensure immediate persistence
+            ArtWork savedArtwork = artWorkRepo.saveAndFlush(artWork);
+            
+            // Refresh the entity from the database to ensure we have the latest state
+            // artWorkRepo.refresh(savedArtwork);
+            
+            return ResponseEntity.ok(ResponseDTO.builder()
+                    .success(true)
+                    .data(ArtWorkDTO.convertToDTO(savedArtwork))
+                    .message("Artwork featured status updated successfully")
+                    .build());
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the full stack trace for debugging
+            return ResponseEntity.status(500).body(ResponseDTO.builder()
+                    .success(false)
+                    .message("Failed to update artwork: " + e.getMessage())
+                    .build());
         }
-
-        if(artWork.isFeatured()){
-            artWork.setFeatured(false);
-        }else {
-            artWork.setFeatured(true);
-        }
-
-        artWorkRepo.save(artWork);
-
-
-        return ResponseEntity.ok(ResponseDTO.builder()
-                .success(true)
-                .data("DONE")
-                .build());
     }
 
+    @SneakyThrows
+    @Transactional
+    public ResponseEntity<ResponseDTO> update(StoreArtWorkReqDTO storeDTO, List<MultipartFile> files) {
+        User user = authService.getCurrentUser();
+        
+        if (user.getIs_deleted()) {
+            throw new EntityNotFoundException("User has been deleted");
+        }
+        
+        ArtWork artWork = findOrFailById(storeDTO.getId());
+        
+        // Check if user has permission to update this artwork
+        if (!authService.hasAnyRole(List.of("ROLE_ADMIN")) && !Objects.equals(user.getId(), artWork.getOwner().getId())) {
+            throw new InvalidDataException("You don't have permission to update this artwork");
+        }
+        
+        // Update artwork properties
+        PaintingType paintingType = paintingTypeService.getPaintingTypeOrFail(storeDTO.getPaintingTypeId());
+        MaterialType materialType = materialTypeService.getMaterialTypeOrFail(storeDTO.getMaterialTypeId());
+        
+        // Save old values that shouldn't be updated
+        User owner = artWork.getOwner();
+        User artist = artWork.getArtist();
+        boolean featured = artWork.isFeatured();
+        
+        // Update all fields from DTO
+        BeanUtils.copyProperties(storeDTO, artWork);
+        
+        // Restore fields that shouldn't be updated
+        artWork.setOwner(owner);
+        artWork.setArtist(artist);
+        artWork.setFeatured(featured);
+        artWork.setPaintingType(paintingType);
+        artWork.setMaterialType(materialType);
+        
+        // Handle file uploads if provided
+        if (files != null && !files.isEmpty()) {
+            // Correctly handle orphaned collections by maintaining the original collection reference
+            if (artWork.getMedias() != null) {
+                artWork.getMedias().clear();
+            } else {
+                artWork.setMedias(new ArrayList<>());
+            }
+            
+            // Upload new files
+            for (MultipartFile file : files) {
+                String ext = s3Service.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
+                String key = ARTWORK_BUCKET + "/" + artWork.getId() + "/" + file.hashCode() + "." + ext;
+                s3Service.uploadFile(file, key);
+                Media media = new Media();
+                media.setArtWork(artWork);
+                media.setKey(key);
+                media.setContentType(file.getContentType());
+                media.setContentSize(String.valueOf(file.getSize()));
+                media.setPublicUrl(s3Service.getPublicUrlFromPreSignedUrl(s3Service.generatePreSignedUrl(key)));
+                artWork.getMedias().add(media);
+            }
+            
+            // Save the media items via the artwork's cascade
+            mediaRepo.saveAll(artWork.getMedias());
+        }
+        
+        artWorkRepo.save(artWork);
+        
+        return ResponseEntity.ok(ResponseDTO.builder()
+                .success(true)
+                .data(ArtWorkDTO.convertToDTO(artWork))
+                .message("Artwork updated successfully")
+                .build());
+    }
 
      // Ajout de la méthode pour supprimer une œuvre d'art
      @Transactional

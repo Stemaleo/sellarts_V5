@@ -55,6 +55,7 @@ export default function ArtworkDetail({ params, translations }: {
     const fetchData = async () => {
       try {
         const response = await params;
+        
         const [artworkData, methodStyleData] = await Promise.all([
           getArtWorkById(response.id),
           fetchMethodAndStyle(response.id),
@@ -62,6 +63,7 @@ export default function ArtworkDetail({ params, translations }: {
         
         setRes(artworkData);
         setRespo(methodStyleData);
+        console.log(methodStyleData, "methodStyleData");
         setArtwork(artworkData);
         setMethodStyle(methodStyleData);
       } catch (error) {
@@ -115,11 +117,11 @@ export default function ArtworkDetail({ params, translations }: {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div>
               <p className="font-semibold">{translations.style}</p>
-              <p>{respo.data.artworks.edges[0].node.style.name}</p>
+              <p>{respo?.data?.artworks?.edges?.[0]?.node?.style?.name || 'N/A'}</p>
             </div>
             <div>
               <p className="font-semibold">{translations.method}</p>
-              <p>{respo.data.artworks.edges[0].node.method.name}</p>
+              <p>{respo?.data?.artworks?.edges?.[0]?.node?.method?.name || 'N/A'}</p>
             </div>
             <div>
               <p className="font-semibold">{translations.material}</p>

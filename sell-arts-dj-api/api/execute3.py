@@ -2,10 +2,9 @@
 import psycopg2
 DATABASE_NAME = "sellarts"
 DATABASE_USER = "postgres"
-DATABASE_PASSWORD = "@satoshi"
-DATABASE_HOST = "localhost"
+DATABASE_PASSWORD = "FoD,Q]m6Get>;H7a"
+DATABASE_HOST = "104.236.221.101"
 DATABASE_PORT = "5432"
-
 
 def delete_all_deleted_users_data():
     try:

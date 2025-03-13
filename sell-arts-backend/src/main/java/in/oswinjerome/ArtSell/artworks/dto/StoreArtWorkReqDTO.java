@@ -10,6 +10,8 @@ import lombok.ToString;
 @Data
 @ToString
 public class StoreArtWorkReqDTO {
+
+    private String id;
     @NotBlank
     private String title;
 

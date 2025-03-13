@@ -74,7 +74,7 @@ export default function OrderHistoryGrid() {
             </CardContent>
             <CardFooter className="flex gap-4">
               {order.status == "WAITING_PAYMENT" && (
-                <Link href={`/checkout/${order.id}`}>
+                <Link href={`/checkout/${order.id}/2`}>
                   <Button size={"sm"}>{t("complete-payment")}</Button>
                 </Link>
               )}

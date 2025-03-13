@@ -11,6 +11,8 @@ import requests
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from api.secret import ANKA_API_BASE_URL, ANKA_API_TOKEN
+import math
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ def instant_payment_notification(request):
 
                     order.status = "PENDING"
                     order.payment_status = "SUCCESS"
+                    order.total_amount = Decimal(math.ceil(math.ceil(order.total_amount) + float(order.shipping_fees)))
                     order.save()
                     logger.error(f"Updated order {order.id} status to PENDING and payment_status to SUCCESS")
 

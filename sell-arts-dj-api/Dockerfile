@@ -13,8 +13,7 @@ RUN pip install poetry \
 # # Donner la permissions à entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
+
 # # Define the entrypoint
 CMD [ "bash", "entrypoint.sh"]
 
-# WORKDIR /app/api
-# RUN poetry run gunicorn api.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
