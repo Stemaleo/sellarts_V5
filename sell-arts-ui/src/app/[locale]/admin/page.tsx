@@ -126,7 +126,7 @@ export default function AdminDashboardStats() {
               </CardHeader>
               <CardContent>
                 <div className="text-xl md:text-2xl font-bold">{convertPrice(data.averageOrderValue, currency)} {currency}</div>
-                <p className="text-xs text-muted-foreground">{data.averageOrderValueThisMonth} {t('from-last-month')}</p>
+                <p className="text-xs text-muted-foreground">{convertPrice(data.averageOrderValueThisMonth, currency)} {currency} {t('from-last-month')}</p>
               </CardContent>
             </Card>
 

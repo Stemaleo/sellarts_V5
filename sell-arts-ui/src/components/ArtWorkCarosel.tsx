@@ -10,22 +10,23 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/context/CurrencyContext";
 import { ArtWorkDTO } from "@/lib/type";
+import { convertPrice } from "@/actions/currencyConverter";
 
 export default function ArtWork({ artworks }: { artworks: ArtWorkDTO[] }) {
   const [emblaRef] = useEmblaCarousel({ loop: true, slidesToScroll: 1 });
   const t = useTranslations();
   const { currency } = useCurrency();
 
-  const exchangeRates: Record<string, number> = {
-    XOF: 1,
-    USD: 600,  
-    EUR: 655,  
-  };
+  // const exchangeRates: Record<string, number> = {
+  //   XOF: 1,
+  //   USD: 600,  
+  //   EUR: 655,  
+  // };
 
   // (pour les prix de base en USD ou EURO, on va multiplier)
-  const convertPrice = (priceXOF: number, targetCurrency: string) => {
-    return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
-  };
+  // const convertPrice = (priceXOF: number, targetCurrency: string) => {
+  //   return (priceXOF / exchangeRates[targetCurrency]).toFixed(4);
+  // };
 
   return (
     <div className="container mx-auto px-4 lg:px-4 lg:py-5 p-4 bg-white">

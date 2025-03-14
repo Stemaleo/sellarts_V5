@@ -207,9 +207,19 @@ export default function EditArtwork() {
         
         if (res?.success) {
           toast.success("Artwork updated successfully."); 
-          formikHelpers.resetForm();
-          setImages([]);
-          router.push('/artist/arts');
+          // Refresh data after successful update
+          const artworkResponse = await getArtWorkById(artworkId);
+          const artworkWithRelated = artworkResponse?.data;
+          
+          if (artworkWithRelated) {
+            const artworkDTO = mapArtWorkWithRelatedToArtWorkDTO(artworkWithRelated);
+            const formValues = mapArtWorkToFormValues(artworkDTO);
+            form.setValues(formValues);
+            // Reset image states
+            setImages([]);
+            setExistingImages(artworkDTO.mediaUrls || []);
+          }
+          // formikHelpers.resetForm();
         }
       } catch (e) {
         toast.error("Error updating artwork.");
