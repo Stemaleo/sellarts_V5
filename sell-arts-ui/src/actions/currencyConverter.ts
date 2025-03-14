@@ -6,7 +6,7 @@ const exchangeRates: Record<string, number> = {
 
 export const convertPrice = (priceXOF: number, targetCurrency: string) => {
   if (targetCurrency === 'XOF') {
-    return priceXOF.toString();
+    return priceXOF.toFixed(0).toString();
   }
-  return (priceXOF / exchangeRates[targetCurrency]).toFixed(2);
+  return (priceXOF / exchangeRates[targetCurrency]).toFixed(0);
 };

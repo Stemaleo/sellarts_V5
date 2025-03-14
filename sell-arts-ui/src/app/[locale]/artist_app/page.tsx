@@ -9,10 +9,13 @@ import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { getAnalyticsForAdminDashboard, getAnalyticsForArtistAndGallery } from "@/actions/analytics";
 import  FloatingMessageButton from "@/components/ui/floatingMessageButton";
+import { useCurrency } from "@/context/CurrencyContext";
+import { convertPrice } from "@/actions/currencyConverter";
 
 const ArtistApp = () => {
   const res = use(getAnalyticsForArtistAndGallery());
   const t = useTranslations();
+  const { currency } = useCurrency();
   if (!res.success) {
     return <div>Unable to load</div>;
   }
@@ -37,7 +40,7 @@ const ArtistApp = () => {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{res.data.totalOrders}</div>
+            <div className="text-2xl font-bold">{res.data.totalOrders} {currency}</div>
             <p className="text-xs text-muted-foreground">+{res.data.totalOrdersThisMonth} {t("this-month")}</p>
           </CardContent>
         </Card>
@@ -47,8 +50,8 @@ const ArtistApp = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{res.data.averageOrderValue}</div>
-            <p className="text-xs text-muted-foreground">{res.data.averageOrderValueThisMonth} {t("last-month")}</p>
+            <div className="text-2xl font-bold">{convertPrice(res.data.averageOrderValue, currency)} {currency}</div>
+            <p className="text-xs text-muted-foreground">{convertPrice(res.data.averageOrderValueThisMonth, currency)} {currency} {t("last-month")}</p>
           </CardContent>
         </Card>
         <Card>
