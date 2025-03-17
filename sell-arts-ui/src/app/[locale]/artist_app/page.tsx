@@ -1,22 +1,80 @@
-import { getMyArtistProfileOverView } from "@/actions/artists";
-import { use } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Palette, ShoppingCart, DollarSign, MessageCircle } from "lucide-react";
-import { getAllOrdersForArtist } from "@/actions/cart";
+import { Palette, ShoppingCart, DollarSign, MessageCircle, Loader2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Image from "next/image";
-import { format } from "date-fns";
 import { useTranslations } from "next-intl";
-import { getAnalyticsForAdminDashboard, getAnalyticsForArtistAndGallery } from "@/actions/analytics";
-import  FloatingMessageButton from "@/components/ui/floatingMessageButton";
+import { getAnalyticsForArtistAndGallery } from "@/actions/analytics";
+import FloatingMessageButton from "@/components/ui/floatingMessageButton";
 import { useCurrency } from "@/context/CurrencyContext";
 import { convertPrice } from "@/actions/currencyConverter";
 
+// Define the types for analytics data
+interface ArtworkData {
+  id: string;
+  title: string;
+  artistName: string;
+}
+
+interface TopSellingArtwork {
+  artwork: ArtworkData;
+  count: number;
+}
+
+interface AdminAnalyticsDTO {
+  totalRevenue: number;
+  thisMonthRevenueGrowth: number;
+  totalOrders: number;
+  totalOrdersThisMonth: number;
+  averageOrderValue: number;
+  averageOrderValueThisMonth: number;
+  totalArtworks: number;
+  totalArtworksThisMonth: number;
+  topSellingArtworks: TopSellingArtwork[];
+}
+
 const ArtistApp = () => {
-  const res = use(getAnalyticsForArtistAndGallery());
+  const [analyticsData, setAnalyticsData] = useState<AdminAnalyticsDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const t = useTranslations();
   const { currency } = useCurrency();
-  if (!res.success) {
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getAnalyticsForArtistAndGallery();
+        if (res.success) {
+          // Convert string totalRevenue to number before setting state
+          setAnalyticsData({
+            ...res.data,
+            totalRevenue: parseFloat(res.data.totalRevenue)
+          });
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        console.error("Error fetching analytics:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading your analytics...</p>
+        </div>
+    );
+  }
+
+  if (error || !analyticsData) {
     return <div>Unable to load</div>;
   }
 
@@ -30,8 +88,8 @@ const ArtistApp = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{res.data.totalRevenue}</div>
-            <p className="text-xs text-muted-foreground">{res.data.thisMonthRevenueGrowth}%{t("from-last-month")}</p>
+            <div className="text-2xl font-bold">{convertPrice(analyticsData.totalRevenue, currency)} {currency}</div>
+            <p className="text-xs text-muted-foreground">{analyticsData.thisMonthRevenueGrowth}%{t("from-last-month")}</p>
           </CardContent>
         </Card>
         <Card>
@@ -40,8 +98,8 @@ const ArtistApp = () => {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{res.data.totalOrders} {currency}</div>
-            <p className="text-xs text-muted-foreground">+{res.data.totalOrdersThisMonth} {t("this-month")}</p>
+            <div className="text-2xl font-bold">{analyticsData.totalOrders} {currency}</div>
+            <p className="text-xs text-muted-foreground">+{analyticsData.totalOrdersThisMonth} {t("this-month")}</p>
           </CardContent>
         </Card>
         <Card>
@@ -50,8 +108,8 @@ const ArtistApp = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{convertPrice(res.data.averageOrderValue, currency)} {currency}</div>
-            <p className="text-xs text-muted-foreground">{convertPrice(res.data.averageOrderValueThisMonth, currency)} {currency} {t("last-month")}</p>
+            <div className="text-2xl font-bold">{convertPrice(analyticsData.averageOrderValue, currency)} {currency}</div>
+            <p className="text-xs text-muted-foreground">{convertPrice(analyticsData.averageOrderValueThisMonth, currency)} {currency} {t("last-month")}</p>
           </CardContent>
         </Card>
         <Card>
@@ -60,8 +118,8 @@ const ArtistApp = () => {
             <Palette className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{res.data.totalArtworks}</div>
-            <p className="text-xs text-muted-foreground">+{res.data.totalArtworksThisMonth} {t("this-month")}</p>
+            <div className="text-2xl font-bold">{analyticsData.totalArtworks}</div>
+            <p className="text-xs text-muted-foreground">+{analyticsData.totalArtworksThisMonth} {t("this-month")}</p>
           </CardContent>
         </Card>
       </div>
@@ -80,7 +138,7 @@ const ArtistApp = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {res.data.topSellingArtworks.map((artwork) => (
+              {analyticsData.topSellingArtworks.map((artwork) => (
                 <TableRow key={artwork.artwork.id}>
                   <TableCell className="font-medium">{artwork.artwork.title}</TableCell>
                   <TableCell>{artwork.artwork.artistName}</TableCell>
