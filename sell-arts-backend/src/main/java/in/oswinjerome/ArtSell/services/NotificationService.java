@@ -44,12 +44,12 @@ public class NotificationService {
         Map<String,Object> map = new HashMap<>();
         map.put("user", order.getOwner());
         map.put("order", order);
-        String content = thymleafService.generateHtmlString("order_placed_email",map);
+        // String content = thymleafService.generateHtmlString("order_placed_email",map);
 
-       byte[] raw = pdfGeneratorService.generatePdf("invoice_pdf",map);
+    //    byte[] raw = pdfGeneratorService.generatePdf("invoice_pdf",map);
 
 //        mailService.sendHtmlEmail(order.getOwner().getEmail(),"Order Placed",content);
-        mailService.sendEmailWithAttachment(order.getOwner().getEmail(),"Order Placed",content,"Invoice.pdf",raw);
+        // mailService.sendEmailWithAttachment(order.getOwner().getEmail(),"Order Placed",content,"Invoice.pdf",raw);
     }
 
 
