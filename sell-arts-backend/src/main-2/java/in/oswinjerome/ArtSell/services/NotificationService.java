@@ -36,8 +36,8 @@ public class NotificationService {
         map.put("user", user);
         map.put("ticket", ticket);
         String content = thymleafService.generateHtmlString("ticket_raised",map);
-        mailService.sendHtmlEmail(user.getEmail(), "admin@sellarts.net","Ticket Raised",content);
-        mailService.createNotification(user.getId(),"Ticket Raised","Your ticket has been raised: #"+ticket.getId());
+        // mailService.sendHtmlEmail(user.getEmail(), "admin@sellarts.net","Ticket Raised",content);
+        // mailService.createNotification(user.getId(),"Ticket Raised","Your ticket has been raised: #"+ticket.getId());
 
     }
     public void sendOrderPlacedNotification(Order order) {
@@ -49,7 +49,7 @@ public class NotificationService {
        byte[] raw = pdfGeneratorService.generatePdf("invoice_pdf",map);
 
 //        mailService.sendHtmlEmail(order.getOwner().getEmail(),"Order Placed",content);
-        mailService.sendEmailWithAttachment(order.getOwner().getEmail(),"Order Placed",content,"Invoice.pdf",raw);
+        // mailService.sendEmailWithAttachment(order.getOwner().getEmail(),"Order Placed",content,"Invoice.pdf",raw);
     }
 
 
