@@ -108,15 +108,16 @@ export default function Component() {
     }),
     async onSubmit(values, formikHelpers) {
       const res = await execute(register, values);
-
-      if (res?.success) {
-        const userId = (res?.data as resData).id
-        handleUserIdAndCountry(userId , values.country, values);
+      if (selectedType!=='customer') {
+        if (res?.success) {
+          const userId = (res?.data as resData).id
+          handleUserIdAndCountry(userId , values.country, values);
  
        
       }
       if (!res?.success) {
         toast.error(res?.message);
+        }
       }
     },
   });
@@ -125,7 +126,7 @@ export default function Component() {
     { value: "artist", label: t("artist"), icon: Palette, description: t("i-want-to-showcase-and-sell-my-artwork") },
     { value: "gallery", label: t("gallery"), icon: Building2, description: t("i-represent-a-gallery-and-want-to-manage-exhibitions") },
   ];
-  const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
+  const [selectedType, setSelectedType] = useState<string | undefined>('customer');
   const [showFields, setShowFields] = useState(false);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary to-red-500">
@@ -190,30 +191,32 @@ export default function Component() {
                   <Input id="email" name="email" onChange={form.handleChange} onBlur={form.handleBlur} value={form.values.email} placeholder="m@example.com" required type="email" />
                   <ErrorMessage error={form.errors.email} touched={form.touched.email} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="type">{t("select-country")}</Label>
-                  <Select
-                    name="country"
-                    onValueChange={(val) => {
-                      form.setFieldValue("country", val);
-                    }}
-                    value={form.values.country}
-                  >
-                    <SelectTrigger id="type">
-                      <SelectValue placeholder={t("select-country")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {country?.map((pt) => {
-                        return (
-                          <SelectItem value={pt.id.toString()} key={pt.id}>
-                            {pt.name}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                  <ErrorMessage error={form.errors.country} touched={form.touched.country} />
-                </div>
+                {selectedType !== "customer" && (
+                  <div className="space-y-2" >
+                    <Label htmlFor="type">{t("select-country")}</Label>
+                    <Select
+                      name="country"
+                      onValueChange={(val) => {
+                        form.setFieldValue("country", val);
+                      }}
+                      value={form.values.country}
+                    >
+                      <SelectTrigger id="type">
+                        <SelectValue placeholder={t("select-country")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {country?.map((pt) => {
+                          return (
+                            <SelectItem value={pt.id.toString()} key={pt.id}>
+                              {pt.name}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <ErrorMessage error={form.errors.country} touched={form.touched.country} />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="password">{t("password")}</Label>
                   <Input id="password" name="password" onChange={form.handleChange} onBlur={form.handleBlur} value={form.values.password} required type="password" />
