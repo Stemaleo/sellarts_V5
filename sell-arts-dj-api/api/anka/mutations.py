@@ -65,31 +65,32 @@ class FeatureInitiatePayment(graphene.Mutation):
                         "reusable": False,
                         "callback_url": f"{SELLARTS_BASE_URL}/orders/{order.id}",
                         "order_reference": internal_reference,
-                        "buyer": {
-                            "contact": {
-                                "fullname": kwargs["name"],
-                                "phone_number": kwargs["phone_number"],
-                                "email": kwargs["email"],
-                            },
-                            "address": {
-                                "street_line_1": kwargs["address"],
-                                "street_line_2": kwargs["address"],
-                                "city": kwargs["city"],
-                                "state": kwargs["state"],
-                                "zip": kwargs["postal_code"],
-                                "country": order.country_code,
-                            },
-                        },
+                        # "buyer": {
+                        #     "contact": {
+                        #         "fullname": kwargs["name"],
+                        #         "phone_number": kwargs["phone_number"],
+                        #         "email": kwargs["email"],
+                        #     },
+                        #     "address": {
+                        #         "street_line_1": kwargs["address"],
+                        #         "street_line_2": kwargs["address"],
+                        #         # "city": kwargs["city"],
+                        #         "city": kwargs["city"],
+                        #         "state": kwargs["state"],
+                        #         "zip": kwargs["postal_code"],
+                        #         "country": order.country_code,
+                        #     },
+                        # },
                     },
                 }
             }
 
-            respons3 = requests.get(
-                f"{ANKA_API_BASE_URL}/shipment/labels/n9nSNSELLARTS36960282_706",
-                headers=headers,
-            )
+            # respons3 = requests.get(
+            #     f"{ANKA_API_BASE_URL}/shipment/labels/n9nSNSELLARTS36960282_706",
+            #     headers=headers,
+            # )
             
-            print(respons3.content, respons3.status_code, respons3.headers)
+            # print(respons3.content, respons3.status_code, respons3.headers)
             
             # Save order before making API call
             order.save()
@@ -100,7 +101,7 @@ class FeatureInitiatePayment(graphene.Mutation):
                 headers=headers,
                 json=data
             )
-
+            print(response.content, response.status_code, response.headers)
             if not response.ok:
                 return FeatureInitiatePayment(
                     success=False,
