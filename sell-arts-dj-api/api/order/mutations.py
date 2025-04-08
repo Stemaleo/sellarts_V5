@@ -208,3 +208,5 @@ class FeatureVerifyShippingLabel(graphene.Mutation):
         except Exception as e:
             logger.error(f"Error verifying shipping label: {str(e)}", exc_info=True)
             return FeatureVerifyShippingLabel(success=False, message=str(e))
+
+
