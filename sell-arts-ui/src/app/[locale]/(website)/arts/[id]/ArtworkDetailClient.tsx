@@ -32,8 +32,14 @@ interface Artwork {
   dimensions: string;
 }
 
+declare global {
+  interface Window {
+    ArtPlacer: any;
+  }
+}
+
 export default function ArtworkDetail({ params, translations }: { 
-  params: Promise<{ id: string }>,
+  params: Promise<{ id: string }>;
   translations: {
     style: string;
     method: string;
@@ -41,7 +47,7 @@ export default function ArtworkDetail({ params, translations }: {
     dimensions: string;
     date: string;
     'related-artworks': string;
-  }
+  };
 }) {
   const [artwork, setArtwork] = useState<any>(null);
   const [methodStyle, setMethodStyle] = useState<any>(null);
@@ -50,20 +56,18 @@ export default function ArtworkDetail({ params, translations }: {
   const [respo, setRespo] = useState<any>(null);
   const { currency } = useCurrency();
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await params;
-        
+
         const [artworkData, methodStyleData] = await Promise.all([
           getArtWorkById(response.id),
           fetchMethodAndStyle(response.id),
         ]);
-        
+
         setRes(artworkData);
         setRespo(methodStyleData);
-        console.log(methodStyleData, "methodStyleData");
         setArtwork(artworkData);
         setMethodStyle(methodStyleData);
       } catch (error) {
@@ -75,6 +79,81 @@ export default function ArtworkDetail({ params, translations }: {
 
     fetchData();
   }, [params]);
+
+  // useEffect(() => {
+  //   const loadArtPlacer = async () => {
+  //     if (!artwork?.data?.artwork) return;
+  //     const art = artwork.data.artwork;
+  //     const existingScript = document.querySelector('script[src="https://widget.artplacer.com/js/script.js"]');
+  //     if (!existingScript) {
+  //       const script = document.createElement("script");
+  //       script.src = "https://widget.artplacer.com/js/script.js";
+  //       script.async = true;
+  //       script.onload = () => {
+  //         initArtPlacerOne(art);
+  //         initArtPlacerTwo(art);
+  //       };
+  //       document.body.appendChild(script);
+  //     } else {
+  //       initArtPlacerOne(art);
+  //       initArtPlacerTwo(art);
+  //     }
+  //   };
+
+  //   const initArtPlacerOne = (art: any) => {
+  //     if (window.ArtPlacer && art) {
+  //       window.ArtPlacer.insert({
+  //         gallery: "78181",
+  //         button_width: "auto",
+  //         dimensions_standard: "hxw",
+  //         unit: "cm",
+  //         type: "1",
+  //         resizable: "true",
+  //         frames: "true",
+  //         rotate: "true",
+  //         catalog: "true",
+  //         data_capture_form: "false",
+  //         default_style: "true",
+  //         artwork_url: art.mediaUrls[0],
+  //         height: art.height,
+  //         title: art.title,
+  //         size: `${art.height} x ${art.width}`,
+  //         price: art.price,
+  //         artist: art.artistName,
+  //         after: "#artplacer-widget-anchor",
+  //       });
+  //     }
+  //   };
+
+  //   const initArtPlacerTwo = (art: any) => {
+  //     if (window.ArtPlacer && art) {
+  //       window.ArtPlacer.insert({
+  //         gallery: "78181",
+  //         default_style: "true",
+  //         button_width: "auto",
+  //         resizable: "true",
+  //         frames: "true",
+  //         rotate: "true",
+  //         dimensions_standard: "hxw",
+  //         unit: "cm",
+  //         catalog: "true",
+  //         data_capture_form: "false",
+  //         type: "2",
+  //         space: "114277",
+  //         additional_spaces: "114277,73831,73863,46373,73739,73591,122633,32468,73946",
+  //         artwork_url: art.mediaUrls[0],
+  //         height: art.height,
+  //         title: art.title,
+  //         size: `${art.height} x ${art.width}`,
+  //         price: art.price,
+  //         artist: art.artistName,
+  //         after: "#artplacer-widget-anchor",
+  //       });
+  //     }
+  //   };
+
+  //   loadArtPlacer();
+  // }, [artwork]);
 
   if (loading) {
     return (
@@ -136,6 +215,12 @@ export default function ArtworkDetail({ params, translations }: {
               <p>{moment(art.createdAt).format("D MMM Y")}</p>
             </div>
           </div>
+
+          {/* Point d'insertion du widget */}
+          {/* <div id="artplacer-widget-anchor" className="mb-4" /> */}
+
+
+
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <AddToCartBtn art={art} />
             <MakeProposalBtn artWork={art} />

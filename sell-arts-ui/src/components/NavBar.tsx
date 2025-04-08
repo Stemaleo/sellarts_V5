@@ -28,6 +28,7 @@ export default function Navbar() {
   const navItems = [
     { name: t("Artists"), href: "/artists" },
     { name: t("Arts"), href: "/arts" },
+    { name: t("crafts"), href: "/arts?paintingType=Crafts" },
     { name: t("the-news"), href: "/posts" },
     { name: t("paint"), href: "/arts?paintingType=Paint" },
     { name: t("sculpture"), href: "/arts?paintingType=Sculpture" },
