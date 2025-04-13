@@ -28,14 +28,30 @@ def find_closest_higher_value(from_country: dict, to_country: str, weight: float
     return from_country[to_country][str(float(min(higher_values)))]
 
 
+
+class InputAddressType(graphene.InputObjectType):
+    country = graphene.String()
+    state = graphene.String()
+    city = graphene.String()
+    zip = graphene.String()
+    street_line_1 = graphene.String()
+    street_line_2 = graphene.String()
+
+class InputContactType(graphene.InputObjectType):
+    email = graphene.String()
+    fullname = graphene.String()
+    phone_number = graphene.String()
+
 class FeatureGenerateShippingFees(graphene.Mutation):
     success: bool = graphene.Boolean()
     message: str = graphene.String()
     order: Optional[anka_models.Orders] = graphene.Field(types.OrdersType)
+    shipping_estimate= graphene.JSONString()
 
     class Arguments:
         order = graphene.ID(required=True)
-        country = graphene.ID(required=True)
+        address = InputAddressType(required=True)
+        contact = InputContactType(required=True)
 
     @classmethod
     def mutate(cls, root, info, **kwargs) -> "FeatureGenerateShippingFees":
@@ -43,7 +59,8 @@ class FeatureGenerateShippingFees(graphene.Mutation):
             logger.info(f"Generating shipping fees for order {kwargs['order']}")
             
             order = anka_models.Orders.objects.get(id=kwargs["order"])
-            country = order_models.Country.objects.get(id=kwargs["country"])
+            address = kwargs["address"]
+            contact = kwargs["contact"]
 
             # Group order items by artwork owner
             owner_items: Dict[int, Dict[str, Any]] = {}
@@ -57,46 +74,153 @@ class FeatureGenerateShippingFees(graphene.Mutation):
                     owner_items[artwork_owner.id] = {
                         'owner': artwork_owner,
                         'total_size': 0,
-                        'artworks': []
+                        'artworks': [],
+                        'items': []
                     }
 
                 owner_items[artwork_owner.id]['artworks'].append(artwork)
                 owner_items[artwork_owner.id]['total_size'] += (artwork.size + 3) * order_item.quantity
+                
+                # Add item details for shipping estimate
+                owner_items[artwork_owner.id]['items'].append({
+                    "quantity": order_item.quantity,
+                    "price_currency": "XOF",
+                    "hscode": "9701.10.0000",  # Default HS code for paintings
+                    "description": artwork.title,
+                    "weight_grams": int(artwork.size * 100),  # Convert size to grams
+                    "price_cents": int(float(artwork.price) * 100)  # Convert to cents
+                })
 
-            # Calculate shipping fees for each owner's items
+            # Calculate shipping fees using Anka API
             total_shipping_fees: float = 0
+            shipping_estimate_response = None
             
             for owner_id, owner_data in owner_items.items():
-                owner = owner_data['owner']
+                owner: anka_models.Users = owner_data['owner']
                 total_size = owner_data['total_size']
+                items = owner_data['items']
+                print(total_size, "total_size")
+                # Calculate package dimensions based on total size
+                # Use artwork size to estimate dimensions, with some padding for packaging
+                base_dimension = math.sqrt(total_size) # Get base dimension from total area
                 
-                # Get origin country code from the owner
-                origin_country_code: str = owner.country.code
+                # Scale dimensions proportionally based on total size
+                # Add padding for packaging materials
+                height_cm = max(20, round(base_dimension * 0.5)) # Minimum 20cm height
+                length_cm = max(20, round(base_dimension * 1.2)) # Length typically larger
+                width_cm = max(25, round(base_dimension * 0.8)) # Width between height and length
                 
-                # Get destination country code from the country parameter
-                destination_country_code: str = country.code
+                # Update dimensions that will be used in estimate_payload
+                print(height_cm, length_cm, width_cm,  int(total_size * 100), "dimensions")
+                estimate_dimensions = {
+                    "height_cm": height_cm,
+                    "length_cm": length_cm, 
+                    "width_cm": width_cm,
+                    "weight_grams": 1000 # Keep existing weight calculation
+                    # "weight_grams": int(total_size * 1000)  # Keep existing weight calculation
+                }
                 
-                # Calculate shipping fee based on origin country
-                if origin_country_code in ["BJ", "NG", "SN", "ZA", "CI"]:
-                    country_choice = order_models.Country.objects.get(code=origin_country_code).shipping_rates
-                    shipping_fee: float = float(find_closest_higher_value(country_choice, destination_country_code, total_size))
-                else:
-                    shipping_fee: float = 100000
+                # Prepare data for Anka API
+                internal_reference = f"SELLARTS{order.id}_{owner.id}"
+                
+                # Create estimate request payload
+                estimate_payload = {
+                    "data": {
+                        "type": "shipment_estimates",
+                        "attributes": {
+                            "package": {
+                                "items": items,
+                                "dimensions": estimate_dimensions,
+                                "description": f"Artwork from {owner.name}"
+                            },
+                            "internal_reference": internal_reference,
+                            "duty_code": "ddps",
+                            "currency": "XOF",
+                            "shipper": {
+                                "contact": {
+                                    "email": owner.email,
+                                    "fullname": owner.name,
+                                    "phone_number": owner.phone_number
+                                },
+                                "address": {
+                                    "country": owner.country_code,
+                                    "state":  owner.state[0:29] or "",
+                                    "street_line_1": owner.street_line_1[0:29] or "",
+                                    "city": owner.city[0:29] or "",
+                                    "zip": owner.zip[0:29] or "",
+                                    "street_line_2": ""
+                                }
+                            },
+                            "recipient": {
+                                "contact": {
+                                    "email": contact.email,
+                                    "fullname": contact.fullname,
+                                    "phone_number": contact.phone_number
+                                },
+                                "address": {
+                                    "country": address.country,
+                                    "state": address.state[0:29] or "",
+                                    "street_line_1": address.street_line_1[0:29] or "",
+                                    "city": address.city[0:29] or "",
+                                    "zip": address.zip[0:29] or "",
+                                    "street_line_2": ""
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                # Make API request to Anka
+                headers = {
+                    "Authorization": "Token FqvbsxHBxTKmbZyNcPvvNbFm",
+                    "Content-Type": "application/json"
+                }
+                
+                try:
+                    response = requests.post(
+                        "https://api.anka.fyi/v1/shipment/estimates",
+                        headers=headers,
+                        json=estimate_payload
+                    )
+                    print(response.json(), "response")
+                    
+                    if response.status_code in [200, 201]:
+                        estimate_data = response.json()
+                        shipping_estimate_response = estimate_data
+                        
+                        # Extract shipping fee from response
+                        if 'data' in estimate_data and 'attributes' in estimate_data['data']:
+                            if estimate_data['data']['type'] == 'shipment_estimates':
+                                attrs = estimate_data['data']['attributes']
+                                if 'total_cost' in attrs:
+                                    shipping_fee = float(attrs['total_cost']) 
+                                    total_shipping_fees += shipping_fee
+                    else:
+                        logger.error(f"Anka API request failed: {response.status_code} - {response.text}")
+                        raise Exception(f"Anka API request failed: {response.status_code} - {response.text}")
+                        
+                except Exception as api_error:
+                    logger.error(f"Error calling Anka API: {str(api_error)}", exc_info=True)
+                    
+                    raise Exception(f"Error calling Anka API: {str(api_error)}")
 
-                # Add shipping fee plus 10% to total
-                total_shipping_fees += shipping_fee + (shipping_fee * 0.10)
-
+            # Update order with shipping information
             order.size = float(sum(data['total_size'] for data in owner_items.values()))
-            order.country = country
-            order.country_code = country.code
-            order.shipping_fees = math.ceil(total_shipping_fees)
-            # order.total_amount = Decimal(math.ceil(math.ceil(order.total_amount) + float(total_shipping_fees)))
+            order.country_code = address.country
+            order.city = address.city
+            order.state = address.state
+            order.address = address.street_line_1
+            order.shipping_fees = math.ceil(total_shipping_fees + (total_shipping_fees * 0.5))
+            order.country_text = address.country
             order.save()
 
             logger.info(f"Successfully updated order {order.id} with shipping fees")
 
             return FeatureGenerateShippingFees(
-                success=True, message="Success", order=order
+                success=True,
+                message="Success",
+                order=order,
+                shipping_estimate=shipping_estimate_response
             )
 
         except Exception as e:
@@ -208,5 +332,4 @@ class FeatureVerifyShippingLabel(graphene.Mutation):
         except Exception as e:
             logger.error(f"Error verifying shipping label: {str(e)}", exc_info=True)
             return FeatureVerifyShippingLabel(success=False, message=str(e))
-
 

@@ -26,6 +26,20 @@ query getAllDeliverableCountry {
 }
 `;
 
+export const GET_LOCATION = `
+query SearchLocation($location: String!) {
+  searchLocations(location: $location) {
+    streetLine1
+    streetLine2
+    city
+    state
+    zip
+    country
+  }
+}
+`;
+
+
 
 
 
