@@ -17,7 +17,7 @@ import { getAllCartThunk } from "@/redux/features/cartFeature";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { FEATEUR_GENERATE_FEES } from "@/actions/mutation/artist/shipping/mutationShipping";
+import { FEATURE_GENERATE_FEES } from "@/actions/mutation/artist/shipping/mutationShipping";
 import { useCurrency } from "@/context/CurrencyContext";
 
 export function CartPopupComponent() {
