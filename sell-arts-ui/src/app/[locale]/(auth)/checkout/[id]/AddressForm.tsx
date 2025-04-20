@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useActions } from "@/lib/hooks";
 import { CountryType, Order } from "@/lib/type";
 import { useFormik } from "formik";
-import { Copy, Lock, MapPin, Search, X, AlertCircle } from "lucide-react";
+import { Copy, Lock, MapPin, Search, X, AlertCircle, Check, ChevronsUpDown } from "lucide-react";
 import axios from "axios";
 import { INITIATE_PAYMENT_MUTATION } from "@/actions/mutation/artist/payement/mutationPayement";
 import Link from "next/link";
@@ -22,8 +22,8 @@ import 'react-phone-number-input/style.css';
 import { isValidPhoneNumber, CountryCode, parsePhoneNumber, E164Number } from 'libphonenumber-js';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Stepper } from "@/components/ui/stepper";
 
 interface Country {
   code: CountryCode;
@@ -197,6 +197,21 @@ const AddressFormSkeleton = () => (
   </div>
 );
 
+const steps = [
+  {
+    title: "Personal Information",
+    description: "Enter your contact details"
+  },
+  {
+    title: "Address",
+    description: "Enter your shipping address"
+  },
+  {
+    title: "Review & Payment",
+    description: "Review your order and proceed to payment"
+  }
+];
+
 const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
   const { execute, loading } = useActions();
   const router = useRouter();
@@ -221,6 +236,10 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [feesCalculated, setFeesCalculated] = useState(false);
   const [shouldCalculateFees, setShouldCalculateFees] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [shippingFee, setShippingFee] = useState<number>(0);
+  const [payAtStore, setPayAtStore] = useState(false);
+  const [pickupInStore, setPickupInStore] = useState(false);
 
   const searchLocation = async (location: string) => {
     if (!location || location.length < 3) {
@@ -347,7 +366,7 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
           state: location.state,
           postalCode: form.values.postalCode,
           email: form.values.email,
-          zip: location.zip || form.values.postalCode, // Use form's postal code as fallback
+          zip: location.zip || form.values.postalCode,
           streetLine1: location.streetLine1,
           fullname: form.values.name,
           phoneNumber: form.values.phone
@@ -355,7 +374,9 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
       });
       
       if (response.data?.data?.featureGenerateFees?.order?.shippingFees) {
-        setFee(response.data.data.featureGenerateFees.order.shippingFees);
+        const fees = response.data.data.featureGenerateFees.order.shippingFees;
+        setShippingFee(fees);
+        setFee(fees);
         setFeesCalculated(true);
         toast.success("Shipping fees calculated successfully");
       } else {
@@ -456,8 +477,9 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
       billing: order.billing ?? "",
       order: order.id ?? "",
       postalCode: order.postalCode ?? "",
+      pickupInStore: false,
     },
-    validationSchema: yup.object({
+    validationSchema: yup.object().shape({
       email: yup
         .string()
         .email('Invalid email address')
@@ -473,12 +495,32 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
           if (!value) return false;
           return isValidPhoneNumber(value);
         }),
-      address: yup.string().required(),
-      allCountry: yup.string().required(),
+      address: yup.string().when('pickupInStore', {
+        is: true,
+        then: (schema) => schema.notRequired(),
+        otherwise: (schema) => schema.required('Address is required')
+      }),
+      allCountry: yup.string().when('pickupInStore', {
+        is: true,
+        then: (schema) => schema.notRequired(),
+        otherwise: (schema) => schema.required('Country is required')
+      }),
       billing: yup.string(),
-      city: yup.string().required(),
-      state: yup.string().required(),
-      postalCode: yup.string().required(),
+      city: yup.string().when('pickupInStore', {
+        is: true,
+        then: (schema) => schema.notRequired(),
+        otherwise: (schema) => schema.required('City is required')
+      }),
+      state: yup.string().when('pickupInStore', {
+        is: true,
+        then: (schema) => schema.notRequired(),
+        otherwise: (schema) => schema.required('State is required')
+      }),
+      postalCode: yup.string().when('pickupInStore', {
+        is: true,
+        then: (schema) => schema.notRequired(),
+        otherwise: (schema) => schema.required('Postal code is required')
+      }),
     }),
     onSubmit: async (values) => {
       if (!checkFormValidity(false)) {
@@ -558,6 +600,11 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
     validAddressSelected
   ]);
 
+  // Update form values when pickupInStore changes
+  useEffect(() => {
+    form.setFieldValue('pickupInStore', pickupInStore);
+  }, [pickupInStore]);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(paymentLink);
     toast.success("Lien copié avec succès !");
@@ -570,6 +617,386 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
     }
   };
 
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700">E-mail address</Label>
+                <div className="relative">
+                  <Input 
+                    type="email" 
+                    name="email" 
+                    value={form.values.email} 
+                    onChange={(e) => {
+                      form.handleChange(e);
+                      validateEmail(e.target.value);
+                    }} 
+                    onBlur={(e) => {
+                      form.handleBlur(e);
+                      validateEmail(e.target.value);
+                    }}
+                    className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="your@email.com"
+                  />
+                  {form.values.email && !form.errors.email && !emailError && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <Check className="h-4 w-4 text-green-500" />
+                    </div>
+                  )}
+                </div>
+                {(emailError || (form.errors.email && form.touched.email)) && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <AlertCircle className="h-4 w-4" />
+                    {emailError || form.errors.email}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium text-gray-700">Name and surname</Label>
+                <div className="relative">
+                  <Input 
+                    type="text" 
+                    name="name" 
+                    value={form.values.name} 
+                    onChange={(e) => {
+                      form.handleChange(e);
+                      validateName(e.target.value);
+                    }} 
+                    onBlur={(e) => {
+                      form.handleBlur(e);
+                      validateName(e.target.value);
+                    }}
+                    className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="John Doe"
+                  />
+                  {form.values.name && !form.errors.name && !nameError && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <Check className="h-4 w-4 text-green-500" />
+                    </div>
+                  )}
+                </div>
+                {(nameError || (form.errors.name && form.touched.name)) && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <AlertCircle className="h-4 w-4" />
+                    {nameError || form.errors.name}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <PhoneNumberInput
+              value={form.values.phone}
+              onChange={(value: string) => form.setFieldValue('phone', value)}
+              onBlur={form.handleBlur}
+              error={form.errors.phone}
+              touched={form.touched.phone}
+            />
+          </div>
+        );
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="payAtStore"
+                  checked={payAtStore}
+                  onCheckedChange={(checked) => {
+                    setPayAtStore(checked as boolean);
+                    if (checked) {
+                      setPushPayment(false);
+                    }
+                  }}
+                />
+                <Label htmlFor="payAtStore" className="text-sm font-medium text-gray-700">
+                  Je veux payer au point de vente
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="pickupInStore"
+                  checked={pickupInStore}
+                  onCheckedChange={(checked) => {
+                    setPickupInStore(checked as boolean);
+                    if (checked) {
+                      setValidAddressSelected(true);
+                      setAddressIncomplete(false);
+                      form.setFieldValue('postalCode', '00000');
+                      form.setFieldValue('address', 'Pickup in store');
+                      form.setFieldValue('city', 'Pickup in store');
+                      form.setFieldValue('state', 'Pickup in store');
+                      form.setFieldValue('allCountry', 'Pickup in store');
+                    } else {
+                      setValidAddressSelected(false);
+                      form.setFieldValue('postalCode', '');
+                      form.setFieldValue('address', '');
+                      form.setFieldValue('city', '');
+                      form.setFieldValue('state', '');
+                      form.setFieldValue('allCountry', '');
+                    }
+                  }}
+                />
+                <Label htmlFor="pickupInStore" className="text-sm font-medium text-gray-700">
+                  Je ne veux pas être livré (je viendrai chercher mon colis)
+                </Label>
+              </div>
+            </div>
+
+            {!pickupInStore && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">Postal code</Label>
+                  <div className="relative">
+                    <Input 
+                      type="text" 
+                      name="postalCode" 
+                      value={form.values.postalCode} 
+                      onChange={form.handleChange} 
+                      onBlur={form.handleBlur}
+                      className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                      placeholder="12345"
+                    />
+                    {form.values.postalCode && !form.errors.postalCode && form.touched.postalCode && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <Check className="h-4 w-4 text-green-500" />
+                      </div>
+                    )}
+                  </div>
+                  <ErrorMessage error={form.errors.postalCode} touched={form.touched.postalCode} />
+                </div>
+
+                <div className="space-y-2 relative">
+                  <Label htmlFor="address" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                    <MapPin className="h-4 w-4 text-gray-500" /> Address
+                  </Label>
+                  <div className="relative">
+                    <Input 
+                      type="text" 
+                      name="address" 
+                      value={form.values.address} 
+                      onChange={(e) => {
+                        form.handleChange(e);
+                        if (selectedAddress && e.target.value !== selectedAddress) {
+                          setSelectedAddress("");
+                          setAddressIncomplete(false);
+                          setValidAddressSelected(false);
+                          setSelectedLocation(null);
+                          setFeesCalculated(false);
+                        }
+                        if (e.target.value.length >= 3) {
+                          debouncedSearch(e.target.value);
+                        }
+                      }} 
+                      onBlur={(e) => {
+                        e.preventDefault();
+                        setTimeout(() => {
+                          if (!document.activeElement?.closest('.absolute')) {
+                            if (validAddressSelected) {
+                              setShowResults(false);
+                            }
+                          }
+                        }, 200);
+                      }}
+                      onFocus={handleAddressInputFocus}
+                      placeholder="Enter your address"
+                      className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 pl-10"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    {validAddressSelected && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <Check className="h-4 w-4 text-green-500" />
+                      </div>
+                    )}
+                  </div>
+                  <ErrorMessage error={form.errors.address} touched={form.touched.address} />
+                  
+                  {isSearching && (
+                    <div className="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                      <div className="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
+                      Searching...
+                    </div>
+                  )}
+                  
+                  {calculatingFees && (
+                    <div className="text-sm text-indigo-500 flex items-center gap-2 mt-1">
+                      <div className="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
+                      Calculating shipping fees...
+                    </div>
+                  )}
+                  
+                  {addressIncomplete && !isSearching && (
+                    <div className="text-sm text-red-500 flex items-center gap-2 mt-1">
+                      <X className="h-4 w-4" />
+                      No address found. Please provide more details or try a different address format.
+                    </div>
+                  )}
+                  
+                  {!validAddressSelected && form.values.address && !isSearching && !addressIncomplete && (
+                    <div className="text-sm text-amber-500 flex items-center gap-2 mt-1">
+                      <MapPin className="h-4 w-4" />
+                      Please select an address from the suggestions to continue.
+                    </div>
+                  )}
+                  
+                  {showResults && locationResults.length > 0 && (
+                    <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto">
+                      {locationResults.map((location, index) => (
+                        <div 
+                          key={index} 
+                          className="p-3 hover:bg-gray-50 cursor-pointer transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+                          onClick={() => handleLocationSelect(location)}
+                        >
+                          <div className="font-medium">{location.streetLine1}</div>
+                          <div className="text-sm text-gray-600">
+                            {location.city}, {location.state} {location.zip}, {location.country}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        );
+      case 2:
+        return (
+          <div className="space-y-6">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Email:</span>
+                  <span className="font-medium">{form.values.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Name:</span>
+                  <span className="font-medium">{form.values.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Phone:</span>
+                  <span className="font-medium">{form.values.phone}</span>
+                </div>
+                {!pickupInStore && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Address:</span>
+                      <span className="font-medium">{form.values.address}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Postal Code:</span>
+                      <span className="font-medium">{form.values.postalCode}</span>
+                    </div>
+                  </>
+                )}
+                {pickupInStore && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Delivery Method:</span>
+                    <span className="font-medium">Pickup in store</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Payment Method:</span>
+                  <span className="font-medium">
+                    {payAtStore ? "Pay at store" : "Online payment"}
+                  </span>
+                </div>
+                {feesCalculated && !pickupInStore && (
+                  <div className="flex justify-between pt-2 border-t">
+                    <span className="text-gray-600">Shipping Fees:</span>
+                    <span className="font-medium">{shippingFee} {currency}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {!formIsValid && (
+              <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-700 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
+                <p className="font-medium">{validationMessage || "Please complete all required fields"}</p>
+              </div>
+            )}
+
+            {order.status != "WAITING_PAYMENT" && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 text-red-600 flex items-center gap-2">
+                <Lock className="h-5 w-5" />
+                <p className="font-medium">Already paid</p>
+              </div>
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const handleNext = async () => {
+    if (currentStep === 0) {
+      if (!validateEmail(form.values.email) || !validateName(form.values.name) || !form.values.phone) {
+        return;
+      }
+    } else if (currentStep === 1) {
+      if (!pickupInStore) {
+        if (!validAddressSelected || !form.values.postalCode) {
+          return;
+        }
+        
+        // Calculate shipping fees only if delivery is selected
+        try {
+          setCalculatingFees(true);
+          const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+            query: FEATURE_GENERATE_FEES,
+            variables: { 
+              order: order.id,
+              country: form.values.allCountry,
+              address: form.values.address,
+              city: form.values.city,
+              state: form.values.state,
+              postalCode: form.values.postalCode,
+              email: form.values.email,
+              zip: form.values.postalCode,
+              streetLine1: form.values.address,
+              fullname: form.values.name,
+              phoneNumber: form.values.phone
+            },
+          });
+          
+          if (response.data?.data?.featureGenerateFees?.order?.shippingFees) {
+            const fees = response.data.data.featureGenerateFees.order.shippingFees;
+            setShippingFee(fees);
+            setFee(fees);
+            setFeesCalculated(true);
+            toast.success("Shipping fees calculated successfully");
+          } else {
+            toast.error("Could not calculate shipping fees");
+            return;
+          }
+        } catch (err) {
+          console.error("Error calculating shipping fees:", err);
+          toast.error("Failed to calculate shipping fees");
+          return;
+        } finally {
+          setCalculatingFees(false);
+        }
+      } else {
+        // If pickup in store is selected, set fees to 0 and mark as calculated
+        setShippingFee(0);
+        setFee(0);
+        setFeesCalculated(true);
+      }
+    }
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+  };
+
+  const handleBack = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
+
   if (isLoading) {
     return <AddressFormSkeleton />;
   }
@@ -577,237 +1004,68 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
   return (
     <div className="bg-white rounded-lg shadow-sm">
       <form onSubmit={form.handleSubmit}>
-        <div className="space-y-6 p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Shipping Information</h2>
+        <div className="p-6">
+          <Stepper steps={steps} currentStep={currentStep} className="mb-8" />
           
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">E-mail address</Label>
-              <div className="relative">
-                <Input 
-                  type="email" 
-                  name="email" 
-                  value={form.values.email} 
-                  onChange={(e) => {
-                    form.handleChange(e);
-                    validateEmail(e.target.value);
-                  }} 
-                  onBlur={(e) => {
-                    form.handleBlur(e);
-                    validateEmail(e.target.value);
-                  }}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                  placeholder="your@email.com"
-                />
-                {form.values.email && !form.errors.email && !emailError && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <Check className="h-4 w-4 text-green-500" />
-                  </div>
-                )}
-              </div>
-              {(emailError || (form.errors.email && form.touched.email)) && (
-                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
-                  <AlertCircle className="h-4 w-4" />
-                  {emailError || form.errors.email}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-gray-700">Name and surname</Label>
-              <div className="relative">
-                <Input 
-                  type="text" 
-                  name="name" 
-                  value={form.values.name} 
-                  onChange={(e) => {
-                    form.handleChange(e);
-                    validateName(e.target.value);
-                  }} 
-                  onBlur={(e) => {
-                    form.handleBlur(e);
-                    validateName(e.target.value);
-                  }}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                  placeholder="John Doe"
-                />
-                {form.values.name && !form.errors.name && !nameError && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <Check className="h-4 w-4 text-green-500" />
-                  </div>
-                )}
-              </div>
-              {(nameError || (form.errors.name && form.touched.name)) && (
-                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
-                  <AlertCircle className="h-4 w-4" />
-                  {nameError || form.errors.name}
-                </p>
-              )}
-            </div>
+          <div className="space-y-6">
+            {renderStepContent()}
           </div>
 
-          <PhoneNumberInput
-            value={form.values.phone}
-            onChange={(value: string) => form.setFieldValue('phone', value)}
-            onBlur={form.handleBlur}
-            error={form.errors.phone}
-            touched={form.touched.phone}
-          />
-          <div className="space-y-2">
-            <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">Postal code</Label>
-            <div className="relative">
-              <Input 
-                type="text" 
-                name="postalCode" 
-                value={form.values.postalCode} 
-                onChange={form.handleChange} 
-                onBlur={form.handleBlur}
-                className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                placeholder="12345"
-              />
-              {form.values.postalCode && !form.errors.postalCode && form.touched.postalCode && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <Check className="h-4 w-4 text-green-500" />
-                </div>
-              )}
-            </div>
-            <ErrorMessage error={form.errors.postalCode} touched={form.touched.postalCode} />
-          </div>
-
-          <div className="space-y-2 relative">
-            <Label htmlFor="address" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              <MapPin className="h-4 w-4 text-gray-500" /> Address
-            </Label>
-            <div className="relative">
-              <Input 
-                type="text" 
-                name="address" 
-                value={form.values.address} 
-                onChange={(e) => {
-                  form.handleChange(e);
-                  if (selectedAddress && e.target.value !== selectedAddress) {
-                    setSelectedAddress("");
-                    setAddressIncomplete(false);
-                    setValidAddressSelected(false);
-                    setSelectedLocation(null);
-                    setFeesCalculated(false);
-                  }
-                  if (e.target.value.length >= 3) {
-                    debouncedSearch(e.target.value);
-                  }
-                }} 
-                onBlur={(e) => {
-                  e.preventDefault();
-                  setTimeout(() => {
-                    if (!document.activeElement?.closest('.absolute')) {
-                      if (validAddressSelected) {
-                        setShowResults(false);
-                      }
-                    }
-                  }, 200);
-                }}
-                onFocus={handleAddressInputFocus}
-                placeholder="Enter your address"
-                className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 pl-10"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              {validAddressSelected && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <Check className="h-4 w-4 text-green-500" />
-                </div>
-              )}
-            </div>
-            <ErrorMessage error={form.errors.address} touched={form.touched.address} />
-            
-            {isSearching && (
-              <div className="text-sm text-gray-500 flex items-center gap-2 mt-1">
-                <div className="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
-                Searching...
-              </div>
-            )}
-            
-            {calculatingFees && (
-              <div className="text-sm text-indigo-500 flex items-center gap-2 mt-1">
-                <div className="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
-                Calculating shipping fees...
-              </div>
-            )}
-            
-            {addressIncomplete && !isSearching && (
-              <div className="text-sm text-red-500 flex items-center gap-2 mt-1">
-                <X className="h-4 w-4" />
-                No address found. Please provide more details or try a different address format.
-              </div>
-            )}
-            
-            {!validAddressSelected && form.values.address && !isSearching && !addressIncomplete && (
-              <div className="text-sm text-amber-500 flex items-center gap-2 mt-1">
-                <MapPin className="h-4 w-4" />
-                Please select an address from the suggestions to continue.
-              </div>
-            )}
+          <div className="flex justify-between mt-8">
             <Button
-              onClick={() => {
-                calculateShippingFees(order.id, selectedLocation!);
-              }}
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 0}
             >
-              Show results
+              Back
             </Button>
-          
-            
 
-            {showResults && locationResults.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto">
-                {locationResults.map((location, index) => (
-                  <div 
-                    key={index} 
-                    className="p-3 hover:bg-gray-50 cursor-pointer transition-colors duration-150 border-b border-gray-100 last:border-b-0"
-                    onClick={() => handleLocationSelect(location)}
+            {currentStep === steps.length - 1 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {!payAtStore && (
+                  <>
+                    <Button
+                      disabled={loadingPaymentLink || order.status !== "WAITING_PAYMENT" || !formIsValid}
+                      loading={loadingPaymentLink}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-md transition-colors duration-200"
+                      size="lg"
+                      onClick={() => setPushPayment(true)}
+                    >
+                      Pay Now
+                    </Button>
+                    <Button
+                      disabled={loadingPaymentLink || order.status !== "WAITING_PAYMENT" || !formIsValid}
+                      loading={loadingPaymentLink}
+                      className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded-md transition-colors duration-200"
+                      size="lg"
+                      type="submit"
+                    >
+                      Generate Payment Link
+                    </Button>
+                  </>
+                )}
+                {payAtStore && (
+                  <Button
+                    disabled={loadingPaymentLink || order.status !== "WAITING_PAYMENT" || !formIsValid}
+                    loading={loadingPaymentLink}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-md transition-colors duration-200"
+                    size="lg"
+                    type="submit"
                   >
-                    <div className="font-medium">{location.streetLine1}</div>
-                    <div className="text-sm text-gray-600">
-                      {location.city}, {location.state} {location.zip}, {location.country}
-                    </div>
-                  </div>
-                ))}
+                    Confirm Order
+                  </Button>
+                )}
               </div>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleNext}
+                disabled={currentStep === steps.length - 1}
+              >
+                Next
+              </Button>
             )}
-          </div>
-
-          {!formIsValid && (
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-amber-700 flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
-              <p className="font-medium">{validationMessage || "Please complete all required fields"}</p>
-            </div>
-          )}
-
-          {order.status != "WAITING_PAYMENT" && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-3 text-red-600 flex items-center gap-2">
-              <Lock className="h-5 w-5" />
-              <p className="font-medium">Already paid</p>
-            </div>
-          )}
-          
-          <div className="grid gap-4 md:grid-cols-2 mt-8">
-            <Button
-              disabled={loadingPaymentLink || order.status !== "WAITING_PAYMENT" || !formIsValid}
-              loading={loadingPaymentLink}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-md transition-colors duration-200"
-              size="lg"
-              onClick={() => setPushPayment(true)}
-            >
-              Pay Now
-            </Button>
-
-            <Button
-              disabled={loadingPaymentLink || order.status !== "WAITING_PAYMENT" || !validAddressSelected}
-              loading={loadingPaymentLink}
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded-md transition-colors duration-200"
-              size="lg"
-              type="submit"
-            >
-              Générer un lien de paiement
-            </Button>
           </div>
         </div>
       </form>
@@ -815,7 +1073,7 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 backdrop-blur-sm">
           <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-4 animate-fadeIn">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Lien de paiement</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Payment Link</h3>
             <div className="relative">
               <input
                 type="text"
@@ -830,13 +1088,13 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
               >
                 <Copy className="h-4 w-4" />
-                Copier
+                Copy
               </Button>
               <Button 
                 onClick={() => setShowPopup(false)} 
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 rounded-md transition-colors duration-200"
               >
-                Fermer
+                Close
               </Button>
             </div>
           </div>
