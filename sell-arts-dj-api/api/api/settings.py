@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "artwork",
     "chat",
     "users",
-    "order"
+    "order",
+    "event",
 ]
 
 

@@ -3,7 +3,8 @@
 import { PageableResponse } from "@/lib/api";
 import { fetchHelper } from "@/lib/fetchHelper";
 import { ApiResponse, ArtWork, Event } from "@/lib/type";
-
+import { GET_ARTWORK_BY_ID_EVENT, GET_EVENT_ARTWORK_BY_ID } from "./queries/artwork/querieArtwork";
+import axios from "axios";
 export const createEvent = async (event: Partial<Event>, images: File[]) => {
   const formData = new FormData();
   formData.append("data", JSON.stringify(event));
@@ -73,6 +74,7 @@ export const getAEventForOwner = async (eventId: number) => {
   return data;
 };
 
+
 export const getAllEventOfAGallery = async (galleryId: number) => {
   const res = await fetchHelper(process.env.API_URL + `/events/owners/${galleryId}/gallery`, {
     method: "GET",
@@ -80,5 +82,21 @@ export const getAllEventOfAGallery = async (galleryId: number) => {
 
   const data: ApiResponse<Event[]> = await res.json();
 
+  return data;
+};
+
+
+export const fetchEventArtworks = async (eventId: number) => {
+  const res = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+    data: {
+      query: GET_EVENT_ARTWORK_BY_ID,
+      variables: {
+        event_Id: eventId,
+      },
+    }
+  });
+  console.log(res, "res")
+  const data = res.data;
+  console.log(data, "data")
   return data;
 };

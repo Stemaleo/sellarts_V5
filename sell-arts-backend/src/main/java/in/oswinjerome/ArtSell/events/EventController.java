@@ -54,7 +54,7 @@ public class EventController {
     }
 
     @GetMapping("owners")
-    @Secured({"ROLE_ADMIN","ROLE_GALLERY"})
+    // @Secured({"ROLE_ADMIN","ROLE_GALLERY"})
     public ResponseEntity<ResponseDTO> getForDashboard(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ){
@@ -71,7 +71,7 @@ public class EventController {
     }
 
     @GetMapping("owners/{eventId}")
-    @Secured({"ROLE_ADMIN","ROLE_GALLERY"})
+    // @Secured({"ROLE_ADMIN","ROLE_GALLERY"})
     public ResponseEntity<ResponseDTO> getEventForDashboard(
 
             @PathVariable Long eventId){
@@ -82,7 +82,7 @@ public class EventController {
 
 
     @DeleteMapping("{eventId}")
-    @Secured({"ROLE_ADMIN","ROLE_GALLERY"})
+    // @Secured({"ROLE_ADMIN","ROLE_GALLERY"})
     public ResponseEntity<ResponseDTO> delete(
 
             @PathVariable Long eventId){

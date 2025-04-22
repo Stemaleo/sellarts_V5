@@ -95,3 +95,54 @@ class StylesType(DjangoObjectType):
 
 
 
+class MaterialTypeFilter(filter.FilterSet):
+    order_by = django_filters.OrderingFilter(
+        fields=(
+            [
+                field.name + "__id" if field.is_relation else field.name
+                for field in anka_models.MaterialType._meta.fields  
+            ]
+        )
+    )
+
+    class Meta:
+        model = anka_models.MaterialType
+        fields = {
+            field.name + "__id" if field.is_relation else field.name: ["exact"]
+            for field in anka_models.MaterialType._meta.fields
+        }
+
+
+class MaterialTypeType(DjangoObjectType):
+    id = graphene.ID(source="pk", required=True)
+
+    class Meta:
+        model = anka_models.MaterialType
+        filterset_class = MaterialTypeFilter
+        interfaces = (graphene.relay.Node,)
+
+class MediasFilter(filter.FilterSet):
+    order_by = django_filters.OrderingFilter(
+        fields=(
+            [
+                field.name + "__id" if field.is_relation else field.name
+                for field in anka_models.Medias._meta.fields
+            ]
+        )
+    )
+
+    class Meta:
+        model = anka_models.Medias
+        fields = {
+            field.name + "__id" if field.is_relation else field.name: ["exact"]
+            for field in anka_models.Medias._meta.fields
+        }
+
+class MediasType(DjangoObjectType):
+    id = graphene.ID(source="pk", required=True)
+
+    class Meta:
+        model = anka_models.Medias
+        filterset_class = MediasFilter
+        interfaces = (graphene.relay.Node,)
+

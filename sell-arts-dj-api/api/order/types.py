@@ -118,3 +118,30 @@ class ShippingType(DjangoObjectType):
         model = order_models.Shipping
         filterset_class = ShippingFilter
         interfaces = (graphene.relay.Node,)
+
+class BidFilter(filter.FilterSet):
+    order_by = django_filters.OrderingFilter(
+        fields=(
+            [
+                field.name + "__id" if field.is_relation else field.name
+                for field in anka_models.Bid._meta.fields
+            ]
+        )
+    )
+
+    class Meta:
+        model = anka_models.Bid
+        fields = {
+            field.name + "__id" if field.is_relation else field.name: ["exact"]
+            for field in anka_models.Bid._meta.fields
+        }
+
+
+class BidType(DjangoObjectType):
+    id = graphene.ID(source="pk", required=True)
+
+    class Meta:
+        model = anka_models.Bid
+        filterset_class = BidFilter
+        interfaces = (graphene.relay.Node,)
+

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getAllCartThunk } from "@/redux/features/cartFeature";
 import { AppDispatch, RootState } from "@/redux/store";
-import { Lock, Trash2 } from "lucide-react";
+import { Lock, Trash2, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -27,6 +27,7 @@ export default function Component({ params }: { params: Promise<{ id: string , t
   const { currency } = useCurrency();
   const [id, setId] = useState<string>("");
   const [res, setRes] = useState<any>(null);
+  const [calculatingTotal, setCalculatingTotal] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -55,7 +56,12 @@ export default function Component({ params }: { params: Promise<{ id: string , t
   }, [params]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Loading order details...</span>
+      </div>
+    );
   }
 
   if (!order) {
@@ -98,11 +104,22 @@ export default function Component({ params }: { params: Promise<{ id: string , t
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping fees</span>
-                <span>{convertPrice(fee, currency)} {currency}</span>
+                {calculatingTotal ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <span>{convertPrice(fee, currency)} {currency}</span>
+                )}
               </div>
               <div className="flex justify-between font-medium">
                 <span>Total</span>
-                <span>{convertPrice(Number(order.totalAmount) + Number(fee), currency)} {currency}</span>
+                {calculatingTotal ? (
+                  <div className="flex items-center">
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    <span>Calculating...</span>
+                  </div>
+                ) : (
+                  <span>{convertPrice(Number(order.totalAmount) + Number(fee), currency)} {currency}</span>
+                )}
               </div>
             </div>
           </Card>

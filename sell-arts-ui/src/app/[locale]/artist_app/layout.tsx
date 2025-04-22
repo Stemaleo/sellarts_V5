@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Banknote, Bell, ChevronDown, Code, DollarSign, FlagIcon, Home, LayoutDashboard, ListIcon, Menu, PaintBucket, PaintRoller, PodcastIcon, Search, Settings, ShoppingCart, TicketsIcon, Users, Users2 } from "lucide-react";
+import { Banknote, Bell, ChevronDown, Code, DollarSign, FlagIcon, Home, LayoutDashboard, ListIcon, Menu, PaintBucket, PaintRoller, PodcastIcon, Search, Settings, ShoppingCart, ShoppingBag, Store, TicketsIcon, Users, Users2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -50,6 +50,7 @@ export default function ArtistLayout({ children }: { children: React.ReactNode }
     { title: t("nav.tickets"), href: "/artist_app/tickets", icon: <TicketsIcon className="h-4 w-4" />, show: true },
     { title: t("nav.my-bids"), href: "/artist_app/bids", icon: <DollarSign className="h-4 w-4" />, show: true },
     { title: t("nav.promo-codes"), href: "/artist_app/promo", icon: <Code className="h-4 w-4" />, show: hasRole(data, "ROLE_GALLERY") },
+    { title: t("nav.pos"), href: "/artist_app/pos", icon: <ShoppingBag className="h-4 w-4" />, show: hasRole(data, "ROLE_GALLERY") },
     // { title: t("nav.settings"), href: "/artist_app/settings", icon: <Settings className="h-4 w-4" />, show: true },
   ];
 
