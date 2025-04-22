@@ -192,6 +192,16 @@ export const getAllFeaturedArtWorksOfAArtist = async (artistId: number) => {
   return data;
 };
 
+export const getAllFeaturedArtWorksOfAArtist2 = async (artistId: number) => {
+  const res = await fetchHelper(process.env.API_URL + `/public/artworks/artist/${artistId}`, {
+    method: "GET",
+  });
+
+  const data: ApiResponse<PageableResponse<ArtWorkDTO>> = await res.json();
+
+  return data;
+};
+
 export const getArtWorkById = async (artworkId: string) => {
   const res = await fetchHelper(process.env.API_URL + `/public/artworks/${artworkId}`, {
     method: "GET",
@@ -225,6 +235,7 @@ export const fetchMethodAndStyle = async (artWorkID: string) => {
     return { data: { artworks: { edges: [] } } };
   }
 };
+
 
 
 

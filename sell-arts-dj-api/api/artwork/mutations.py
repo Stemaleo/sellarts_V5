@@ -345,6 +345,44 @@ class FeatureUpdateArtworkDeletions(graphene.Mutation):
 
 
 
+class FeatureUpdateArtworkStock(graphene.Mutation):
+    """
+    Mutation to update the stock of an artwork.
+    """
+
+    success: bool = graphene.Boolean(description="Indicates whether the operation was successful.")
+    message: str = graphene.String(description="Response message indicating success or failure.")
+    artwork: anka_models.ArtWorks = graphene.Field(types.ArtworksType, description="The updated artwork object.")   
+
+    class Arguments:
+        artwork = graphene.ID(
+            required=True, 
+            description="ID of the artwork to update the stock."
+        )       
+        stock = graphene.Int(
+            required=True, 
+            description="New stock of the artwork."
+        )
+
+    class Meta:
+        description = meta.feature_update_artwork_stock
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs):
+        try:
+            artwork = anka_models.ArtWorks.objects.get(id=kwargs['artwork'])
+            artwork.stock = kwargs['stock']
+            artwork.save()  
+            return FeatureUpdateArtworkStock(
+                success=True, 
+                message="Artwork stock updated successfully.", 
+                artwork=artwork
+            )
+        except Exception as error:
+            error = traceback.format_exc()
+            return FeatureUpdateArtworkStock(
+                success=False, message=f"Error while updating artwork stock: {error}"
+            )
 
 
 
@@ -368,49 +406,4 @@ class FeatureUpdateArtworkDeletions(graphene.Mutation):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class ActivateDeactivateMethod(graphene.Mutation):
-#     """
-#     Mutation pour activer ou désactiver une méthode.
-#     """
-
-#     success = graphene.Boolean()
-#     message = graphene.String()
-#     method = graphene.Field(MethodsType)
-
-#     class Arguments:
-#         name = graphene.String(required=True, description="Nom de la méthode.")
-#         active = graphene.Boolean(required=True, description="True pour activer, False pour désactiver.")
-
-#     @classmethod
-#     def mutate(cls, root, info, name, active):
-#         try:
-#             method = Methods.objects.filter(name=name).first()
-#             if not method:
-#                 return ActivateDeactivateMethod(success=False, message="Method not found.", method=None)
-
-#             method.is_active = active
-#             method.save()
-#             action = "activated" if active else "deactivated"
-#             return ActivateDeactivateMethod(success=True, message=f"Method successfully {action}.", method=method)
-#         except Exception as error:
-#             return ActivateDeactivateMethod(success=False, message=f"Error updating method: {str(error)}", method=None)
 

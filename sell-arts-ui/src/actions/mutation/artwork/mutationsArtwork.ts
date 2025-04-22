@@ -22,3 +22,60 @@ mutation featureUpdateArtworkDeletions($artworks: [ID]!, $isDeleted: Boolean!) {
     }
   }
 `;
+
+export const FEATURE_ADD_ARTWORK_TO_EVENT = `
+mutation featureAddArtworkToEvent($event: ID!, $artworks: [ID!]!) {
+  featureAddArtworkToEvent(event: $event, artworks: $artworks) {
+    success
+    message
+    event {
+      id
+    }
+  }
+}
+`;
+
+export const FEATURE_REMOVE_ARTWORK_FROM_EVENT = `
+mutation featureRemoveArtworkFromEvent($event: ID!, $artworks: [ID!]!) {
+  featureRemoveArtworkFromEvent(event: $event, artworks: $artworks) {
+    success
+    message
+    event {
+      id
+    }
+  }
+}
+`;
+
+
+export const FEATURE_UPDATE_ARTWORK_STOCK = `
+mutation featureUpdateArtworkStock($artwork: ID!, $stock: Int!) {
+  featureUpdateArtworkStock(artwork: $artwork, stock: $stock) {
+    success
+    message
+    artwork {
+      id
+    }
+  }
+}
+`;
+
+
+export const FEATURE_UPDATE_ORDER_STATUS = `
+mutation featureUpdateOrderStatus(
+  $order: ID!,
+  $status: OrderStatus!    
+) {
+  featureUpdateOrderStatus(
+    order: $order
+    status: $status
+  ) {
+    success
+    message
+    order {
+      id
+      status
+    }
+  } 
+} 
+`;

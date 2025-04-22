@@ -3,8 +3,8 @@ import requests
 
 DATABASE_NAME = "sellarts"
 DATABASE_USER = "postgres"
-DATABASE_PASSWORD = "@satoshi"
-DATABASE_HOST = "localhost" 
+DATABASE_PASSWORD = "FoD,Q]m6Get>;H7a"
+DATABASE_HOST = "64.227.21.130" 
 DATABASE_PORT = "5432"
 
 def update_users_infos():

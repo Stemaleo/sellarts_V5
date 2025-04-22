@@ -39,3 +39,25 @@ mutation featureGenerateFees(
   }
 } 
 `
+
+export const FEATURE_UPDATE_ORDER_PAYMENT_AND_SHIPPING_METHOD = `
+  mutation featureUpdateOrderPaymentAndShippingMethod(
+    $order: ID!,
+    $isForShipping: Boolean!,
+    $isForPos: Boolean!
+) {
+  featureUpdateOrderPaymentAndShippingMethod(
+    order: $order
+    isForShipping: $isForShipping
+    isForPos: $isForPos
+  ) {
+    success
+    message
+    order {
+      id
+      isForShipping
+      isForPos
+    }
+  }
+}
+`

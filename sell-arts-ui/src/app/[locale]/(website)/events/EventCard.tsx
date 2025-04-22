@@ -13,11 +13,56 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import RegisterEventButton from "./RegisterBtn";
 import { useTranslations } from "next-intl";
+import { EVENT_REGISTRATION } from "@/actions/queries/artwork/querieArtwork";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+
 
 const WebEventCard = ({ event }: { event: Event }) => {
   const { loading, execute } = useActions();
   const router = useRouter();
   const t = useTranslations();
+  const { data: session } = useSession();
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [checkingRegistration, setCheckingRegistration] = useState(true);
+  const [ownerId, setOwnerId] = useState<string | null>(null);
+console.log(event, "event")
+
+  useEffect(() => {
+    const checkUserRegistration = async () => {
+      if (!session?.user?.id) {
+        setCheckingRegistration(false);
+        return;
+      }
+
+      try {
+        const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "" , {
+          query: EVENT_REGISTRATION,
+          variables: {
+            user_Id: session.user.id,
+            event_Id: event.id.toString()
+          }
+        });
+
+        const result = response.data;
+        setIsRegistered(result.data?.eventRegistration?.edges?.length > 0);
+        // Check if the user is the owner of the event
+        // const isOwner = result.data?.eventRegistration?.edges?.[0]?.node?.event?.owner?.id === session.user.id;
+        
+        // Get the owner ID from the event registration data
+        setOwnerId(result.data?.eventRegistration?.edges?.[0]?.node?.event?.owner?.artistProfile?.id);
+        console.log("Event owner ID:", ownerId);
+      } catch (error) {
+        console.error("Error checking event registration:", error);
+      } finally {
+        setCheckingRegistration(false);
+      }
+    };
+
+    checkUserRegistration();
+  }, [session, event.id]);
+
   const handleDelete = () => {
     execute(deleteEvent, event.id).then((res) => {
       if (res?.success) {
@@ -25,6 +70,10 @@ const WebEventCard = ({ event }: { event: Event }) => {
         toast.warning("Deleted");
       }
     });
+  };
+
+  const handleOpenEvent = () => {
+    router.push(`/events/${event.id}/${ownerId}`);
   };
 
   return (
@@ -60,8 +109,14 @@ const WebEventCard = ({ event }: { event: Event }) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <RegisterEventButton event={event} />
+      <CardFooter className="flex justify-between">
+        {isRegistered ? (
+          <Button onClick={handleOpenEvent} className="w-full">
+            {t("common.open")}
+          </Button>
+        ) : (
+          <RegisterEventButton event={event} />
+        )}
       </CardFooter>
     </Card>
   );

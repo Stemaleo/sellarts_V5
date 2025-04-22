@@ -8,7 +8,7 @@ from . import types as types
 import math
 from decimal import Decimal
 logger = logging.getLogger(__name__)
-
+from . import meta
 def find_closest_higher_value(from_country: dict, to_country: str, weight: float) -> float:
     """Returns the rate for a given country and weight."""
     
@@ -333,3 +333,71 @@ class FeatureVerifyShippingLabel(graphene.Mutation):
             logger.error(f"Error verifying shipping label: {str(e)}", exc_info=True)
             return FeatureVerifyShippingLabel(success=False, message=str(e))
 
+
+
+class FeatureUpdateOrderPaymentAndShippingMethod(graphene.Mutation):
+    success = graphene.Boolean()
+    message = graphene.String()
+    order = graphene.Field(types.OrdersType)
+
+    class Arguments:
+        order = graphene.ID(required=True)
+        is_for_shipping = graphene.Boolean(required=True)
+        is_for_pos = graphene.Boolean(required=True)
+
+    class Meta:
+        description = meta.feature_update_order_payment_and_shipping_method
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs) -> "FeatureUpdateOrderPaymentAndShippingMethod":
+        try:
+            order = anka_models.Orders.objects.get(id=kwargs["order"])
+            order.is_for_shipping = kwargs["is_for_shipping"]
+            order.is_for_pos = kwargs["is_for_pos"]
+            order.save()
+            return FeatureUpdateOrderPaymentAndShippingMethod(
+                success=True,
+                message="Success",
+                order=order,        
+            )
+        except Exception as e:
+            logger.error(f"Error updating order payment and shipping method: {str(e)}", exc_info=True)
+            return FeatureUpdateOrderPaymentAndShippingMethod(
+                success=False,
+                message=str(e),
+            ) 
+class OrderStatus(graphene.Enum):
+    WAITING_PAYMENT = "WAITING_PAYMENT"
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
+    SHIPPED = "SHIPPED"
+    DELIVERED = "DELIVERED"
+    RETURNED = "RETURNED"
+    CANCELED = "CANCELED"
+
+class FeatureUpdateOrderStatus(graphene.Mutation):
+    success = graphene.Boolean()
+    message = graphene.String()
+    order = graphene.Field(types.OrdersType)
+
+    class Arguments:
+        order = graphene.ID(required=True)
+        status = OrderStatus(required=True)
+
+    class Meta:
+        description = meta.feature_update_order_status  
+
+    @classmethod
+    def mutate(cls, root, info, **kwargs) -> "FeatureUpdateOrderStatus":
+        try:
+            order = anka_models.Orders.objects.get(id=kwargs["order"])
+            order.status = kwargs["status"].value
+            order.save()    
+            return FeatureUpdateOrderStatus(
+                success=True,
+                message="Success",
+                order=order,
+            )
+        except Exception as e:
+            logger.error(f"Error updating order status: {str(e)}", exc_info=True)
+            return FeatureUpdateOrderStatus(success=False, message=str(e))

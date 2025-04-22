@@ -24,6 +24,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { Stepper } from "@/components/ui/stepper";
+import { FEATURE_UPDATE_ORDER_PAYMENT_AND_SHIPPING_METHOD } from "@/actions/mutation/artist/shipping/mutationShipping";
+
 
 interface Country {
   code: CountryCode;
@@ -705,10 +707,26 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
                 <Checkbox
                   id="payAtStore"
                   checked={payAtStore}
-                  onCheckedChange={(checked) => {
+                  onCheckedChange={async (checked) => {
                     setPayAtStore(checked as boolean);
                     if (checked) {
                       setPushPayment(false);
+                    }
+                    try {
+                      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+                        query: FEATURE_UPDATE_ORDER_PAYMENT_AND_SHIPPING_METHOD,
+                        variables: { 
+                          order: order.id,
+                          isForShipping: !pickupInStore,
+                          isForPos: checked as boolean
+                        },
+                      });
+                      if (!response.data?.data?.featureUpdateOrderPaymentAndShippingMethod?.success) {
+                        toast.error("Failed to update payment method");
+                      }
+                    } catch (err) {
+                      console.error("Error updating payment method:", err);
+                      toast.error("Failed to update payment method");
                     }
                   }}
                 />
@@ -721,7 +739,7 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
                 <Checkbox
                   id="pickupInStore"
                   checked={pickupInStore}
-                  onCheckedChange={(checked) => {
+                  onCheckedChange={async (checked) => {
                     setPickupInStore(checked as boolean);
                     if (checked) {
                       setValidAddressSelected(true);
@@ -738,6 +756,22 @@ const AddressForm = ({ order, setFee, currency }: AddressFormProps) => {
                       form.setFieldValue('city', '');
                       form.setFieldValue('state', '');
                       form.setFieldValue('allCountry', '');
+                    }
+                    try {
+                      const response = await axios.post(process.env.NEXT_PUBLIC_DJ_API_URL || "", {
+                        query: FEATURE_UPDATE_ORDER_PAYMENT_AND_SHIPPING_METHOD,
+                        variables: { 
+                          order: order.id,
+                          isForShipping: !checked,
+                          isForPos: payAtStore
+                        },
+                      });
+                      if (!response.data?.data?.featureUpdateOrderPaymentAndShippingMethod?.success) {
+                        toast.error("Failed to update shipping method");
+                      }
+                    } catch (err) {
+                      console.error("Error updating shipping method:", err);
+                      toast.error("Failed to update shipping method");
                     }
                   }}
                 />

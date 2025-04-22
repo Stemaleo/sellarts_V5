@@ -25,7 +25,8 @@ class Query(graphene.ObjectType):
     order_item = DjangoConnectionField(types.OrderItemType)
     country = DjangoConnectionField(types.CountryType)
     shipping = DjangoConnectionField(types.ShippingType)
-    
+    bid = DjangoConnectionField(types.BidType)
+
     search_locations = graphene.List(
         OutputAddressType,
         location=graphene.String(required=True),
@@ -92,3 +93,5 @@ class Query(graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     feature_generate_fees = mutations.FeatureGenerateShippingFees.Field()
     feature_verify_shipping_label = mutations.FeatureVerifyShippingLabel.Field()
+    feature_update_order_payment_and_shipping_method = mutations.FeatureUpdateOrderPaymentAndShippingMethod.Field()
+    feature_update_order_status = mutations.FeatureUpdateOrderStatus.Field()

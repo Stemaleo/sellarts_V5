@@ -28,6 +28,7 @@
     "crafts": "Crafts",
     "catalogues": "Catalogues",
     "posts": "Posts",
+    "pos":"POS",
     "tickets": "Tickets"
   },
   "artistsPage": {
@@ -166,6 +167,7 @@
       "orders": "Orders",
       "favourites": "Favourites",
       "payments": "Payments"
+      
     },
     "artist": {
       "suspend": "Suspendre?",

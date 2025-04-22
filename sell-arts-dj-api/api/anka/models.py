@@ -199,6 +199,16 @@ class EventsMediaUrls(models.Model):
         db_table = 'events_media_urls'
 
 
+# class EventArtwork(models.Model):
+#     event = models.ForeignKey(Events, models.DO_NOTHING)
+#     artwork = models.ForeignKey(ArtWorks, models.DO_NOTHING)
+#     is_deleted = models.BooleanField(null=True, default=False)
+#     is_active = models.BooleanField(null=True, default=True)
+
+#     class Meta:
+#         managed = True
+#         db_table = 'event_artwork'
+        
 class Favourite(models.Model):
     id = models.BigAutoField(primary_key=True)
     created_at = models.DateTimeField(blank=True, null=True)
@@ -304,6 +314,8 @@ class Orders(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True)
     country_text = models.CharField(max_length=255, blank=True, null=True)
     country = models.ForeignKey('order.Country', models.DO_NOTHING, db_column="country", related_name="orders_country", blank=True, null=True)
+    is_for_shipping = models.BooleanField(null=True, default=False, blank=True)
+    is_for_pos = models.BooleanField(null=True, default=False, blank=True )
     owner = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     is_deleted = models.BooleanField(null=True, default=False)
     is_active = models.BooleanField(null=True, default=True)

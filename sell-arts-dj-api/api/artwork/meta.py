@@ -107,3 +107,56 @@ mutation {
   }
 }
 """
+
+feature_update_artwork_stock = """
+# Mutation `featureUpdateArtworkStock`
+
+This mutation allows updating the stock of an artwork.
+
+## **Parameters:**  
+- `artwork` (ID) : The ID of the artwork to update the stock.  
+- `stock` (Int) : The new stock of the artwork.  
+
+## **Returns:**  
+- `success` (Boolean) : Indicates whether the operation was successful.  
+- `message` (String) : Response message indicating success or failure.  
+- `artwork` (Artwork) : The updated artwork object.  
+
+---
+
+## **Syntax**
+```graphql
+mutation featureUpdateArtworkStock(
+  $artwork: ID!
+  $stock: Int!
+) {
+  featureUpdateArtworkStock(
+    artwork: $artwork
+    stock: $stock
+  ) {
+    success
+    message
+    artwork { 
+      id
+      stock
+    }
+  }
+}
+```
+## **Example**
+```graphql
+mutation {
+  featureUpdateArtworkStock(
+    artwork: "1234"
+    stock: 100
+  ) { 
+    success
+    message
+    artwork {
+      id
+      stock
+    }
+  } 
+}
+```
+"""
