@@ -13,7 +13,14 @@ const RegisterEventButton = ({ event }: { event: Event }) => {
     execute(registerEvent, event.id).then((res) => {
       if (res?.success) {
         toast.success("Registered...");
+        // Refresh the page to update the UI after successful registration
+        window.location.reload();
+      } else {
+        toast.error(res?.message || "Registration failed");
       }
+    }).catch(error => {
+      console.error("Registration error:", error);
+      toast.error("An error occurred during registration");
     });
   };
 
@@ -21,7 +28,7 @@ const RegisterEventButton = ({ event }: { event: Event }) => {
     <Button onClick={handle} loading={loading} disabled={loading} className="w-full">
       {t("register.register")}
     </Button>
-  );
+  );    
 };
 
 export default RegisterEventButton;
