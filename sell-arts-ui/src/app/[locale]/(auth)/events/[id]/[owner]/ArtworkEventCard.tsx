@@ -1,5 +1,8 @@
 "use client";
 
+import { convertPrice } from "@/actions/currencyConverter";
+import { useCurrency } from "@/context/CurrencyContext";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -54,6 +57,7 @@ interface ArtworkData {
 }
 
 const ArtworkEventCard = ({ artwork , eventId , owner }: { artwork: ArtworkData , eventId: string, owner: string }) => {
+  const { currency } = useCurrency();
   return (
     <Link href={`/eventarts/${artwork.id}`} className="block h-full">
       <div className="group h-full overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:translate-y-[-5px]">
@@ -83,7 +87,7 @@ const ArtworkEventCard = ({ artwork , eventId , owner }: { artwork: ArtworkData 
             <h3 className="text-lg font-bold text-gray-900 line-clamp-1 group-hover:text-primary transition-colors duration-300">
               {artwork.title}
             </h3>
-            <span className="font-medium text-lg text-primary">${artwork.price}</span>
+            <span className="font-medium text-lg text-primary">{convertPrice(artwork.price, currency)} {currency}</span>
           </div>
           
           {/* Artist Info */}

@@ -222,7 +222,7 @@ export default function ArtworkDetail({ params, translations }: {
               <p className="font-bold text-lg text-yellow-800">{"Best Offer"}</p>
               <p className="text-yellow-700 font-semibold text-lg">
                 {respo?.data?.artworks?.edges?.[0]?.node?.bidSet?.[0]?.amount 
-                  ? `${respo.data.artworks.edges[0].node.bidSet[0].amount} ${currency}`
+                  ? `${convertPrice(respo.data.artworks.edges[0].node.bidSet[0].amount, currency)} ${currency}`
                   : 'No offers yet'}
               </p>
             </div>
