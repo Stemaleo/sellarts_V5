@@ -160,15 +160,25 @@ export const getMyArtWorks = async (page: number, title: string, paintingType: s
   const res = await fetchHelper(process.env.API_URL + `/artists/artworks?page=${page}&size=8&title=${title}&paintingType=${paintingType}`, {
     method: "GET",
   }
-);
-
-
-  
+);  
 
   const data: ApiResponse<PageableResponse<ArtWorkDTO>> = await res.json();
 
   return data;
 };
+
+export const getMyArtWorksWithoutPagination = async () => {
+  const res = await fetchHelper(process.env.API_URL + `/artists/artworks`, {
+    method: "GET",
+  }
+);  
+
+  const data: ApiResponse<PageableResponse<ArtWorkDTO>> = await res.json();
+
+  return data;
+};
+
+
 
 export const getAllArtWorks = async (page: number, paintingType: string, materialType: string, price: number, title: string) => {
   const res = await fetchHelper(process.env.API_URL + `/public/artworks?page=${page}&size=8&paintingType=${paintingType}&materialType=${materialType}&price=${price}&title=${title}`, {
