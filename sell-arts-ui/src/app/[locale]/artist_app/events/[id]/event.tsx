@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getMyArtWorks } from "@/actions/artwork";
+import { getMyArtWorks, getMyArtWorksWithoutPagination } from "@/actions/artwork";
 import { fetchEventArtworks } from "@/actions/events";
 import Form from "next/form";
 import { Badge } from "@/components/ui/badge";
@@ -157,7 +157,8 @@ EventDetails({ params }: any) {
       }
 
       // Fetch artworks
-      const artworksRes = await getMyArtWorks(0, "", "");
+      // const artworksRes = await getMyArtWorks(, "", "");
+      const artworksRes = await getMyArtWorksWithoutPagination();
       if (artworksRes.success) {
         setArtworks(artworksRes.data.content);
       }
@@ -167,7 +168,7 @@ EventDetails({ params }: any) {
       setEventArtworks(eventArtworksRes);
       setEventNotArtworks(eventNotArtworksRes);
 
-      // Fetch painting types
+      // Fetch painting typesAfricahouse123Africa
       const paintingTypesRes = await getAllPaintingTypes();
       if (paintingTypesRes.success) {
         setPaintingTypes(paintingTypesRes.data);
