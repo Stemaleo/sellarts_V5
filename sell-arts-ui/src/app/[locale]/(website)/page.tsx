@@ -18,6 +18,11 @@ import ArtistWorks from "@/components/ArtistWorks";
 import { use } from "react";
 import { getAllRandomArtworks, getARandomArtists, getARandomGallery, getRandomArtists } from "@/actions/home";
 import { getAllArtistProfiles } from "@/actions/artists";
+import Chatbot from "./chatbot";
+
+
+
+
 export default function BentoLanding() {
   const res = use(getAllRandomArtworks());
   const futuresRes = use(getAllRandomArtworks());
@@ -35,6 +40,9 @@ export default function BentoLanding() {
       <ArtWork artworks={futuresRes.data} />
       {featureArtist.data != null && <ArtistWorks artist={featureArtist.data} />}
       <FeaturedArtGalleries galleries={artists.data} />
+      <Chatbot />
     </div>
   );
 }
+
+
