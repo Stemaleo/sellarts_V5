@@ -29,7 +29,7 @@ export default function Chatbot() {
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
-
+  const user = data?.user;
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
     
@@ -61,7 +61,7 @@ export default function Chatbot() {
       setMessages(prev => [...prev, loadingMessage]);
 
       // Use HTTPS endpoint
-      fetch("http://89.116.38.238:8000/chat", {
+      fetch("https://chat.sellarts.net/chat", {
         method: "POST",
         headers: {
           'accept': 'application/json',
@@ -192,18 +192,20 @@ export default function Chatbot() {
           </div>
         </div>
       ) : (
-        <button
-          onClick={toggleChat}
-          className="bg-white hover:bg-gray-50 rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 border-2 border-red-500 hover:border-red-600 hover:shadow-red-200 hover:shadow-xl"
-        >
-          <Image
-            src={chatLogo}
-            alt="Chat Icon" 
-            width={40}
-            height={40}
-            className="rounded-full transform transition-transform duration-300 hover:rotate-12"
-          />
-        </button>
+        user && (
+          <button
+            onClick={toggleChat}
+            className="bg-white hover:bg-gray-50 rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 border-2 border-red-500 hover:border-red-600 hover:shadow-red-200 hover:shadow-xl"
+          >
+            <Image
+              src={chatLogo}
+              alt="Chat Icon" 
+              width={40}
+              height={40}
+              className="rounded-full transform transition-transform duration-300 hover:rotate-12"
+            />
+          </button>
+        )
       )}
     </div>
   );
