@@ -85,7 +85,7 @@ export default function Chatbot() {
           },
           body: JSON.stringify({
             message: inputMessage,
-            user_id: data?.user?.id?.toString() || crypto.randomUUID() // More secure anonymous ID
+            user_id: crypto.randomUUID() // More secure anonymous ID
           }),
         });
 
@@ -320,7 +320,7 @@ export default function Chatbot() {
           </div>
         </div>
       ) : (
-        user && (
+         (
           <button
             onClick={toggleChat}
             className="bg-white hover:bg-gray-50 rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 border-2 border-red-500 hover:border-red-600 hover:shadow-red-200 hover:shadow-xl"
