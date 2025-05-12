@@ -5,7 +5,8 @@ import { MessageCircle, X, Send } from "lucide-react";
 import Image from "next/image";
 import chatLogo from "@/assets/logo/chatLogo.jpg";
 import { useSession } from "next-auth/react";
-
+import { parse } from "path";
+import React from "react";
 interface Message {
   id: number;
   text: string;
@@ -18,17 +19,31 @@ interface ChatbotProps {
   chatIcon?: string; // URL for custom chat icon
   logoImage?: string; // URL for logo in title bar
 }
-
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { data } = useSession();
+  // Add a ref for the messages container
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom whenever messages change
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Effect to scroll to bottom when messages change
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
+    // Scroll to bottom when chat is opened
+    setTimeout(scrollToBottom, 100);
   };
+  
   const user = data?.user;
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -122,9 +137,11 @@ export default function Chatbot() {
                 }
                 throw new Error("An error occurred while processing your request");
               }
-              
+              console.log(parsedData);
               // Add the text fragment to accumulated text
-              accumulatedText += parsedData.text || "";
+              if (!parsedData.text?.includes('{"error":')) {
+                accumulatedText += parsedData.text || "";
+              }
               console.log(accumulatedText);
               // Update the message with accumulated text
               setMessages(prev => 
@@ -162,40 +179,41 @@ export default function Chatbot() {
                 );
               }
             }
-          } // else {
+          } 
+          else {
           //   // Handle regular JSON format as before
-          //   try {
-          //     const parsedChunk = JSON.parse(chunk);
-          //     // Don't display error messages directly in chat
+            try {
+              const parsedChunk = JSON.parse(chunk);
+              // Don't display error messages directly in chat
               
-          //     if (!parsedChunk.error) {
-          //       accumulatedText += parsedChunk.response || parsedChunk.text || "";
+              if (!parsedChunk.error) {
+                accumulatedText += parsedChunk.response || parsedChunk.text || "";
                 
-          //       setMessages(prev => 
-          //         prev.map(msg => 
-          //           msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
-          //             ? { ...msg, text: accumulatedText }
-          //             : msg
-          //         )
-          //       );
-          //     } else {
-          //       console.error("API error in JSON:", parsedChunk.error);
-          //     }
-          //   } catch (e) {
-          //     console.error("Error parsing chunk:", e);
-          //     // If it's not valid JSON, check if it contains an error message before using
-          //     if (!chunk.includes('{"error":')) {
-          //       accumulatedText += chunk;
-          //       setMessages(prev => 
-          //         prev.map(msg => 
-          //           msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
-          //             ? { ...msg, text: accumulatedText }
-          //             : msg
-          //         )
-          //       );
-          //     }
-          //   }
-          // }
+                setMessages(prev => 
+                  prev.map(msg => 
+                    msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
+                      ? { ...msg, text: accumulatedText }
+                      : msg
+                  )
+                );
+              } else {
+                console.error("API error in JSON:", parsedChunk.error);
+              }
+            } catch (e) {
+              console.error("Error parsing chunk:", e);
+              // If it's not valid JSON, check if it contains an error message before using
+              if (!chunk.includes('{"error":')) {
+                accumulatedText += chunk;
+                setMessages(prev => 
+                  prev.map(msg => 
+                    msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
+                      ? { ...msg, text: accumulatedText }
+                      : msg
+                  )
+                );
+              }
+            }
+          }
         }
         
         setIsLoading(false);
@@ -276,6 +294,8 @@ export default function Chatbot() {
                 </div>
               </div>
             ))}
+            {/* Invisible div at the end to scroll to */}
+            <div ref={messagesEndRef} />
           </div>
 
           <div className="border-t bg-white p-4">
