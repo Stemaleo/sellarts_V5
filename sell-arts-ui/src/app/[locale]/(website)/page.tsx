@@ -18,6 +18,12 @@ import ArtistWorks from "@/components/ArtistWorks";
 import { use } from "react";
 import { getAllRandomArtworks, getARandomArtists, getARandomGallery, getRandomArtists } from "@/actions/home";
 import { getAllArtistProfiles } from "@/actions/artists";
+import Chatbot from "./chatbot";
+import Head from "next/head";
+
+
+
+
 export default function BentoLanding() {
   const res = use(getAllRandomArtworks());
   const futuresRes = use(getAllRandomArtworks());
@@ -30,11 +36,35 @@ export default function BentoLanding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b  pb-12">
+            <Head>
+        <title>Sellarts - Marketplace d'art africain contemporain</title>
+        <meta
+          name="description"
+          content="Sellarts est une marketplace dédiée à l'art africain contemporain, mettant en relation artistes, collectionneurs et passionnés à l’échelle mondiale."
+        />
+        <meta property="og:title" content="Sellarts - Marketplace d'art africain contemporain" />
+        <meta
+          property="og:description"
+          content="Sellarts connecte artistes, collectionneurs et passionnés d’art africain contemporain à l’échelle mondiale."
+        />
+        {/* <meta property="og:image" content="https://sellarts.com/images/og-image.jpg" /> */}
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Sellarts - Marketplace d'art africain contemporain" />
+        <meta
+          name="twitter:description"
+          content="Sellarts connecte artistes, collectionneurs et passionnés d’art africain contemporain à l’échelle mondiale."
+        />
+        <meta name="twitter:image" content="https://sellarts.com/images/twitter-image.jpg" />
+      </Head>
       <FeaturedArtistsCarousel artworks={res.data} />
       <FeaturedArtists artists={featureArtists.data} />
       <ArtWork artworks={futuresRes.data} />
       {featureArtist.data != null && <ArtistWorks artist={featureArtist.data} />}
       <FeaturedArtGalleries galleries={artists.data} />
+      {/* <Chatbot /> */}
     </div>
   );
 }
+
+
