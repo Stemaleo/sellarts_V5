@@ -7,6 +7,8 @@ import chatLogo from "@/assets/logo/chatLogo.jpg";
 import { useSession } from "next-auth/react";
 import { parse } from "path";
 import React from "react";
+import ReactMarkdown from 'react-markdown';
+
 interface Message {
   id: number;
   text: string;
@@ -91,7 +93,6 @@ export default function Chatbot() {
 
         if (!response.ok) throw new Error('Network response was not ok');
         
-        // Handle streaming response
         const reader = response.body?.getReader();
         if (!reader) throw new Error('Stream reader not available');
         
@@ -108,118 +109,54 @@ export default function Chatbot() {
         
         setMessages(prev => [...prev, botMessage]);
         
-        // Process the stream
         let accumulatedText = "";
         
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           
-          // Decode the chunk and add to accumulated text
           const chunk = new TextDecoder().decode(value);
           
-          // Handle SSE format (data: {...})
-          if (chunk.startsWith('data: ')) {
-            try {
-              // Extract the JSON part from "data: {...}"
-              const jsonStr = chunk.substring(6);
-              const parsedData = JSON.parse(jsonStr);
-              
-              // Check for error message but don't display it directly in chat
-              if (parsedData.error) {
-                console.error("API error:", parsedData.error);
-                // Don't add error message to chat, just log it
-                // Check if there's any text content before the error
-                const textBeforeError = parsedData.text || "";
-                if (textBeforeError && !textBeforeError.includes('{"error":')) {
-                  // Only add valid text content that appears before the error
-                  accumulatedText += textBeforeError.split('{"error":')[0].trim();
-                }
-                throw new Error("An error occurred while processing your request");
-              }
-              console.log(parsedData);
-              // Add the text fragment to accumulated text
-              if (!parsedData.text?.includes('{"error":')) {
-                accumulatedText += parsedData.text || "";
-              }
-              console.log(accumulatedText);
-              // Update the message with accumulated text
-              setMessages(prev => 
-                prev.map(msg => 
-                  msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
-                    ? { ...msg, text: accumulatedText }
-                    : msg
-                )
-              );
-            } catch (e) {
-              console.error("Error parsing SSE data:", e);
-              // If there's an error parsing the SSE data, try to extract any text
-              const match = chunk.match(/data: (.+)/);
-              if (match && match[1]) {
-                try {
-                  const fallbackData = JSON.parse(match[1]);
-                  // Don't display error messages directly in chat
-                  if (fallbackData.text && !fallbackData.error) {
-                    accumulatedText += fallbackData.text;
-                  }
-                } catch (jsonError) {
-                  // If JSON parsing fails, check if it's an error message before adding
-                  const rawText = match[1];
-                  if (!rawText.includes('{"error":')) {
-                    accumulatedText += rawText;
-                  }
+          // Handle SSE format
+          const lines = chunk.split('\n').filter(line => line.trim());
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const jsonStr = line.substring(6).trim();
+                
+                // Skip [DONE] messages
+                if (jsonStr === '[DONE]') {
+                  continue;
                 }
                 
-                setMessages(prev => 
-                  prev.map(msg => 
-                    msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
-                      ? { ...msg, text: accumulatedText }
-                      : msg
-                  )
-                );
-              }
-            }
-          } 
-          else {
-          //   // Handle regular JSON format as before
-            try {
-              const parsedChunk = JSON.parse(chunk);
-              // Don't display error messages directly in chat
-              
-              if (!parsedChunk.error) {
-                accumulatedText += parsedChunk.response || parsedChunk.text || "";
+                const parsedData = JSON.parse(jsonStr);
                 
-                setMessages(prev => 
-                  prev.map(msg => 
-                    msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
-                      ? { ...msg, text: accumulatedText }
-                      : msg
-                  )
-                );
-              } else {
-                console.error("API error in JSON:", parsedChunk.error);
-              }
-            } catch (e) {
-              console.error("Error parsing chunk:", e);
-              // If it's not valid JSON, check if it contains an error message before using
-              if (!chunk.includes('{"error":')) {
-                accumulatedText += chunk;
-                setMessages(prev => 
-                  prev.map(msg => 
-                    msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
-                      ? { ...msg, text: accumulatedText }
-                      : msg
-                  )
-                );
+                if (!parsedData.error && parsedData.text) {
+                  accumulatedText += parsedData.text;
+                  
+                  setMessages(prev => 
+                    prev.map(msg => 
+                      msg.id === parseInt(botMessageId.replace(/-/g, ''), 16)
+                        ? { ...msg, text: accumulatedText }
+                        : msg
+                    )
+                  );
+                }
+              } catch (e) {
+                console.error("Error parsing SSE data:", e);
+                // Continue processing other messages even if one fails
+                continue;
               }
             }
           }
         }
         
         setIsLoading(false);
+        
       } catch (error) {
         console.error("Error sending message:", error);
-        // Remove loading message and add error message
+        
         setMessages(prev => prev.filter(msg => msg.id !== parseInt(botMessageId.replace(/-/g, ''), 16)));
         
         const errorMessage: Message = {
@@ -288,6 +225,8 @@ export default function Chatbot() {
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '200ms'}}></div>
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '400ms'}}></div>
                     </div>
+                  ) : message.sender === 'bot' ? (
+                    <ReactMarkdown>{message.text}</ReactMarkdown>
                   ) : (
                     message.text
                   )}
