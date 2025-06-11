@@ -40,13 +40,13 @@ public interface ArtistProfileRepo extends JpaRepository<ArtistProfile, Long> {
 
     @Query("SELECT new in.oswinjerome.ArtSell.website.FeaturedArtistDTO(e, a) FROM artist_profiles e " +
             "JOIN art_works a ON a.owner = e.user " +
-            "WHERE e.is_deleted = false AND e.user.is_deleted = false AND a.is_deleted = false " +
+            "WHERE e.is_deleted = false AND e.user.is_deleted = false AND a.is_deleted = false AND a.paintingType.id NOT IN (252) " +
             "GROUP BY e, a ORDER BY random() LIMIT 5")
     List<FeaturedArtistDTO> findRandomArtistWithArtWorks();
 
     @Query("SELECT new in.oswinjerome.ArtSell.website.FeaturedArtistDTO(e, a) FROM artist_profiles e " +
-            "JOIN art_works a ON a.owner = e.user AND e.artistType = in.oswinjerome.ArtSell.artist.ArtistType.GALLERY " +
-            "WHERE e.is_deleted = false AND e.user.is_deleted = false AND a.is_deleted = false and a.paintingType.id NOT IN (159, 202, 203, 204, 205) " +
+            "JOIN art_works a ON a.owner = e.user AND e.artistType = in.oswinjerome.ArtSell.artist.ArtistType.GALLERY AND a.paintingType.id NOT IN (252) " +
+            "WHERE e.is_deleted = false AND e.user.is_deleted = false AND a.is_deleted = false " +
             "GROUP BY e, a ORDER BY random() LIMIT 3")
     List<FeaturedArtistDTO> findRandomGalleryWithArtWorks();
 
