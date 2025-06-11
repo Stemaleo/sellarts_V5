@@ -58,7 +58,7 @@ export default function BentoLanding() {
       <ArtWork artworks={futuresRes.data} />
       {featureArtist.data != null && <ArtistWorks artist={featureArtist.data} />}
       <FeaturedArtGalleries galleries={artists.data} />
-      {/* <Chatbot /> */}
+      <Chatbot />
     </div>
   );
 }

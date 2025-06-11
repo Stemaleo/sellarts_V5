@@ -50,7 +50,7 @@ public interface ArtWorkRepo extends JpaRepository<ArtWork, String> {
     @Query("UPDATE art_works at SET at.paintingType = :newType WHERE at.paintingType = :oldType AND at.is_deleted = false")
     int updateStatusForUsers(@Param("oldType") PaintingType oldType, @Param("newType") PaintingType newType);
 
-    @Query("SELECT e FROM art_works e WHERE e.is_deleted = false AND e.owner.is_deleted = false ORDER BY random() LIMIT 5")
+    @Query("SELECT e FROM art_works e WHERE e.is_deleted = false AND e.owner.is_deleted = false AND e.paintingType.id NOT IN (252) ORDER BY random() LIMIT 5")
     List<ArtWork> findRandomRecords();
 
     @Query("SELECT COUNT(a) FROM art_works a WHERE a.owner = :owner AND a.is_deleted = false AND a.owner.is_deleted = false")
